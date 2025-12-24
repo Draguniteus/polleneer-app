@@ -1,23 +1,26 @@
-name: polleneer
+﻿name: polleneer
 region: nyc
 services:
-- name: web
+- name: polleneer-app
   github:
     branch: main
-    deploy_on_push: true
     repo: Draguniteus/polleneer-app
-  source_dir: .
-  build_command: |
-    cd frontend && npm install && npm run build
-    mkdir -p backend/public
-    cp -r frontend/dist/* backend/public/
-  run_command: cd backend && npm start
+    deploy_on_push: true
   http_port: 8080
-  instance_size: basic-xxs
-  instance_count: 1
+  run_command: cd backend && npm start
+  build_command: |
+    cd frontend && npm ci && npm run build
+    mkdir -p ../backend/public
+    cp -r dist/* ../backend/public/
+  source_dir: /
   envs:
   - key: NODE_ENV
-    scope: RUN_AND_BUILD_TIME
     value: production
   - key: PORT
     value: "8080"
+  - key: DATABASE_URL
+    scope: RUN_TIME
+    value: ${polleneer-db.DATABASE_URL}
+databases:
+- name: polleneer-db
+  engine: PG
