@@ -1,0 +1,8 @@
+{
+  "name": "polleneer-app",
+  "version": "1.0.0",
+  "description": "Polleneer Social Platform",
+  "engines": {
+    "node": "18.x"
+  }
+}
