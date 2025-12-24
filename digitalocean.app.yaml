@@ -1,37 +1,16 @@
-﻿name: polleneer
+﻿name: polleneer-app
 region: nyc
 services:
-- name: polleneer-app
+- name: backend
   github:
     branch: main
-    repo: Draguniteus/polleneer-app
     deploy_on_push: true
-  http_port: 8080
-  run_command: cd backend && npm start
+  source_dir: backend
   build_command: |
-    echo "=== 🐝 BUILD START ==="
-    
-    # Install frontend dependencies and build
-    echo "Building frontend..."
-    cd frontend
-    npm ci
-    npm run build
-    
-    # Create backend public folder and copy files
-    echo "Setting up backend..."
-    cd ..
-    mkdir -p backend/public
-    cp -r frontend/dist/* backend/public/
-    
-    # Install backend dependencies
-    echo "Installing backend dependencies..."
-    cd backend
-    npm ci
-    
-    echo "=== ✅ BUILD COMPLETE ==="
-  source_dir: .
-  envs:
-  - key: NODE_ENV
-    value: production
-  - key: PORT
-    value: "8080"
+    cd ../frontend
+    node simple-production-build.mjs
+    xcopy dist\* ..\backend\public\ /E /Y /I
+  run_command: node server.js
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: basic-xxs
