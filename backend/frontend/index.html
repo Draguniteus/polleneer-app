@@ -897,7 +897,7 @@
             color: var(--honey-yellow);
         }
 
-        /* Comments Section - FIXED VERSION */
+        /* Comments Section */
         .comments-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -1540,6 +1540,13 @@
             border: 5px solid var(--bg-card);
             object-fit: cover;
             background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-avatar-large:hover {
+            transform: scale(1.05);
+            border-color: var(--honey-yellow);
         }
 
         .profile-details {
@@ -1829,6 +1836,12 @@
             color: var(--honey-yellow);
         }
 
+        .bulletin-option.selected {
+            background: var(--honey-yellow);
+            color: var(--bee-black);
+            border-color: var(--honey-yellow);
+        }
+
         /* Top Friends */
         .friends-section {
             background: var(--bg-card);
@@ -2041,17 +2054,6 @@
             .friends-grid {
                 grid-template-columns: 1fr;
             }
-        }
-
-        /* Profile Custom CSS Injection Area */
-        #profileCustomCSS {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
         }
 
         /* Active states for interactions */
@@ -2403,22 +2405,27 @@
                 
                 <div style="margin: 20px 0;">
                     <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                        <button class="action-btn" onclick="addMediaToPost()">
-                            <i class="fas fa-image"></i>
-                            <span>Add Media</span>
-                        </button>
-                        <button class="action-btn" onclick="addLinkToPost()">
+                        <div class="file-input-wrapper">
+                            <input type="file" class="file-input" id="mediaUpload" accept="image/*,video/*" multiple onchange="handleMediaUpload(event)">
+                            <button class="action-btn" onclick="document.getElementById('mediaUpload').click()">
+                                <i class="fas fa-image"></i>
+                                <span>Add Media</span>
+                            </button>
+                        </div>
+                        
+                        <button class="action-btn" onclick="showLinkModal()">
                             <i class="fas fa-link"></i>
                             <span>Add Link</span>
                         </button>
+                        
                         <button class="action-btn" onclick="createPoll()">
                             <i class="fas fa-poll"></i>
                             <span>Create Poll</span>
                         </button>
-                        <button class="action-btn" onclick="addTagToPost()">
-                            <i class="fas fa-hashtag"></i>
-                            <span>Add Tag</span>
-                        </button>
+                        
+                        <div class="hashtag-input-container">
+                            <input type="text" class="hashtag-input" id="hashtagInput" placeholder="#hashtag" onkeypress="if(event.key === 'Enter') addTagFromInput()">
+                        </div>
                     </div>
                     
                     <div style="margin-bottom: 15px;" id="postTagsContainer">
@@ -2454,6 +2461,97 @@
         </div>
     </div>
 
+    <!-- Link Modal -->
+    <div class="modal" id="linkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Link</h3>
+                <button class="modal-close" onclick="closeModal('linkModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="linkUrl">URL</label>
+                    <input type="url" id="linkUrl" class="form-control" placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label for="linkText">Display Text (optional)</label>
+                    <input type="text" id="linkText" class="form-control" placeholder="Check this out!">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button class="action-btn" onclick="closeModal('linkModal')">
+                        Cancel
+                    </button>
+                    <button class="pollinate-btn" onclick="addLinkFromModal()">
+                        <i class="fas fa-link"></i>
+                        Add Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bio Edit Modal -->
+    <div class="modal" id="bioModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Bio</h3>
+                <button class="modal-close" onclick="closeModal('bioModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="bioText">Your Bio</label>
+                    <textarea id="bioText" class="form-control" rows="4" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button class="action-btn" onclick="closeModal('bioModal')">
+                        Cancel
+                    </button>
+                    <button class="pollinate-btn" onclick="saveBio()">
+                        <i class="fas fa-save"></i>
+                        Save Bio
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Upload Modal -->
+    <div class="modal" id="avatarModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Avatar</h3>
+                <button class="modal-close" onclick="closeModal('avatarModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div id="avatarPreview" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 20px; border: 3px solid var(--honey-yellow); overflow: hidden;">
+                        <img id="avatarPreviewImg" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="file-input-wrapper" style="display: inline-block;">
+                        <input type="file" class="file-input" id="avatarUpload" accept="image/*" onchange="previewAvatar(event)">
+                        <button class="action-btn" onclick="document.getElementById('avatarUpload').click()">
+                            <i class="fas fa-upload"></i>
+                            <span>Choose Image</span>
+                        </button>
+                    </div>
+                </div>
+                <div style="color: var(--text-secondary); font-size: 12px; text-align: center; margin-bottom: 20px;">
+                    Supported: JPG, PNG, GIF • Max 5MB
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button class="action-btn" onclick="closeModal('avatarModal')">
+                        Cancel
+                    </button>
+                    <button class="pollinate-btn" onclick="saveAvatar()">
+                        <i class="fas fa-save"></i>
+                        Save Avatar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Menu Modal -->
     <div class="modal" id="profileMenuModal">
         <div class="modal-content">
             <div class="modal-body">
@@ -2508,8 +2606,9 @@
         </div>
     </div>
 
+    <!-- Customization Modal -->
     <div class="modal" id="customizationModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3>Customize Your Profile</h3>
                 <button class="modal-close" onclick="closeModal('customizationModal')">&times;</button>
@@ -2536,7 +2635,7 @@
                     </div>
                     <div style="margin-top: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 500;">Custom Color</label>
-                        <input type="color" id="customColorPicker" style="width: 100%; height: 40px; border-radius: 8px; border: none; cursor: pointer;">
+                        <input type="color" id="customColorPicker" style="width: 100%; height: 40px; border-radius: 8px; border: none; cursor: pointer;" onchange="selectColor(this.value)">
                     </div>
                 </div>
                 
@@ -2619,6 +2718,7 @@
         </div>
     </div>
 
+    <!-- Admin Panel Modal -->
     <div class="modal" id="adminPanelModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2707,9 +2807,6 @@
         </div>
     </div>
 
-    <!-- Profile Custom CSS Injection -->
-    <style id="profileCustomCSS"></style>
-
     <!-- Toast Notifications -->
     <div class="toast" id="notificationToast"></div>
 
@@ -2731,9 +2828,13 @@
             css: '',
             music: ''
         };
-        let comments = {}; // Store comments by post ID
+        let comments = {};
+        let selectedBulletinOption = 'public';
+        let selectedProfileTab = 'posts';
+        let selectedColor = '#FFC30B';
+        let selectedBackground = 'gradient';
 
-        // Default admin account
+        // Admin account
         const ADMIN_CREDENTIALS = {
             username: 'admin',
             password: 'polleneer2024',
@@ -2872,7 +2973,6 @@
             setupEventListeners();
             loadSampleData();
             
-            // Check if user was previously logged in
             const savedUser = localStorage.getItem('polleneer_user');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
@@ -2889,17 +2989,14 @@
         });
 
         function initializeApp() {
-            // Load saved theme
             const savedTheme = localStorage.getItem('polleneer_theme') || 'dark';
             const savedStyle = localStorage.getItem('polleneer_style') || 'default';
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.documentElement.setAttribute('data-site-style', savedStyle);
             updateThemeIcon(savedTheme);
             
-            // Initialize comments
             comments = { ...SAMPLE_COMMENTS };
             
-            // Initialize customization
             const savedCustomization = localStorage.getItem('polleneer_customization');
             if (savedCustomization) {
                 customization = JSON.parse(savedCustomization);
@@ -2908,18 +3005,15 @@
         }
 
         function setupEventListeners() {
-            // Auth forms
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('registerForm').addEventListener('submit', handleRegister);
             document.getElementById('showRegister').addEventListener('click', showRegisterForm);
             document.getElementById('showLogin').addEventListener('click', showLoginForm);
             document.getElementById('forgotPassword').addEventListener('click', handleForgotPassword);
             
-            // Social login buttons
             document.getElementById('googleLogin').addEventListener('click', handleGoogleLogin);
             document.getElementById('githubLogin').addEventListener('click', handleGithubLogin);
             
-            // Nav buttons
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('notificationsBtn').addEventListener('click', showNotifications);
             document.getElementById('messagesBtn').addEventListener('click', showMessages);
@@ -2927,7 +3021,6 @@
             document.getElementById('profileMenuBtn').addEventListener('click', showProfileMenu);
             document.getElementById('adminPanelBtn').addEventListener('click', showAdminPanel);
             
-            // Search
             document.getElementById('searchInput').addEventListener('input', handleSearch);
             document.getElementById('searchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') performSearch();
@@ -2948,17 +3041,376 @@
                 { id: 2, from: 'TechWorker', text: 'Can we collaborate on that algorithm?', time: '1h ago', unread: true }
             ];
             
-            // Update badge counts
             updateBadgeCounts();
-            
-            // Load trending topics
             loadTrendingTopics();
-            
-            // Load suggested users
             loadSuggestedUsers();
-            
-            // Load activity feed
             loadActivityFeed();
+        }
+
+        // ============================================
+        // FILE UPLOAD FUNCTIONS - FIXED
+        // ============================================
+        function handleMediaUpload(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                const mediaPreview = document.getElementById('mediaPreview');
+                mediaPreview.innerHTML = '';
+                
+                for (let i = 0; i < Math.min(files.length, 4); i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        if (file.type.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.maxWidth = '100%';
+                            img.style.borderRadius = '10px';
+                            img.style.marginBottom = '10px';
+                            img.style.maxHeight = '200px';
+                            mediaPreview.appendChild(img);
+                        } else if (file.type.startsWith('video/')) {
+                            const video = document.createElement('video');
+                            video.src = e.target.result;
+                            video.controls = true;
+                            video.style.maxWidth = '100%';
+                            video.style.borderRadius = '10px';
+                            video.style.marginBottom = '10px';
+                            video.style.maxHeight = '200px';
+                            mediaPreview.appendChild(video);
+                        }
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+                
+                document.getElementById('postMediaContainer').classList.remove('hidden');
+                showToast(`Added ${files.length} file(s) to post`);
+            }
+        }
+
+        function showLinkModal() {
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkText').value = '';
+            openModal('linkModal');
+        }
+
+        function addLinkFromModal() {
+            const url = document.getElementById('linkUrl').value.trim();
+            const text = document.getElementById('linkText').value.trim();
+            
+            if (!url) {
+                showToast('Please enter a URL');
+                return;
+            }
+            
+            const content = document.getElementById('postContent');
+            content.value += `\n${text ? `[${text}](${url})` : url}`;
+            
+            closeModal('linkModal');
+            showToast('Link added to post');
+        }
+
+        function addTagFromInput() {
+            const input = document.getElementById('hashtagInput');
+            let tag = input.value.trim();
+            
+            if (tag && !tag.startsWith('#')) {
+                tag = '#' + tag;
+            }
+            
+            if (tag) {
+                const tagsContainer = document.getElementById('postTags');
+                const tagElement = document.createElement('span');
+                tagElement.className = 'post-tag';
+                tagElement.textContent = tag;
+                tagElement.onclick = function() { this.remove(); };
+                tagsContainer.appendChild(tagElement);
+                
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        // ============================================
+        // PROFILE FUNCTIONS - FIXED
+        // ============================================
+        function editProfile() {
+            document.getElementById('bioText').value = currentUser.bio;
+            openModal('bioModal');
+        }
+
+        function saveBio() {
+            const newBio = document.getElementById('bioText').value.trim();
+            if (newBio) {
+                currentUser.bio = newBio;
+                updateUIForUser();
+                localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
+                closeModal('bioModal');
+                showToast('Bio updated successfully!');
+                
+                if (currentPage === 'profile') {
+                    goToProfile(selectedProfileTab);
+                }
+            }
+        }
+
+        function changeAvatar() {
+            document.getElementById('avatarPreviewImg').src = currentUser.avatar;
+            openModal('avatarModal');
+        }
+
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('File size must be less than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreviewImg').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveAvatar() {
+            const previewImg = document.getElementById('avatarPreviewImg').src;
+            if (previewImg && previewImg !== currentUser.avatar) {
+                currentUser.avatar = previewImg;
+                updateUIForUser();
+                localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
+                closeModal('avatarModal');
+                showToast('Avatar updated successfully!');
+                
+                if (currentPage === 'profile') {
+                    goToProfile(selectedProfileTab);
+                }
+            }
+        }
+
+        // ============================================
+        // BULLETIN BOARD FUNCTIONS - FIXED
+        // ============================================
+        function addBulletinOption(option) {
+            selectedBulletinOption = option;
+            
+            document.querySelectorAll('.bulletin-option').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            event.target.classList.add('selected');
+        }
+
+        function postBulletin() {
+            const text = document.getElementById('bulletinText').value.trim();
+            if (!text) {
+                showToast('Please write something for your bulletin');
+                return;
+            }
+            
+            showToast(`Bulletin posted as ${selectedBulletinOption}!`);
+            document.getElementById('bulletinText').value = '';
+            
+            document.querySelectorAll('.bulletin-option').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector('.bulletin-option').classList.add('selected');
+            selectedBulletinOption = 'public';
+        }
+
+        function manageFriends() {
+            showToast('Friends management would open here. In a real app, this would show friend management options.');
+        }
+
+        function switchProfileTab(tab) {
+            selectedProfileTab = tab;
+            
+            document.querySelectorAll('.customization-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            loadProfileFeed(tab);
+        }
+
+        // ============================================
+        // CUSTOMIZATION FUNCTIONS - FIXED
+        // ============================================
+        function switchCustomizationTab(tab) {
+            document.querySelectorAll('.customization-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.customization-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(tab + 'Section').classList.add('active');
+        }
+
+        function selectColor(color) {
+            selectedColor = color;
+            
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.getAttribute('data-color') === color) {
+                    option.classList.add('selected');
+                }
+            });
+            
+            document.getElementById('customColorPicker').value = color;
+        }
+
+        function setBackground(type) {
+            selectedBackground = type;
+            showToast(`Background set to ${type}`);
+        }
+
+        function testMusic() {
+            const url = document.getElementById('musicUrl').value.trim();
+            if (url) {
+                showToast('Testing music... In a real app, this would play the music.');
+            } else {
+                showToast('Please enter a music URL');
+            }
+        }
+
+        function saveCustomization() {
+            customization.colors = { primary: selectedColor };
+            customization.background = selectedBackground;
+            customization.css = document.getElementById('customCSSEditor').value;
+            
+            localStorage.setItem('polleneer_customization', JSON.stringify(customization));
+            showToast('Customization saved!');
+            
+            if (currentPage === 'profile') {
+                applyProfileCustomization();
+            }
+        }
+
+        function resetCustomization() {
+            selectedColor = '#FFC30B';
+            selectedBackground = 'gradient';
+            document.getElementById('customCSSEditor').value = '';
+            document.getElementById('musicUrl').value = '';
+            
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector('.color-option').classList.add('selected');
+            
+            showToast('Customization reset to default');
+        }
+
+        function applyProfileCustomization() {
+            const profileHeader = document.getElementById('profileHeader');
+            if (profileHeader && customization.colors.primary) {
+                profileHeader.style.borderColor = customization.colors.primary;
+            }
+        }
+
+        // ============================================
+        // SIDEBAR FUNCTIONS - FIXED
+        // ============================================
+        function loadTrendingTopics() {
+            const trendingList = document.getElementById('trendingList');
+            if (!trendingList) return;
+            
+            trendingList.innerHTML = TRENDING_TOPICS.map(topic => `
+                <li class="trend-item" onclick="searchTag('${topic.tag}')">
+                    <div class="trend-category">${topic.category} · Trending</div>
+                    <div class="trend-tag">${topic.tag}</div>
+                    <div class="trend-stats">${topic.posts} posts</div>
+                </li>
+            `).join('');
+        }
+
+        function loadSuggestedUsers() {
+            const suggestedUsers = document.getElementById('suggestedUsers');
+            if (!suggestedUsers) return;
+            
+            const suggestions = users.filter(u => u.id !== currentUser.id).slice(0, 4);
+            
+            suggestedUsers.innerHTML = suggestions.map(user => `
+                <div class="user-to-follow">
+                    <div class="follow-user-info" onclick="goToUserProfile(${user.id})">
+                        <img src="${user.avatar}" alt="User" class="follow-avatar">
+                        <div class="follow-details">
+                            <h4>${user.displayName}</h4>
+                            <p>@${user.username}</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn" onclick="toggleFollow(${user.id})">
+                        Follow
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function loadActivityFeed() {
+            const activityFeed = document.getElementById('activityFeed');
+            if (!activityFeed) return;
+            
+            const activities = [
+                { user: 'FloraCreative', action: 'posted a new artwork', time: '5m ago', icon: 'fas fa-palette' },
+                { user: 'TechWorker', action: 'pollinated an idea about AI', time: '12m ago', icon: 'fas fa-retweet' },
+                { user: 'ScienceBee', action: 'started a new discussion', time: '25m ago', icon: 'fas fa-comments' },
+                { user: 'NewUser123', action: 'joined Polleneer', time: '1h ago', icon: 'fas fa-user-plus' }
+            ];
+            
+            activityFeed.innerHTML = activities.map(activity => `
+                <div class="activity-item" onclick="searchUser('${activity.user}')">
+                    <div class="activity-icon">
+                        <i class="${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <strong>${activity.user}</strong> ${activity.action}
+                    </div>
+                    <div class="activity-time">${activity.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadCommunities() {
+            const communitiesGrid = document.getElementById('communitiesGrid');
+            if (!communitiesGrid) return;
+            
+            const communities = [
+                { name: 'Art Collective', members: '3.7k', icon: 'A', color: '#FF69B4' },
+                { name: 'Tech Innovators', members: '4.2k', icon: 'T', color: '#87CEEB' },
+                { name: 'Music Lovers', members: '5.1k', icon: 'M', color: '#9370DB' },
+                { name: 'Food & Travel', members: '2.8k', icon: 'F', color: '#FF8C00' },
+                { name: 'Gaming Hub', members: '6.3k', icon: 'G', color: '#228B22' },
+                { name: 'Book Club', members: '1.9k', icon: 'B', color: '#8B4513' }
+            ];
+            
+            communitiesGrid.innerHTML = communities.map(community => `
+                <div class="hive-card" style="flex-direction: column; text-align: center; padding: 20px;">
+                    <div class="hive-icon" style="background: ${community.color}; margin-bottom: 10px; width: 60px; height: 60px; align-self: center;">
+                        ${community.icon}
+                    </div>
+                    <div style="text-align: center;">
+                        <h4>${community.name}</h4>
+                        <div class="hive-members">${community.members} members</div>
+                    </div>
+                    <button class="follow-btn" style="margin-top: 10px; width: 100%;" onclick="joinCommunity('${community.name}')">
+                        Join Community
+                    </button>
+                    <button class="action-btn" style="margin-top: 5px; width: 100%;" onclick="createCommunity()">
+                        <i class="fas fa-plus"></i> Create Similar
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function createCommunity() {
+            showToast('Create community feature would open here. In a real app, you would need 50 honey points to create a community.');
         }
 
         // ============================================
@@ -2969,7 +3421,6 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            // Check for admin login
             if (email === ADMIN_CREDENTIALS.username || email === ADMIN_CREDENTIALS.email) {
                 if (password === ADMIN_CREDENTIALS.password) {
                     currentUser = { ...ADMIN_CREDENTIALS };
@@ -2981,9 +3432,8 @@
                     return;
                 }
             } else {
-                // Regular user login (simulated)
                 const user = users.find(u => u.email === email || u.username === email);
-                if (!user || password !== 'password123') { // Simple demo password
+                if (!user || password !== 'password123') {
                     showToast('Invalid credentials. Try: admin/polleneer2024 or any username/password123');
                     return;
                 }
@@ -2991,10 +3441,7 @@
                 isAdmin = false;
             }
             
-            // Save user to localStorage
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-            
-            // Show app
             showApp();
             updateUIForUser();
             loadHomeFeed();
@@ -3014,7 +3461,6 @@
                 return;
             }
             
-            // Check if username/email already exists
             if (users.some(u => u.username === username)) {
                 showToast('Username already taken!');
                 return;
@@ -3025,7 +3471,6 @@
                 return;
             }
             
-            // Create new user
             const newUser = {
                 id: users.length + 1,
                 username: username,
@@ -3045,30 +3490,25 @@
             currentUser = newUser;
             isAdmin = false;
             
-            // Save user to localStorage
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-            
-            // Show app
             showApp();
             updateUIForUser();
             loadHomeFeed();
             showToast(`Welcome to Polleneer, ${username}! 🎉 You've earned 100 Honey Points!`);
-            
-            // Switch to login form
             showLoginForm();
         }
 
         function handleGoogleLogin() {
-            showToast('Google login would open here. In a real app, this would redirect to Google OAuth.');
+            showToast('Google login would open here.');
         }
 
         function handleGithubLogin() {
-            showToast('GitHub login would open here. In a real app, this would redirect to GitHub OAuth.');
+            showToast('GitHub login would open here.');
         }
 
         function handleForgotPassword(e) {
             e.preventDefault();
-            showToast('Password reset email would be sent. In a real app, this would trigger email reset.');
+            showToast('Password reset email would be sent.');
         }
 
         function showRegisterForm(e) {
@@ -3110,31 +3550,20 @@
         function updateUIForUser() {
             if (!currentUser) return;
             
-            // Update avatar
             const avatars = document.querySelectorAll('#currentUserAvatar, #sidebarUserAvatar, #modalUserAvatar, #menuUserAvatar');
             avatars.forEach(avatar => {
                 avatar.src = currentUser.avatar;
             });
             
-            // Update username
             document.getElementById('sidebarUserName').textContent = currentUser.displayName;
             document.getElementById('menuUserName').textContent = currentUser.displayName;
             document.getElementById('menuUserRole').textContent = `@${currentUser.username} · ${getRoleName(currentUser.role)}`;
-            
-            // Update role
             document.getElementById('sidebarUserRole').textContent = getRoleName(currentUser.role);
-            
-            // Update honey points
             document.getElementById('sidebarHoneyPoints').textContent = currentUser.honeyPoints.toLocaleString();
             document.getElementById('honeyPoints').textContent = currentUser.honeyPoints.toLocaleString();
             document.getElementById('menuHoneyCount').textContent = currentUser.honeyPoints.toLocaleString();
-            
-            // Update stats
             document.getElementById('menuFollowingCount').textContent = currentUser.following || 0;
             document.getElementById('menuFollowersCount').textContent = currentUser.followers || 0;
-            document.getElementById('menuHoneyCount').textContent = currentUser.honeyPoints.toLocaleString();
-            
-            // Show/hide admin button
             document.getElementById('adminPanelBtn').style.display = isAdmin ? 'block' : 'none';
         }
 
@@ -3249,6 +3678,7 @@
 
         function goToProfile(section = 'posts') {
             currentPage = 'profile';
+            selectedProfileTab = section;
             const user = currentUser;
             
             document.getElementById('mainContent').innerHTML = `
@@ -3313,7 +3743,7 @@
                         <div class="bulletin-form">
                             <textarea placeholder="Post a bulletin to your profile..." id="bulletinText"></textarea>
                             <div class="bulletin-options">
-                                <button class="bulletin-option" onclick="addBulletinOption('public')">
+                                <button class="bulletin-option selected" onclick="addBulletinOption('public')">
                                     <i class="fas fa-globe"></i> Public
                                 </button>
                                 <button class="bulletin-option" onclick="addBulletinOption('friends')">
@@ -3362,10 +3792,7 @@
                 </div>
             `;
             
-            // Apply customization
             applyProfileCustomization();
-            
-            // Load profile content
             loadProfileFeed(section);
             loadTopFriends();
             updateActiveNavLink('profile');
@@ -3415,7 +3842,7 @@
         }
 
         // ============================================
-        // POST MANAGEMENT FUNCTIONS
+        // POST FUNCTIONS
         // ============================================
         function loadHomeFeed() {
             const feed = document.getElementById('homeFeed');
@@ -3428,7 +3855,6 @@
             const feed = document.getElementById('exploreFeed');
             if (!feed) return;
             
-            // Show all posts
             feed.innerHTML = posts.map(post => createPostHTML(post)).join('');
         }
 
@@ -3436,7 +3862,6 @@
             const feed = document.getElementById('profileFeed');
             if (!feed) return;
             
-            // Filter posts by current user
             const userPosts = posts.filter(post => post.userId === currentUser.id);
             feed.innerHTML = userPosts.map(post => createPostHTML(post)).join('');
         }
@@ -3445,7 +3870,6 @@
             const feed = document.getElementById('bookmarksFeed');
             if (!feed) return;
             
-            // Show bookmarked posts (in demo, show all liked posts)
             const bookmarkedPosts = posts.filter(post => post.isLiked);
             feed.innerHTML = bookmarkedPosts.map(post => createPostHTML(post)).join('');
         }
@@ -3554,7 +3978,6 @@
                         </button>
                     </div>
                     
-                    <!-- Comments Section - FIXED -->
                     <div class="comments-section" id="comments-${post.id}">
                         <div id="comments-list-${post.id}">
                             ${postComments.map(comment => `
@@ -3585,7 +4008,6 @@
         }
 
         function formatPostContent(content) {
-            // Convert mentions and hashtags to links
             return content
                 .replace(/@(\w+)/g, '<a href="#" onclick="searchUser(\'$1\')" style="color: var(--honey-yellow); text-decoration: none;">@$1</a>')
                 .replace(/#(\w+)/g, '<a href="#" onclick="searchTag(\'#$1\')" style="color: var(--honey-yellow); text-decoration: none;">#$1</a>')
@@ -3593,7 +4015,7 @@
         }
 
         // ============================================
-        // POST INTERACTION FUNCTIONS - FIXED COMMENT SYSTEM
+        // POST INTERACTION FUNCTIONS
         // ============================================
         function likePost(postId) {
             const post = posts.find(p => p.id === postId);
@@ -3602,7 +4024,6 @@
             post.isLiked = !post.isLiked;
             post.likes += post.isLiked ? 1 : -1;
             
-            // Update UI
             const postElement = document.getElementById(`post-${postId}`);
             if (postElement) {
                 const likeBtn = postElement.querySelector('.post-action-btn');
@@ -3613,18 +4034,15 @@
                 likeIcon.className = post.isLiked ? 'fas fa-heart' : 'far fa-heart';
                 likeText.textContent = post.isLiked ? 'Liked' : 'Like';
                 
-                // Update stats
                 const stats = postElement.querySelectorAll('.stat');
                 if (stats[2]) {
                     stats[2].querySelector('span').textContent = `${post.likes} Likes`;
                 }
                 
-                // Add animation
                 likeBtn.classList.add('clicked');
                 setTimeout(() => likeBtn.classList.remove('clicked'), 300);
             }
             
-            // Add honey points for interaction
             if (post.isLiked && post.userId !== currentUser.id) {
                 currentUser.honeyPoints += 5;
                 updateUIForUser();
@@ -3663,7 +4081,6 @@
                 return;
             }
             
-            // Add comment to data
             if (!comments[postId]) {
                 comments[postId] = [];
             }
@@ -3677,13 +4094,11 @@
             
             comments[postId].push(newComment);
             
-            // Update post comment count
             const post = posts.find(p => p.id === postId);
             if (post) {
                 post.comments += 1;
             }
             
-            // Update UI
             const commentsList = document.getElementById(`comments-list-${postId}`);
             if (commentsList) {
                 const commentHTML = `
@@ -3705,10 +4120,8 @@
                 commentsList.innerHTML += commentHTML;
             }
             
-            // Clear input
             commentInput.value = '';
             
-            // Update post stats
             const postElement = document.getElementById(`post-${postId}`);
             if (postElement) {
                 const stats = postElement.querySelectorAll('.stat');
@@ -3717,7 +4130,6 @@
                 }
             }
             
-            // Add honey points
             currentUser.honeyPoints += 10;
             updateUIForUser();
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
@@ -3725,7 +4137,7 @@
         }
 
         function likeComment(postId, commentId) {
-            showToast('Liked comment! In a real app, this would track comment likes.');
+            showToast('Liked comment!');
         }
 
         function replyToComment(postId, commentId) {
@@ -3742,7 +4154,6 @@
             post.isPollinated = !post.isPollinated;
             post.pollinations += post.isPollinated ? 1 : -1;
             
-            // Update UI
             const postElement = document.getElementById(`post-${postId}`);
             if (postElement) {
                 const pollinateBtn = postElement.querySelector('.post-action-btn:nth-child(3)');
@@ -3753,18 +4164,15 @@
                 pollinateIcon.className = post.isPollinated ? 'fas fa-retweet' : 'far fa-retweet';
                 pollinateText.textContent = post.isPollinated ? 'Pollinated' : 'Pollinate';
                 
-                // Update stats
                 const stats = postElement.querySelectorAll('.stat');
                 if (stats[0]) {
                     stats[0].querySelector('span').textContent = `${post.pollinations} Pollinations`;
                 }
                 
-                // Add animation
                 pollinateBtn.classList.add('clicked');
                 setTimeout(() => pollinateBtn.classList.remove('clicked'), 300);
             }
             
-            // Add honey points for pollination
             if (post.isPollinated && post.userId !== currentUser.id) {
                 currentUser.honeyPoints += 15;
                 updateUIForUser();
@@ -3790,7 +4198,6 @@
             if (menu) {
                 menu.classList.toggle('show');
                 
-                // Close other menus
                 document.querySelectorAll('.options-menu.show').forEach(otherMenu => {
                     if (otherMenu !== menu) {
                         otherMenu.classList.remove('show');
@@ -3809,7 +4216,6 @@
                 return;
             }
             
-            // Create new post
             const newPost = {
                 id: posts.length + 1,
                 userId: currentUser.id,
@@ -3825,47 +4231,25 @@
                 isPollinated: false
             };
             
-            posts.unshift(newPost); // Add to beginning
+            posts.unshift(newPost);
             
-            // Clear form
             document.getElementById('postContent').value = '';
             document.getElementById('postTags').innerHTML = '';
             document.getElementById('mediaPreview').innerHTML = '';
             document.getElementById('postMediaContainer').classList.add('hidden');
             document.getElementById('postPollContainer').classList.add('hidden');
             
-            // Close modal
             closeModal('createPostModal');
             
-            // Reload feed
             if (currentPage === 'home') {
                 loadHomeFeed();
             }
             
-            // Add honey points
             currentUser.honeyPoints += 25;
             updateUIForUser();
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
             
             showToast('Post created successfully! +25 Honey Points 🍯');
-        }
-
-        function addMediaToPost() {
-            const url = prompt('Enter image URL:');
-            if (url) {
-                const mediaPreview = document.getElementById('mediaPreview');
-                mediaPreview.innerHTML = `<img src="${url}" style="max-width: 100%; border-radius: 10px;">`;
-                document.getElementById('postMediaContainer').classList.remove('hidden');
-            }
-        }
-
-        function addLinkToPost() {
-            const url = prompt('Enter link URL:');
-            const text = prompt('Enter link text (optional):');
-            if (url) {
-                const content = document.getElementById('postContent');
-                content.value += `\n${text ? `[${text}](${url})` : url}`;
-            }
         }
 
         function createPoll() {
@@ -3908,18 +4292,6 @@
             button.closest('div[style*="display: flex"]').remove();
         }
 
-        function addTagToPost() {
-            const tag = prompt('Enter tag (without #):');
-            if (tag) {
-                const tagsContainer = document.getElementById('postTags');
-                const tagElement = document.createElement('span');
-                tagElement.className = 'post-tag';
-                tagElement.textContent = `#${tag}`;
-                tagElement.onclick = function() { this.remove(); };
-                tagsContainer.appendChild(tagElement);
-            }
-        }
-
         // ============================================
         // UTILITY FUNCTIONS
         // ============================================
@@ -3933,106 +4305,16 @@
             }, 3000);
         }
 
-        function loadTrendingTopics() {
-            const trendingList = document.getElementById('trendingList');
-            if (!trendingList) return;
-            
-            trendingList.innerHTML = TRENDING_TOPICS.map(topic => `
-                <li class="trend-item" onclick="searchTag('${topic.tag}')">
-                    <div class="trend-category">${topic.category} · Trending</div>
-                    <div class="trend-tag">${topic.tag}</div>
-                    <div class="trend-stats">${topic.posts} posts</div>
-                </li>
-            `).join('');
-        }
-
-        function loadSuggestedUsers() {
-            const suggestedUsers = document.getElementById('suggestedUsers');
-            if (!suggestedUsers) return;
-            
-            // Get users not followed by current user
-            const suggestions = users.filter(u => u.id !== currentUser.id).slice(0, 4);
-            
-            suggestedUsers.innerHTML = suggestions.map(user => `
-                <div class="user-to-follow">
-                    <div class="follow-user-info" onclick="goToUserProfile(${user.id})">
-                        <img src="${user.avatar}" alt="User" class="follow-avatar">
-                        <div class="follow-details">
-                            <h4>${user.displayName}</h4>
-                            <p>@${user.username}</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn" onclick="toggleFollow(${user.id})">
-                        Follow
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        function loadActivityFeed() {
-            const activityFeed = document.getElementById('activityFeed');
-            if (!activityFeed) return;
-            
-            const activities = [
-                { user: 'FloraCreative', action: 'posted a new artwork', time: '5m ago', icon: 'fas fa-palette' },
-                { user: 'TechWorker', action: 'pollinated an idea about AI', time: '12m ago', icon: 'fas fa-retweet' },
-                { user: 'ScienceBee', action: 'started a new discussion', time: '25m ago', icon: 'fas fa-comments' },
-                { user: 'NewUser123', action: 'joined Polleneer', time: '1h ago', icon: 'fas fa-user-plus' }
-            ];
-            
-            activityFeed.innerHTML = activities.map(activity => `
-                <div class="activity-item" onclick="searchUser('${activity.user}')">
-                    <div class="activity-icon">
-                        <i class="${activity.icon}"></i>
-                    </div>
-                    <div class="activity-content">
-                        <strong>${activity.user}</strong> ${activity.action}
-                    </div>
-                    <div class="activity-time">${activity.time}</div>
-                </div>
-            `).join('');
-        }
-
         function loadTopFriends() {
             const friendsGrid = document.getElementById('topFriendsGrid');
             if (!friendsGrid) return;
             
-            // Get top 8 friends
             const friends = users.filter(u => u.id !== currentUser.id).slice(0, 8);
             
             friendsGrid.innerHTML = friends.map(friend => `
                 <div class="friend-card" onclick="goToUserProfile(${friend.id})">
                     <img src="${friend.avatar}" alt="Friend" class="friend-avatar">
                     <div class="friend-name">${friend.username}</div>
-                </div>
-            `).join('');
-        }
-
-        function loadCommunities() {
-            const communitiesGrid = document.getElementById('communitiesGrid');
-            if (!communitiesGrid) return;
-            
-            const communities = [
-                { name: 'Art Collective', members: '3.7k', icon: 'A', color: '#FF69B4' },
-                { name: 'Tech Innovators', members: '4.2k', icon: 'T', color: '#87CEEB' },
-                { name: 'Music Lovers', members: '5.1k', icon: 'M', color: '#9370DB' },
-                { name: 'Food & Travel', members: '2.8k', icon: 'F', color: '#FF8C00' },
-                { name: 'Gaming Hub', members: '6.3k', icon: 'G', color: '#228B22' },
-                { name: 'Book Club', members: '1.9k', icon: 'B', color: '#8B4513' }
-            ];
-            
-            communitiesGrid.innerHTML = communities.map(community => `
-                <div class="hive-card" style="flex-direction: column; text-align: center; padding: 20px;">
-                    <div class="hive-icon" style="background: ${community.color}; margin-bottom: 10px; width: 60px; height: 60px; align-self: center;">
-                        ${community.icon}
-                    </div>
-                    <div style="text-align: center;">
-                        <h4>${community.name}</h4>
-                        <div class="hive-members">${community.members} members</div>
-                    </div>
-                    <button class="follow-btn" style="margin-top: 10px; width: 100%;" onclick="joinCommunity('${community.name}')">
-                        Join Community
-                    </button>
                 </div>
             `).join('');
         }
@@ -4065,17 +4347,17 @@
         }
 
         function searchTag(tag) {
-            showToast(`Searching for ${tag}... In a real app, this would show posts with that tag.`);
+            showToast(`Searching for ${tag}...`);
         }
 
         function searchUser(username) {
-            showToast(`Searching for @${username}... In a real app, this would show the user's profile.`);
+            showToast(`Searching for @${username}...`);
         }
 
         function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             if (query) {
-                showToast(`Searching for "${query}"... In a real app, this would show search results.`);
+                showToast(`Searching for "${query}"...`);
             }
         }
 
@@ -4086,32 +4368,12 @@
         function goToUserProfile(userId) {
             const user = users.find(u => u.id === userId);
             if (user) {
-                alert(`Viewing ${user.username}'s profile. In a real app, this would navigate to their profile page.`);
+                alert(`Viewing ${user.username}'s profile.`);
             }
         }
 
         function showHoneyShop() {
-            alert('Honey Shop would open here. In a real app, this would show items you can buy with Honey Points.');
-        }
-
-        function editProfile() {
-            const newBio = prompt('Edit your bio:', currentUser.bio);
-            if (newBio !== null) {
-                currentUser.bio = newBio;
-                updateUIForUser();
-                localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-                showToast('Profile updated!');
-            }
-        }
-
-        function changeAvatar() {
-            const newAvatar = prompt('Enter new avatar URL:');
-            if (newAvatar) {
-                currentUser.avatar = newAvatar;
-                updateUIForUser();
-                localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-                showToast('Avatar updated!');
-            }
+            alert('Honey Shop would open here.');
         }
 
         function refreshSuggestions() {
@@ -4144,31 +4406,29 @@
         function showNotifications() {
             const unreadCount = notifications.filter(n => !n.read).length;
             if (unreadCount > 0) {
-                // Mark all as read
                 notifications.forEach(n => n.read = true);
                 updateBadgeCounts();
             }
             
-            alert(`You have ${notifications.length} notifications. In a real app, this would show a notifications panel.`);
+            alert(`You have ${notifications.length} notifications.`);
         }
 
         function showMessages() {
             const unreadCount = messages.filter(m => m.unread).length;
             if (unreadCount > 0) {
-                // Mark all as read
                 messages.forEach(m => m.unread = false);
                 updateBadgeCounts();
             }
             
-            alert(`You have ${messages.length} messages. In a real app, this would show a messages panel.`);
+            alert(`You have ${messages.length} messages.`);
         }
 
         function showSettings() {
-            alert('Settings panel would open here. In a real app, this would show account settings, privacy controls, etc.');
+            alert('Settings panel would open here.');
         }
 
         function showHelp() {
-            alert('Help center would open here. In a real app, this would show FAQs, tutorials, and support contact.');
+            alert('Help center would open here.');
         }
 
         function openModal(modalId) {
