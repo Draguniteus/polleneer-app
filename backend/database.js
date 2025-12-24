@@ -12,6 +12,7 @@ if (!connectionString) {
 }
 
 console.log('Database URL found, attempting to connect...');
+console.log('DATABASE_URL value:', connectionString); // DEBUG LINE ADDED HERE
 
 const pool = new Pool({
   connectionString: connectionString,
