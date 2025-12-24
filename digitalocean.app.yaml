@@ -6,10 +6,7 @@ services:
     branch: main
     deploy_on_push: true
   source_dir: backend
-  build_command: |
-    cd ../frontend
-    node simple-production-build.mjs
-    xcopy dist\* ..\backend\public\ /E /Y /I
+  build_command: cd ../frontend && node simple-production-build.mjs && cp -r dist/* ../backend/public/
   run_command: node server.js
   http_port: 8080
   instance_count: 1
