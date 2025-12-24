@@ -1,9 +1,33 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+// DigitalOcean provides DATABASE_URL in this format:
+// postgresql://user:password@host:port/database?sslmode=require
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error('ERROR: DATABASE_URL environment variable is not set.');
+  console.error('Please check your DigitalOcean app configuration.');
+  process.exit(1);
+}
+
+console.log('Database URL found, attempting to connect...');
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  connectionString: connectionString,
+  // DigitalOcean Managed Databases require SSL
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+// Test the connection
+pool.on('connect', () => {
+  console.log('Connected to PostgreSQL database!');
+});
+
+pool.on('error', (err) => {
+  console.error('Unexpected database error:', err);
 });
 
 async function initializeDatabase() {
@@ -79,7 +103,12 @@ async function initializeDatabase() {
       )
     `);
 
-    console.log('Database tables created/verified');
+    console.log('✅ Database tables created/verified successfully!');
+    
+  } catch (error) {
+    console.error('❌ Database initialization failed:', error.message);
+    // Don't crash the app - just log the error
+    // This allows the app to start even if tables already exist
   } finally {
     client.release();
   }
