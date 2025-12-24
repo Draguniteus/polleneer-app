@@ -1,75 +1,80 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const { Pool } = require('pg');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 // ===== MIDDLEWARE =====
-app.use(cors({
-    origin: '*', // Allow all origins for now
-    credentials: true
-}));
+app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ===== SERVE STATIC FILES =====
-// Serve frontend files from the frontend folder
 app.use(express.static(path.join(__dirname, 'frontend')));
+console.log('📁 Serving from:', path.join(__dirname, 'frontend'));
 
-// Debug logging for file serving
-console.log('📁 Static files served from:', path.join(__dirname, 'frontend'));
-console.log('📁 index.html location:', path.join(__dirname, 'frontend', 'index.html'));
+// ===== DATABASE CONNECTION (PostgreSQL) =====
+let pool;
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://localhost:5432/polleneer';
 
-// ===== DATABASE CONNECTION =====
-// Use environment variable for MongoDB URI
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/polleneer';
-
-mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 10s
-    socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-})
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch(err => {
-    console.log('❌ MongoDB connection error:', err.message);
-    console.log('⚠️ Continuing without database - using in-memory storage');
-});
-
-// ===== DATABASE MODELS =====
-const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    profileColor: { type: String, default: '#FFC107' },
-    honeyPoints: { type: Number, default: 100 },
-    joinDate: { type: Date, default: Date.now }
-});
-
-const PostSchema = new mongoose.Schema({
-    content: { type: String, required: true },
-    authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    authorName: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now },
-    likes: { type: Number, default: 0 },
-    comments: [{
-        userId: String,
-        username: String,
-        content: String,
-        timestamp: Date
-    }],
-    pollinates: { type: Number, default: 0 }
-});
-
-const User = mongoose.models.User || mongoose.model('User', UserSchema);
-const Post = mongoose.models.Post || mongoose.model('Post', PostSchema);
+try {
+    pool = new Pool({
+        connectionString: DATABASE_URL,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    });
+    console.log('✅ PostgreSQL connected');
+    
+    // Create tables if they don't exist
+    (async () => {
+        try {
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(50) UNIQUE NOT NULL,
+                    email VARCHAR(100) UNIQUE NOT NULL,
+                    password VARCHAR(100) NOT NULL,
+                    profile_color VARCHAR(20) DEFAULT '#FFC107',
+                    honey_points INTEGER DEFAULT 100,
+                    join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+                
+                CREATE TABLE IF NOT EXISTS posts (
+                    id SERIAL PRIMARY KEY,
+                    content TEXT NOT NULL,
+                    author_id INTEGER REFERENCES users(id),
+                    author_name VARCHAR(50) NOT NULL,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    likes INTEGER DEFAULT 0,
+                    pollinates INTEGER DEFAULT 0
+                );
+                
+                CREATE TABLE IF NOT EXISTS comments (
+                    id SERIAL PRIMARY KEY,
+                    post_id INTEGER REFERENCES posts(id),
+                    user_id INTEGER REFERENCES users(id),
+                    username VARCHAR(50) NOT NULL,
+                    content TEXT NOT NULL,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            `);
+            console.log('✅ Database tables ready');
+        } catch (err) {
+            console.log('⚠️ Table creation error:', err.message);
+        }
+    })();
+} catch (error) {
+    console.log('❌ PostgreSQL connection failed:', error.message);
+    console.log('⚠️ Using in-memory storage instead');
+    pool = null;
+}
 
 // ===== IN-MEMORY STORAGE (FALLBACK) =====
 let inMemoryUsers = [];
 let inMemoryPosts = [];
+let inMemoryComments = [];
 
 // ===== API ROUTES =====
 
@@ -78,7 +83,7 @@ app.get('/api/test', (req, res) => {
     res.json({ 
         message: 'API is working! 🐝',
         timestamp: new Date().toISOString(),
-        mode: mongoose.connection.readyState === 1 ? 'Database' : 'In-memory'
+        mode: pool ? 'PostgreSQL' : 'In-memory'
     });
 });
 
@@ -87,48 +92,45 @@ app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, email, password, profileColor } = req.body;
         
-        // Check if user exists
-        let existingUser;
-        if (mongoose.connection.readyState === 1) {
-            existingUser = await User.findOne({ $or: [{ username }, { email }] });
-        } else {
-            existingUser = inMemoryUsers.find(u => u.username === username || u.email === email);
-        }
-        
-        if (existingUser) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Username or email already exists' 
-            });
-        }
-        
-        // Create new user
-        const newUser = {
-            username,
-            email,
-            password, // In real app, hash this!
-            profileColor: profileColor || '#FFC107',
-            honeyPoints: 100,
-            joinDate: new Date()
-        };
-        
-        if (mongoose.connection.readyState === 1) {
-            const savedUser = await User.create(newUser);
+        if (pool) {
+            // PostgreSQL
+            const result = await pool.query(
+                'INSERT INTO users (username, email, password, profile_color) VALUES ($1, $2, $3, $4) RETURNING *',
+                [username, email, password, profileColor || '#FFC107']
+            );
+            
             res.json({
                 success: true,
                 message: 'User registered successfully',
                 user: {
-                    id: savedUser._id,
-                    username: savedUser.username,
-                    email: savedUser.email,
-                    profileColor: savedUser.profileColor,
-                    honeyPoints: savedUser.honeyPoints
+                    id: result.rows[0].id,
+                    username: result.rows[0].username,
+                    email: result.rows[0].email,
+                    profileColor: result.rows[0].profile_color,
+                    honeyPoints: result.rows[0].honey_points
                 },
-                token: 'sample-jwt-token' // In real app, generate proper JWT
+                token: 'sample-jwt-token'
             });
         } else {
             // In-memory storage
-            newUser.id = Date.now().toString();
+            const existingUser = inMemoryUsers.find(u => u.username === username || u.email === email);
+            if (existingUser) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Username or email already exists' 
+                });
+            }
+            
+            const newUser = {
+                id: Date.now(),
+                username,
+                email,
+                password,
+                profileColor: profileColor || '#FFC107',
+                honeyPoints: 100,
+                joinDate: new Date()
+            };
+            
             inMemoryUsers.push(newUser);
             res.json({
                 success: true,
@@ -157,9 +159,15 @@ app.post('/api/auth/login', async (req, res) => {
         const { username, password } = req.body;
         
         let user;
-        if (mongoose.connection.readyState === 1) {
-            user = await User.findOne({ username, password });
+        if (pool) {
+            // PostgreSQL
+            const result = await pool.query(
+                'SELECT * FROM users WHERE username = $1 AND password = $2',
+                [username, password]
+            );
+            user = result.rows[0];
         } else {
+            // In-memory
             user = inMemoryUsers.find(u => u.username === username && u.password === password);
         }
         
@@ -174,11 +182,11 @@ app.post('/api/auth/login', async (req, res) => {
             success: true,
             message: 'Login successful',
             user: {
-                id: user._id || user.id,
+                id: user.id,
                 username: user.username,
                 email: user.email,
-                profileColor: user.profileColor,
-                honeyPoints: user.honeyPoints
+                profileColor: user.profile_color || user.profileColor,
+                honeyPoints: user.honey_points || user.honeyPoints
             },
             token: 'sample-jwt-token'
         });
@@ -194,14 +202,17 @@ app.post('/api/auth/login', async (req, res) => {
 // Posts routes
 app.get('/api/posts', async (req, res) => {
     try {
-        let posts;
-        if (mongoose.connection.readyState === 1) {
-            posts = await Post.find().sort({ timestamp: -1 }).limit(50);
+        if (pool) {
+            // PostgreSQL
+            const result = await pool.query(
+                'SELECT * FROM posts ORDER BY timestamp DESC LIMIT 50'
+            );
+            res.json({ success: true, posts: result.rows });
         } else {
-            posts = inMemoryPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 50);
+            // In-memory
+            const posts = inMemoryPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 50);
+            res.json({ success: true, posts });
         }
-        
-        res.json({ success: true, posts });
     } catch (error) {
         console.error('Get posts error:', error);
         res.status(500).json({ 
@@ -216,26 +227,30 @@ app.post('/api/posts', async (req, res) => {
     try {
         const { content, authorId, authorName } = req.body;
         
-        const newPost = {
-            content,
-            authorId,
-            authorName,
-            timestamp: new Date(),
-            likes: 0,
-            comments: [],
-            pollinates: 0
-        };
-        
-        if (mongoose.connection.readyState === 1) {
-            const savedPost = await Post.create(newPost);
+        if (pool) {
+            // PostgreSQL
+            const result = await pool.query(
+                'INSERT INTO posts (content, author_id, author_name) VALUES ($1, $2, $3) RETURNING *',
+                [content, authorId, authorName]
+            );
+            
             res.json({
                 success: true,
                 message: 'Post created successfully',
-                post: savedPost
+                post: result.rows[0]
             });
         } else {
-            // In-memory storage
-            newPost.id = Date.now().toString();
+            // In-memory
+            const newPost = {
+                id: Date.now(),
+                content,
+                authorId,
+                authorName,
+                timestamp: new Date(),
+                likes: 0,
+                pollinates: 0
+            };
+            
             inMemoryPosts.unshift(newPost);
             res.json({
                 success: true,
@@ -262,6 +277,5 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`🌐 Web interface: http://localhost:${PORT}`);
     console.log(`🔗 API base URL: http://localhost:${PORT}/api`);
-    console.log(`📁 Serving from: ${path.join(__dirname, 'frontend')}`);
-    console.log(`🗄️ Database status: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Not connected (using in-memory)'}`);
+    console.log(`🗄️ Database: ${pool ? 'PostgreSQL' : 'In-memory (no DB)'}`);
 });
