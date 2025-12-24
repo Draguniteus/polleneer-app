@@ -1,21 +1,27 @@
 const express = require('express');
 const cors = require('cors');
-// const path = require('path'); // REMOVED - we don't serve static files anymore
+const path = require('path'); // ADD BACK for production
 const { Pool } = require('pg');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001; // CHANGED FROM 8080 TO 3001
+const PORT = process.env.PORT || 8080; // DigitalOcean uses 8080
 
 // ===== MIDDLEWARE =====
 app.use(cors({ 
-    origin: ['http://localhost:3000', 'http://localhost:5173'], // Allow frontend ports
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://polleneer-dbkzq.ondigitalocean.app'] 
+        : ['http://localhost:3000', 'http://localhost:5173'],
     credentials: true 
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// REMOVED: app.use(express.static(path.join(__dirname, 'frontend')));
+// ===== SERVE REACT IN PRODUCTION =====
+if (process.env.NODE_ENV === 'production') {
+    console.log('🚀 PRODUCTION MODE: Serving React build');
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+}
 
 // ===== DATABASE CONNECTION (PostgreSQL) =====
 let pool;
@@ -85,7 +91,7 @@ app.get('/api/test', (req, res) => {
         message: 'API is working! 🐝',
         timestamp: new Date().toISOString(),
         mode: pool ? 'PostgreSQL' : 'In-memory',
-        frontendUrl: 'http://localhost:3000'
+        environment: process.env.NODE_ENV || 'development'
     });
 });
 
@@ -99,196 +105,39 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Auth routes
+// Auth routes (keep your existing auth routes here)
 app.post('/api/auth/register', async (req, res) => {
-    try {
-        const { username, email, password, profileColor } = req.body;
-        
-        if (pool) {
-            // PostgreSQL
-            const result = await pool.query(
-                'INSERT INTO users (username, email, password, profile_color) VALUES ($1, $2, $3, $4) RETURNING *',
-                [username, email, password, profileColor || '#FFC107']
-            );
-            
-            res.json({
-                success: true,
-                message: 'User registered successfully',
-                user: {
-                    id: result.rows[0].id,
-                    username: result.rows[0].username,
-                    email: result.rows[0].email,
-                    profileColor: result.rows[0].profile_color,
-                    honeyPoints: result.rows[0].honey_points
-                },
-                token: 'sample-jwt-token'
-            });
-        } else {
-            // In-memory storage
-            const existingUser = inMemoryUsers.find(u => u.username === username || u.email === email);
-            if (existingUser) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: 'Username or email already exists' 
-                });
-            }
-            
-            const newUser = {
-                id: Date.now(),
-                username,
-                email,
-                password,
-                profileColor: profileColor || '#FFC107',
-                honeyPoints: 100,
-                joinDate: new Date()
-            };
-            
-            inMemoryUsers.push(newUser);
-            res.json({
-                success: true,
-                message: 'User registered (in-memory mode)',
-                user: {
-                    id: newUser.id,
-                    username: newUser.username,
-                    email: newUser.email,
-                    profileColor: newUser.profileColor,
-                    honeyPoints: newUser.honeyPoints
-                },
-                token: 'sample-jwt-token'
-            });
-        }
-    } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Server error during registration' 
-        });
-    }
+    // ... keep your existing register code ...
 });
 
 app.post('/api/auth/login', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        
-        let user;
-        if (pool) {
-            // PostgreSQL
-            const result = await pool.query(
-                'SELECT * FROM users WHERE username = $1 AND password = $2',
-                [username, password]
-            );
-            user = result.rows[0];
-        } else {
-            // In-memory
-            user = inMemoryUsers.find(u => u.username === username && u.password === password);
-        }
-        
-        if (!user) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'Invalid credentials' 
-            });
-        }
-        
-        res.json({
-            success: true,
-            message: 'Login successful',
-            user: {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                profileColor: user.profile_color || user.profileColor,
-                honeyPoints: user.honey_points || user.honeyPoints
-            },
-            token: 'sample-jwt-token'
-        });
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Server error during login' 
-        });
-    }
+    // ... keep your existing login code ...
 });
 
-// Posts routes
+// Posts routes (keep your existing posts code)
 app.get('/api/posts', async (req, res) => {
-    try {
-        if (pool) {
-            // PostgreSQL
-            const result = await pool.query(
-                'SELECT * FROM posts ORDER BY timestamp DESC LIMIT 50'
-            );
-            res.json({ success: true, posts: result.rows });
-        } else {
-            // In-memory
-            const posts = inMemoryPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 50);
-            res.json({ success: true, posts });
-        }
-    } catch (error) {
-        console.error('Get posts error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to fetch posts',
-            posts: []
-        });
-    }
+    // ... keep your existing get posts code ...
 });
 
 app.post('/api/posts', async (req, res) => {
-    try {
-        const { content, authorId, authorName } = req.body;
-        
-        if (pool) {
-            // PostgreSQL
-            const result = await pool.query(
-                'INSERT INTO posts (content, author_id, author_name) VALUES ($1, $2, $3) RETURNING *',
-                [content, authorId, authorName]
-            );
-            
-            res.json({
-                success: true,
-                message: 'Post created successfully',
-                post: result.rows[0]
-            });
-        } else {
-            // In-memory
-            const newPost = {
-                id: Date.now(),
-                content,
-                authorId,
-                authorName,
-                timestamp: new Date(),
-                likes: 0,
-                pollinates: 0
-            };
-            
-            inMemoryPosts.unshift(newPost);
-            res.json({
-                success: true,
-                message: 'Post created (in-memory mode)',
-                post: newPost
-            });
-        }
-    } catch (error) {
-        console.error('Create post error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to create post' 
-        });
-    }
+    // ... keep your existing create post code ...
 });
 
-// REMOVED: app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-// });
+// ===== CATCH ALL ROUTE FOR REACT ROUTING =====
+if (process.env.NODE_ENV === 'production') {
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+    });
+}
 
 // ===== START SERVER =====
 app.listen(PORT, () => {
-    console.log(`🚀 Backend Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 API URL: http://localhost:${PORT}/api`);
-    console.log(`🔗 Test endpoint: http://localhost:${PORT}/api/test`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
     console.log(`🗄️ Database: ${pool ? 'PostgreSQL' : 'In-memory (no DB)'}`);
-    console.log(`🌐 Frontend should run on: http://localhost:3000`);
+    
+    if (process.env.NODE_ENV === 'production') {
+        console.log('📁 Serving React build from: ../frontend/dist');
+    }
 });

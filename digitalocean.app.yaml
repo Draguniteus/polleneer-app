@@ -1,40 +1,21 @@
-name: polleneer-app
+name: polleneer
 region: nyc
 services:
-- name: backend
+- name: web
   github:
     branch: main
     deploy_on_push: true
-  build_command: npm install
-  run_command: npm start
+    repo: Draguniteus/polleneer-app
+  source_dir: .
+  build_command: |
+    cd backend && npm install
+    cd ../frontend && npm install && npm run build
+  run_command: cd backend && npm start
+  http_port: 8080
+  instance_size: basic-xxs
   instance_count: 1
-  instance_size_slug: basic-xs
-  http_port: 3000
-  routes:
-  - path: /
-  - path: /api
   envs:
   - key: NODE_ENV
     value: production
-  - key: DATABASE_URL
-    scope: RUN_TIME
-    value: ${db.DATABASE_URL}
-  - key: JWT_SECRET
-    value: polleneer-secret-key-2024-change-this-later
-
-static_sites:
-- name: frontend
-  github:
-    branch: main
-    deploy_on_push: true
-  source_dir: /frontend
-  build_command: echo "Building frontend..."
-  output_dir: /
-  index_document: index.html
-  error_document: index.html
-  catchall_document: index.html
-
-databases:
-- engine: PG
-  name: polleneer-db
-  version: "18"
+  - key: PORT
+    value: "8080"
