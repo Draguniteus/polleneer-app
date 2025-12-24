@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polleneer - The Social Hive</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="auth-container">
+        <div class="auth-left">
+            <div class="bee-animation">🐝</div>
+            <h1>Welcome to Polleneer</h1>
+            <p>Where ideas take flight! Join our hive and connect with friends.</p>
+        </div>
+        <div class="auth-right">
+            <div class="auth-card">
+                <h2>Enter the Hive</h2>
+                <p>Sign in to start connecting</p>
+                
+                <form class="auth-form" id="loginForm">
+                    <div class="form-group">
+                        <input type="text" id="loginEmail" class="form-control" placeholder="Email or Username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Password" required>
+                    </div>
+                    
+                    <button type="submit" class="auth-btn">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                
+                <div class="auth-divider">or</div>
+                
+                <div class="auth-card hidden" id="registerCard">
+                    <h2>Join the Hive</h2>
+                    <form class="auth-form" id="registerForm">
+                        <div class="form-group">
+                            <input type="text" id="regUsername" class="form-control" placeholder="Username" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="email" id="regEmail" class="form-control" placeholder="Email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="password" id="regPassword" class="form-control" placeholder="Password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="regBeeRole" class="form-control" required>
+                                <option value="">Choose Bee Role</option>
+                                <option value="queen">Queen Bee</option>
+                                <option value="worker">Worker Bee</option>
+                                <option value="drone">Drone</option>
+                                <option value="honeybee">Honey Bee</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="auth-btn">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        Already have an account? <a href="#" id="showLogin">Sign in</a>
+                    </div>
+                </div>
+                
+                <div class="auth-footer">
+                    New to the hive? <a href="#" id="showRegister">Create an account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appScreen" class="hidden">
+        <nav class="navbar">
+            <div class="logo">
+                <div class="logo-icon">🐝</div>
+                <div class="logo-text">Polleneer</div>
+            </div>
+            
+            <div class="nav-search">
+                <input type="text" class="search-input" placeholder="Search Polleneer..." id="searchInput">
+            </div>
+            
+            <div class="nav-actions">
+                <button class="nav-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                
+                <button class="nav-btn" id="notificationsBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationBadge">0</span>
+                </button>
+                
+                <div class="profile-btn" id="profileMenuBtn">
+                    <img src="" alt="Profile" class="profile-img" id="currentUserAvatar">
+                </div>
+            </div>
+        </nav>
+
+        <div class="app-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="user-info" id="sidebarUserInfo">
+                        <img src="" alt="Profile" class="user-avatar" id="sidebarUserAvatar">
+                        <div class="user-details">
+                            <h3 id="sidebarUserName">Loading...</h3>
+                            <p><span class="bee-role" id="sidebarUserRole">Bee</span> • <span id="sidebarHoneyPoints">0</span>🍯</p>
+                        </div>
+                    </div>
+                    
+                    <div class="honey-display" onclick="showHoneyShop()">
+                        <div>
+                            <div class="honey-amount" id="honeyPoints">0</div>
+                            <div class="honey-label">Honey Points</div>
+                        </div>
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a class="nav-link active" onclick="loadHome()">
+                                <i class="fas fa-home"></i>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="loadExplore()">
+                                <i class="fas fa-hashtag"></i>
+                                <span>Explore</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="goToProfile()">
+                                <i class="fas fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        <button class="create-post-btn" onclick="showCreatePostModal()">
+                            <i class="fas fa-feather-alt"></i>
+                            Create Buzz
+                        </button>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content" id="mainContent">
+                <div class="create-post">
+                    <div class="post-input">
+                        <img src="" alt="Profile" class="user-avatar-small" id="postUserAvatar">
+                        <textarea class="post-textarea" placeholder="What's buzzing in your mind?" onclick="showCreatePostModal()"></textarea>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="showCreatePostModal()">
+                                <i class="fas fa-image"></i>
+                                <span>Media</span>
+                            </button>
+                            <button class="action-btn" onclick="showCreatePostModal()">
+                                <i class="fas fa-hashtag"></i>
+                                <span>Tag</span>
+                            </button>
+                        </div>
+                        
+                        <button class="pollinate-btn" onclick="showCreatePostModal()">
+                            <i class="fas fa-feather-alt"></i>
+                            Buzz
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="feed" id="feed">
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <div class="spinner"></div>
+                        <p>Loading buzz from the hive...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Create Post Modal -->
+        <div class="modal" id="createPostModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Create Buzz</h3>
+                    <button class="modal-close" onclick="closeModal('createPostModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="post-textarea" id="postContent" placeholder="What's buzzing in your mind?"></textarea>
+                    <div style="margin: 20px 0;">
+                        <button class="action-btn" onclick="addTagToPost()">
+                            <i class="fas fa-hashtag"></i>
+                            Add Tag
+                        </button>
+                        <button class="action-btn" onclick="addMediaToPost()">
+                            <i class="fas fa-image"></i>
+                            Add Media URL
+                        </button>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button class="action-btn" onclick="closeModal('createPostModal')">
+                            Cancel
+                        </button>
+                        <button class="pollinate-btn" onclick="submitPost()">
+                            Post Buzz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
