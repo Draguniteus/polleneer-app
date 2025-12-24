@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polleneer Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 48px; margin-bottom: 20px; }
+        p { font-size: 20px; margin: 10px 0; }
+        .status { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .connected { background: green; }
+        .testing { background: orange; }
+        .failed { background: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>?? Polleneer</h1>
+        <p>Production Server Test</p>
+        <div class="status connected">? Server is running</div>
+        <p>API: <a href="/api/test" style="color:#ffdd40;">/api/test</a></p>
+        <p>JavaScript file: <a href="/assets/index.js" style="color:#ffdd40;">/assets/index.js</a></p>
+        <p id="api-status">Testing API...</p>
+    </div>
+    
+    <script>
+        // Simple API test
+        fetch('/api/test')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-status').textContent = 
+                    'API Status: ? ' + data.message;
+            })
+            .catch(error => {
+                document.getElementById('api-status').textContent = 
+                    'API Status: ? ' + error.message;
+            });
+    </script>
+</body>
+</html>
