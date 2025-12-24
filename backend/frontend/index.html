@@ -2155,6 +2155,11 @@
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+<div id="loadingOverlay" style="display: none;">
+    <div class="hexagon-spinner"></div>
+    <div class="loading-text">Connecting to Hive...</div>
+</div>
     <!-- Authentication Screen -->
     <div id="authScreen" class="auth-container">
         <div class="auth-left">
@@ -2864,6 +2869,90 @@
 
     <!-- JavaScript -->
     <script>
+    /* ===== LOADING HELPER FUNCTIONS ===== */
+    function showLoading(message = 'Connecting to Hive...') {
+        const overlay = document.getElementById('loadingOverlay');
+        const text = overlay.querySelector('.loading-text');
+        if (overlay && text) {
+            text.textContent = message;
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+
+    // Show loading when page loads
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            hideLoading();
+        }, 1000);
+    });
+
+    // Show loading immediately when page starts loading
+    document.addEventListener('DOMContentLoaded', () => {
+        showLoading('Loading Polleneer...');
+    });
+
+    /* ===== API SERVICE ===== */
+    const apiService = {
+        baseUrl: 'http://localhost:5000/api',
+        
+        async request(endpoint, options = {}) {
+            showLoading('Connecting to API...');
+            
+            const url = `${this.baseUrl}${endpoint}`;
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            
+            const config = { ...defaultOptions, ...options };
+            
+            try {
+                const response = await fetch(url, config);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API Request failed:', error);
+                throw error;
+            } finally {
+                hideLoading();
+            }
+        },
+        
+        async get(endpoint) {
+            return this.request(endpoint, { method: 'GET' });
+        },
+        
+        async post(endpoint, data) {
+            return this.request(endpoint, {
+                method: 'POST',
+                body: JSON.stringify(data),
+            });
+        },
+        
+        async put(endpoint, data) {
+            return this.request(endpoint, {
+                method: 'PUT',
+                body: JSON.stringify(data),
+            });
+        },
+        
+        async delete(endpoint) {
+            return this.request(endpoint, { method: 'DELETE' });
+        }
+    };
+        
         // ============================================
         // GLOBAL VARIABLES AND INITIALIZATION
         // ============================================
