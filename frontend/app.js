@@ -10,7 +10,13 @@ let posts = [];
 let isDarkTheme = true;
 
 // API base URL - will be set automatically
+// IMPORTANT FIX: Use current window location
 const API_BASE = window.location.origin;
+
+// Debug logging
+console.log('🐝 Polleneer frontend loaded');
+console.log('🌐 API Base URL:', API_BASE);
+console.log('📱 Current URL:', window.location.href);
 
 // DOM Elements
 const authScreen = document.getElementById('authScreen');
@@ -31,6 +37,7 @@ const createPostModal = document.getElementById('createPostModal');
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('📱 DOM fully loaded, initializing Polleneer...');
     initializeApp();
     setupEventListeners();
     
@@ -39,37 +46,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const savedUser = localStorage.getItem('polleneer_user');
     
     if (savedToken && savedUser) {
+        console.log('🔑 Found saved login credentials');
         currentToken = savedToken;
         currentUser = JSON.parse(savedUser);
         showApp();
         loadUserData();
         loadPosts();
     } else {
+        console.log('👤 No saved login, showing auth screen');
         showAuth();
     }
 });
 
 function initializeApp() {
+    console.log('⚙️ Initializing app...');
     // Set theme
     const savedTheme = localStorage.getItem('polleneer_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     isDarkTheme = savedTheme === 'dark';
     updateThemeIcon();
+    console.log('🎨 Theme set to:', savedTheme);
 }
 
 function setupEventListeners() {
+    console.log('🔗 Setting up event listeners...');
+    
     // Auth forms
     if (loginForm) {
+        console.log('✅ Login form found');
         loginForm.addEventListener('submit', handleLogin);
+    } else {
+        console.log('❌ Login form NOT found');
     }
     
     if (registerForm) {
+        console.log('✅ Register form found');
         registerForm.addEventListener('submit', handleRegister);
+    } else {
+        console.log('❌ Register form NOT found');
     }
     
     if (showRegister) {
         showRegister.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('📝 Switching to register form');
             showRegisterForm();
         });
     }
@@ -77,6 +97,7 @@ function setupEventListeners() {
     if (showLogin) {
         showLogin.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('🔐 Switching to login form');
             showLoginForm();
         });
     }
@@ -84,6 +105,7 @@ function setupEventListeners() {
     // Theme toggle
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
+        console.log('🎨 Theme toggle button found');
     }
 }
 
@@ -93,9 +115,13 @@ function setupEventListeners() {
 
 async function handleLogin(e) {
     e.preventDefault();
+    console.log('🔐 Login attempt...');
     
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
+    
+    console.log('📧 Email/Username:', email ? 'Provided' : 'Missing');
+    console.log('🔑 Password:', password ? 'Provided' : 'Missing');
     
     if (!email || !password) {
         showToast('Please enter email and password');
@@ -103,6 +129,8 @@ async function handleLogin(e) {
     }
     
     try {
+        console.log('🌐 Calling API:', `${API_BASE}/api/auth/login`);
+        
         const response = await fetch(`${API_BASE}/api/auth/login`, {
             method: 'POST',
             headers: {
@@ -114,7 +142,10 @@ async function handleLogin(e) {
             })
         });
         
+        console.log('📡 API Response status:', response.status);
+        
         const data = await response.json();
+        console.log('📦 API Response data:', data);
         
         if (!response.ok) {
             throw new Error(data.error || 'Login failed');
@@ -127,19 +158,22 @@ async function handleLogin(e) {
         localStorage.setItem('polleneer_token', data.token);
         localStorage.setItem('polleneer_user', JSON.stringify(data.user));
         
+        console.log('✅ Login successful, user:', data.user.username);
+        
         showApp();
         loadUserData();
         loadPosts();
         showToast(`Welcome back, ${data.user.username}! 🐝`);
         
     } catch (error) {
+        console.error('❌ Login error:', error);
         showToast(error.message || 'Login failed. Try: admin/polleneer2024');
-        console.error('Login error:', error);
     }
 }
 
 async function handleRegister(e) {
     e.preventDefault();
+    console.log('📝 Registration attempt...');
     
     const username = document.getElementById('regUsername').value;
     const email = document.getElementById('regEmail').value;
@@ -152,6 +186,8 @@ async function handleRegister(e) {
     }
     
     try {
+        console.log('🌐 Calling registration API...');
+        
         const response = await fetch(`${API_BASE}/api/auth/register`, {
             method: 'POST',
             headers: {
@@ -178,6 +214,8 @@ async function handleRegister(e) {
         localStorage.setItem('polleneer_token', data.token);
         localStorage.setItem('polleneer_user', JSON.stringify(data.user));
         
+        console.log('✅ Registration successful');
+        
         showApp();
         loadUserData();
         loadPosts();
@@ -187,19 +225,21 @@ async function handleRegister(e) {
         showLoginForm();
         
     } catch (error) {
+        console.error('❌ Registration error:', error);
         showToast(error.message || 'Registration failed');
-        console.error('Registration error:', error);
     }
 }
 
 function showRegisterForm() {
     document.querySelector('.auth-card').classList.add('hidden');
     registerCard.classList.remove('hidden');
+    console.log('📝 Showing register form');
 }
 
 function showLoginForm() {
-    registerCard.classList.add('hidden');
+    if (registerCard) registerCard.classList.add('hidden');
     document.querySelector('.auth-card').classList.remove('hidden');
+    console.log('🔐 Showing login form');
 }
 
 function logout() {
@@ -210,6 +250,7 @@ function logout() {
         currentUser = null;
         showAuth();
         showToast('You have been logged out. Come back soon! 🐝');
+        console.log('👋 User logged out');
     }
 }
 
@@ -218,17 +259,24 @@ function logout() {
 // ============================================
 
 function showAuth() {
+    console.log('🔓 Showing authentication screen');
     if (authScreen) authScreen.classList.remove('hidden');
     if (appScreen) appScreen.classList.add('hidden');
 }
 
 function showApp() {
+    console.log('🚀 Showing main app screen');
     if (authScreen) authScreen.classList.add('hidden');
     if (appScreen) appScreen.classList.remove('hidden');
 }
 
 function loadUserData() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        console.log('❌ No current user to load data for');
+        return;
+    }
+    
+    console.log('👤 Loading user data for:', currentUser.username);
     
     // Update sidebar
     const sidebarUserAvatar = document.getElementById('sidebarUserAvatar');
@@ -239,13 +287,34 @@ function loadUserData() {
     const currentUserAvatar = document.getElementById('currentUserAvatar');
     const postUserAvatar = document.getElementById('postUserAvatar');
     
-    if (sidebarUserAvatar) sidebarUserAvatar.src = currentUser.avatar_url;
-    if (sidebarUserName) sidebarUserName.textContent = currentUser.display_name || currentUser.username;
-    if (sidebarUserRole) sidebarUserRole.textContent = getRoleName(currentUser.role);
-    if (sidebarHoneyPoints) sidebarHoneyPoints.textContent = currentUser.honey_points;
-    if (honeyPoints) honeyPoints.textContent = currentUser.honey_points;
-    if (currentUserAvatar) currentUserAvatar.src = currentUser.avatar_url;
-    if (postUserAvatar) postUserAvatar.src = currentUser.avatar_url;
+    if (sidebarUserAvatar) {
+        sidebarUserAvatar.src = currentUser.avatar_url || currentUser.avatar;
+        console.log('🖼️ Sidebar avatar updated');
+    }
+    if (sidebarUserName) {
+        sidebarUserName.textContent = currentUser.display_name || currentUser.username;
+        console.log('📛 Sidebar name updated');
+    }
+    if (sidebarUserRole) {
+        sidebarUserRole.textContent = getRoleName(currentUser.role);
+        console.log('👑 Sidebar role updated');
+    }
+    if (sidebarHoneyPoints) {
+        sidebarHoneyPoints.textContent = currentUser.honey_points || currentUser.honeyPoints || 0;
+        console.log('🍯 Sidebar honey points updated');
+    }
+    if (honeyPoints) {
+        honeyPoints.textContent = currentUser.honey_points || currentUser.honeyPoints || 0;
+        console.log('💰 Honey points display updated');
+    }
+    if (currentUserAvatar) {
+        currentUserAvatar.src = currentUser.avatar_url || currentUser.avatar;
+        console.log('👤 Navbar avatar updated');
+    }
+    if (postUserAvatar) {
+        postUserAvatar.src = currentUser.avatar_url || currentUser.avatar;
+        console.log('✏️ Post avatar updated');
+    }
 }
 
 function getRoleName(role) {
@@ -264,26 +333,33 @@ function getRoleName(role) {
 // ============================================
 
 async function loadPosts() {
-    if (!feed) return;
+    if (!feed) {
+        console.log('❌ Feed element not found');
+        return;
+    }
     
+    console.log('📮 Loading posts from API...');
     showLoading();
     
     try {
         const response = await fetch(`${API_BASE}/api/posts`);
+        console.log('📡 Posts API response:', response.status);
         
         if (!response.ok) {
             throw new Error('Failed to load posts');
         }
         
         posts = await response.json();
+        console.log(`✅ Loaded ${posts.length} posts`);
         renderPosts();
         
     } catch (error) {
-        console.error('Load posts error:', error);
+        console.error('❌ Load posts error:', error);
         feed.innerHTML = `
             <div class="post-card">
                 <p style="text-align: center; color: var(--text-secondary); padding: 40px;">
-                    Could not load posts. The hive is busy!
+                    Could not load posts. The hive is busy!<br>
+                    Error: ${error.message}
                 </p>
             </div>
         `;
@@ -303,24 +379,29 @@ function renderPosts() {
                 </p>
             </div>
         `;
+        console.log('📭 No posts to render');
         return;
     }
     
+    console.log(`🎨 Rendering ${posts.length} posts`);
     feed.innerHTML = posts.map(post => createPostHTML(post)).join('');
 }
 
 function createPostHTML(post) {
+    console.log('🖼️ Creating HTML for post:', post.id);
     return `
         <div class="post-card" id="post-${post.id}">
             <div class="post-header">
                 <div class="post-user" onclick="viewUserProfile(${post.user_id})">
-                    <img src="${post.avatar_url}" alt="User" class="post-avatar">
+                    <img src="${post.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}" 
+                         alt="User" class="post-avatar"
+                         onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=default'">
                     <div class="user-name-role">
                         <div class="user-name">
-                            ${post.display_name || post.username}
+                            ${post.display_name || post.username || 'User'}
                             <span class="user-role-badge">${getRoleName(post.role)}</span>
                         </div>
-                        <div class="post-meta">@${post.username} • ${formatTime(post.created_at)}</div>
+                        <div class="post-meta">@${post.username || 'user'} • ${formatTime(post.created_at)}</div>
                     </div>
                 </div>
             </div>
@@ -335,7 +416,8 @@ function createPostHTML(post) {
             
             ${post.media_url ? `
             <div class="post-media">
-                <img src="${post.media_url}" alt="Post media" class="post-image">
+                <img src="${post.media_url}" alt="Post media" class="post-image"
+                     onerror="this.style.display='none'">
             </div>
             ` : ''}
             
@@ -350,7 +432,7 @@ function createPostHTML(post) {
                 </div>
                 <div class="stat">
                     <i class="fas fa-heart"></i>
-                    <span>${post.likes_count || 0} Likes</span>
+                    <span>${post.likes_count || post.likes || 0} Likes</span>
                 </div>
                 <div class="stat">
                     <i class="fas fa-chart-line"></i>
@@ -377,6 +459,7 @@ function createPostHTML(post) {
 }
 
 function formatPostContent(content) {
+    if (!content) return '';
     return content
         .replace(/@(\w+)/g, '<span class="mention">@$1</span>')
         .replace(/#(\w+)/g, '<span class="hashtag">#$1</span>')
@@ -384,6 +467,8 @@ function formatPostContent(content) {
 }
 
 function formatTime(timestamp) {
+    if (!timestamp) return 'Just now';
+    
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now - date;
@@ -409,6 +494,8 @@ async function likePost(postId) {
         showToast('Please login to like posts');
         return;
     }
+    
+    console.log(`❤️ Liking post ${postId}`);
     
     try {
         const response = await fetch(`${API_BASE}/api/posts/${postId}/like`, {
@@ -450,7 +537,7 @@ async function likePost(postId) {
         loadPosts();
         
     } catch (error) {
-        console.error('Like post error:', error);
+        console.error('❌ Like post error:', error);
         showToast('Failed to like post');
     }
 }
@@ -460,12 +547,14 @@ function commentOnPost(postId) {
     if (comment && comment.trim()) {
         // In a real app, this would call the API
         showToast('Comment added! +10 Honey Points 🍯');
+        console.log(`💬 Comment on post ${postId}: ${comment}`);
     }
 }
 
 function pollinatePost(postId) {
     // In a real app, this would call the API
     showToast('Post pollinated! +15 Honey Points 🍯');
+    console.log(`🔄 Pollinated post ${postId}`);
 }
 
 // ============================================
@@ -478,6 +567,7 @@ function showCreatePostModal() {
         return;
     }
     
+    console.log('📝 Opening create post modal');
     openModal('createPostModal');
 }
 
@@ -493,6 +583,8 @@ async function submitPost() {
         showToast('Please login to post');
         return;
     }
+    
+    console.log('📤 Submitting new post...');
     
     try {
         const response = await fetch(`${API_BASE}/api/posts`, {
@@ -524,14 +616,15 @@ async function submitPost() {
         
         // Update user honey points
         if (currentUser) {
-            currentUser.honey_points += 25;
+            currentUser.honey_points = (currentUser.honey_points || 0) + 25;
             loadUserData();
         }
         
         showToast('Post created! +25 Honey Points 🍯');
+        console.log('✅ Post created successfully');
         
     } catch (error) {
-        console.error('Create post error:', error);
+        console.error('❌ Create post error:', error);
         showToast('Failed to create post');
     }
 }
@@ -541,6 +634,7 @@ function addTagToPost() {
     if (tag) {
         const content = document.getElementById('postContent');
         content.value += ` #${tag}`;
+        console.log(`🏷️ Added tag: ${tag}`);
     }
 }
 
@@ -549,6 +643,7 @@ function addMediaToPost() {
     if (url) {
         const content = document.getElementById('postContent');
         content.value += `\n[Image: ${url}]`;
+        console.log(`🖼️ Added media URL: ${url}`);
     }
 }
 
@@ -565,6 +660,7 @@ function toggleTheme() {
     updateThemeIcon();
     
     showToast(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme activated`);
+    console.log(`🎨 Theme switched to: ${theme}`);
 }
 
 function updateThemeIcon() {
@@ -585,6 +681,7 @@ function updateThemeIcon() {
 // ============================================
 
 function loadHome() {
+    console.log('🏠 Loading home feed');
     loadPosts();
     updateActiveNav('home');
 }
@@ -592,11 +689,13 @@ function loadHome() {
 function loadExplore() {
     showToast('Explore page coming soon!');
     updateActiveNav('explore');
+    console.log('🔍 Explore page requested');
 }
 
 function goToProfile() {
     showToast('Profile page coming soon!');
     updateActiveNav('profile');
+    console.log('👤 Profile page requested');
 }
 
 function updateActiveNav(page) {
@@ -607,15 +706,18 @@ function updateActiveNav(page) {
     const activeLink = document.querySelector(`.nav-link[onclick*="${page}"]`);
     if (activeLink) {
         activeLink.classList.add('active');
+        console.log(`📍 Active nav: ${page}`);
     }
 }
 
 function viewUserProfile(userId) {
     showToast(`Viewing user profile #${userId}`);
+    console.log(`👥 Viewing user profile: ${userId}`);
 }
 
 function showHoneyShop() {
     showToast('Honey Shop coming soon!');
+    console.log('🏪 Honey shop requested');
 }
 
 // ============================================
@@ -626,6 +728,9 @@ function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.add('show');
+        console.log(`📂 Opened modal: ${modalId}`);
+    } else {
+        console.log(`❌ Modal not found: ${modalId}`);
     }
 }
 
@@ -633,6 +738,7 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('show');
+        console.log(`📂 Closed modal: ${modalId}`);
     }
 }
 
@@ -642,6 +748,7 @@ document.addEventListener('keydown', function(e) {
         document.querySelectorAll('.modal.show').forEach(modal => {
             modal.classList.remove('show');
         });
+        console.log('⎋ Closed all modals with Escape');
     }
 });
 
@@ -649,6 +756,7 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('modal')) {
         e.target.classList.remove('show');
+        console.log('👆 Closed modal by clicking outside');
     }
 });
 
@@ -657,6 +765,8 @@ document.addEventListener('click', function(e) {
 // ============================================
 
 function showToast(message) {
+    console.log('🍞 Toast:', message);
+    
     // Create toast if it doesn't exist
     let toast = document.getElementById('notificationToast');
     if (!toast) {
@@ -664,6 +774,7 @@ function showToast(message) {
         toast.id = 'notificationToast';
         toast.className = 'toast';
         document.body.appendChild(toast);
+        console.log('✅ Toast container created');
     }
     
     toast.textContent = message;
@@ -675,12 +786,14 @@ function showToast(message) {
 }
 
 function showLoading() {
+    console.log('⏳ Showing loading spinner');
     if (loadingSpinner) {
         loadingSpinner.classList.remove('hidden');
     }
 }
 
 function hideLoading() {
+    console.log('✅ Hiding loading spinner');
     if (loadingSpinner) {
         loadingSpinner.classList.add('hidden');
     }
@@ -695,10 +808,10 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
-                console.log('ServiceWorker registered:', registration);
+                console.log('🔧 ServiceWorker registered:', registration);
             })
             .catch(error => {
-                console.log('ServiceWorker registration failed:', error);
+                console.log('❌ ServiceWorker registration failed:', error);
             });
     });
 }
@@ -709,6 +822,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     
+    console.log('📱 PWA install prompt available');
+    
     // Show install prompt after 5 seconds
     setTimeout(() => {
         if (deferredPrompt) {
@@ -716,3 +831,29 @@ window.addEventListener('beforeinstallprompt', (e) => {
         }
     }, 5000);
 });
+
+// ============================================
+// DEBUG HELPER: Test API Connection
+// ============================================
+
+// Test API connection on load
+window.testAPI = async function() {
+    console.log('🧪 Testing API connection...');
+    try {
+        const response = await fetch(`${API_BASE}/api/health`);
+        const data = await response.json();
+        console.log('✅ API Test Result:', data);
+        showToast(`API Connection: ${data.status}`);
+        return data;
+    } catch (error) {
+        console.error('❌ API Test Failed:', error);
+        showToast('API Connection Failed');
+        return { error: error.message };
+    }
+};
+
+// Run a quick test on load
+setTimeout(() => {
+    console.log('🚀 Polleneer frontend initialized successfully!');
+    console.log('🐝 Ready for action!');
+}, 1000);
