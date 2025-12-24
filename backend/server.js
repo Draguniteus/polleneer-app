@@ -1,20 +1,21 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+// const path = require('path'); // REMOVED - we don't serve static files anymore
 const { Pool } = require('pg');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3001; // CHANGED FROM 8080 TO 3001
 
 // ===== MIDDLEWARE =====
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors({ 
+    origin: ['http://localhost:3000', 'http://localhost:5173'], // Allow frontend ports
+    credentials: true 
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ===== SERVE STATIC FILES =====
-app.use(express.static(path.join(__dirname, 'frontend')));
-console.log('📁 Serving from:', path.join(__dirname, 'frontend'));
+// REMOVED: app.use(express.static(path.join(__dirname, 'frontend')));
 
 // ===== DATABASE CONNECTION (PostgreSQL) =====
 let pool;
@@ -83,7 +84,18 @@ app.get('/api/test', (req, res) => {
     res.json({ 
         message: 'API is working! 🐝',
         timestamp: new Date().toISOString(),
-        mode: pool ? 'PostgreSQL' : 'In-memory'
+        mode: pool ? 'PostgreSQL' : 'In-memory',
+        frontendUrl: 'http://localhost:3000'
+    });
+});
+
+// Health check
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'healthy',
+        server: 'Polleneer Backend',
+        port: PORT,
+        timestamp: new Date().toISOString()
     });
 });
 
@@ -267,15 +279,16 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
-// ===== ROOT ROUTE - SERVE INDEX.HTML =====
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-});
+// REMOVED: app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+// });
 
 // ===== START SERVER =====
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`🌐 Web interface: http://localhost:${PORT}`);
-    console.log(`🔗 API base URL: http://localhost:${PORT}/api`);
+    console.log(`🚀 Backend Server running on port ${PORT}`);
+    console.log(`🔗 API URL: http://localhost:${PORT}/api`);
+    console.log(`🔗 Test endpoint: http://localhost:${PORT}/api/test`);
+    console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
     console.log(`🗄️ Database: ${pool ? 'PostgreSQL' : 'In-memory (no DB)'}`);
+    console.log(`🌐 Frontend should run on: http://localhost:3000`);
 });
