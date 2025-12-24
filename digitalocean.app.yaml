@@ -8,14 +8,16 @@ services:
     repo: Draguniteus/polleneer-app
   source_dir: .
   build_command: |
-    cd backend && npm install
-    cd ../frontend && npm install && npm run build
+    cd frontend && npm install && npm run build
+    mkdir -p backend/public
+    cp -r frontend/dist/* backend/public/
   run_command: cd backend && npm start
   http_port: 8080
   instance_size: basic-xxs
   instance_count: 1
   envs:
   - key: NODE_ENV
+    scope: RUN_AND_BUILD_TIME
     value: production
   - key: PORT
     value: "8080"

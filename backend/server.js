@@ -1,143 +1,60 @@
-const express = require('express');
+﻿const express = require('express');
+const path = require('path');
 const cors = require('cors');
-const path = require('path'); // ADD BACK for production
-const { Pool } = require('pg');
-require('dotenv').config();
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8080; // DigitalOcean uses 8080
+const PORT = process.env.PORT || 8080;
 
-// ===== MIDDLEWARE =====
-app.use(cors({ 
-    origin: process.env.NODE_ENV === 'production' 
-        ? ['https://polleneer-dbkzq.ondigitalocean.app'] 
-        : ['http://localhost:3000', 'http://localhost:5173'],
-    credentials: true 
-}));
+// Middleware
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// ===== SERVE REACT IN PRODUCTION =====
-if (process.env.NODE_ENV === 'production') {
-    console.log('🚀 PRODUCTION MODE: Serving React build');
-    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// ✅ Serve static files from public folder
+const publicPath = path.join(__dirname, 'public');
+console.log('📂 Serving from:', publicPath);
+
+// Check if files exist
+const fs = require('fs');
+if (fs.existsSync(publicPath)) {
+  const files = fs.readdirSync(publicPath);
+  console.log('📄 Files found:', files);
 }
 
-// ===== DATABASE CONNECTION (PostgreSQL) =====
-let pool;
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://localhost:5432/polleneer';
+// Serve static files
+app.use(express.static(publicPath));
 
-try {
-    pool = new Pool({
-        connectionString: DATABASE_URL,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-    });
-    console.log('✅ PostgreSQL connected');
-    
-    // Create tables if they don't exist
-    (async () => {
-        try {
-            await pool.query(`
-                CREATE TABLE IF NOT EXISTS users (
-                    id SERIAL PRIMARY KEY,
-                    username VARCHAR(50) UNIQUE NOT NULL,
-                    email VARCHAR(100) UNIQUE NOT NULL,
-                    password VARCHAR(100) NOT NULL,
-                    profile_color VARCHAR(20) DEFAULT '#FFC107',
-                    honey_points INTEGER DEFAULT 100,
-                    join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-                
-                CREATE TABLE IF NOT EXISTS posts (
-                    id SERIAL PRIMARY KEY,
-                    content TEXT NOT NULL,
-                    author_id INTEGER REFERENCES users(id),
-                    author_name VARCHAR(50) NOT NULL,
-                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    likes INTEGER DEFAULT 0,
-                    pollinates INTEGER DEFAULT 0
-                );
-                
-                CREATE TABLE IF NOT EXISTS comments (
-                    id SERIAL PRIMARY KEY,
-                    post_id INTEGER REFERENCES posts(id),
-                    user_id INTEGER REFERENCES users(id),
-                    username VARCHAR(50) NOT NULL,
-                    content TEXT NOT NULL,
-                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-            `);
-            console.log('✅ Database tables ready');
-        } catch (err) {
-            console.log('⚠️ Table creation error:', err.message);
-        }
-    })();
-} catch (error) {
-    console.log('❌ PostgreSQL connection failed:', error.message);
-    console.log('⚠️ Using in-memory storage instead');
-    pool = null;
-}
+// ✅ FIX: Serve index.html for root path
+app.get('/', (req, res) => {
+  console.log('📄 Serving index.html for /');
+  res.sendFile(path.join(publicPath, 'index.html'));
+});
 
-// ===== IN-MEMORY STORAGE (FALLBACK) =====
-let inMemoryUsers = [];
-let inMemoryPosts = [];
-let inMemoryComments = [];
-
-// ===== API ROUTES =====
-
-// Test route
+// Test API endpoint
 app.get('/api/test', (req, res) => {
-    res.json({ 
-        message: 'API is working! 🐝',
-        timestamp: new Date().toISOString(),
-        mode: pool ? 'PostgreSQL' : 'In-memory',
-        environment: process.env.NODE_ENV || 'development'
-    });
+  console.log('✅ API called');
+  res.json({ 
+    message: '🐝 Polleneer API is working!', 
+    status: 'success',
+    time: new Date().toLocaleTimeString()
+  });
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'healthy',
-        server: 'Polleneer Backend',
-        port: PORT,
-        timestamp: new Date().toISOString()
-    });
+// ✅ FIX: Catch-all route MUST come LAST
+app.get('*', (req, res) => {
+  console.log('🔄 Catch-all route for:', req.url);
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-// Auth routes (keep your existing auth routes here)
-app.post('/api/auth/register', async (req, res) => {
-    // ... keep your existing register code ...
-});
-
-app.post('/api/auth/login', async (req, res) => {
-    // ... keep your existing login code ...
-});
-
-// Posts routes (keep your existing posts code)
-app.get('/api/posts', async (req, res) => {
-    // ... keep your existing get posts code ...
-});
-
-app.post('/api/posts', async (req, res) => {
-    // ... keep your existing create post code ...
-});
-
-// ===== CATCH ALL ROUTE FOR REACT ROUTING =====
-if (process.env.NODE_ENV === 'production') {
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
-    });
-}
-
-// ===== START SERVER =====
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 API URL: http://localhost:${PORT}/api`);
-    console.log(`🗄️ Database: ${pool ? 'PostgreSQL' : 'In-memory (no DB)'}`);
-    
-    if (process.env.NODE_ENV === 'production') {
-        console.log('📁 Serving React build from: ../frontend/dist');
-    }
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('\n' + '='.repeat(50));
+  console.log('🐝 POLLENEER SERVER STARTED');
+  console.log('='.repeat(50));
+  console.log(`🌐 Local: http://localhost:${PORT}`);
+  console.log(`🌐 Network: http://0.0.0.0:${PORT}`);
+  console.log(`📁 Serving: ${publicPath}`);
+  console.log('='.repeat(50) + '\n');
 });
