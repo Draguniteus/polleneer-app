@@ -1,0 +1,102 @@
+﻿/* Polleneer - Main Stylesheet */
+:root {
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #f0f0f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+#app {
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Loading animation */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 2rem;
+}
+
+.bee-loader {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.bee-body {
+    width: 40px;
+    height: 60px;
+    background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+    border-radius: 50%;
+    position: absolute;
+    left: 20px;
+    top: 10px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.bee-wing {
+    position: absolute;
+    width: 30px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    animation: flap 1s ease-in-out infinite;
+}
+
+.bee-wing.left {
+    left: 0;
+    top: 5px;
+    animation-delay: 0s;
+}
+
+.bee-wing.right {
+    right: 0;
+    top: 5px;
+    animation-delay: 0.5s;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: #FFD700;
+    letter-spacing: 2px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes flap {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.8); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Utility classes */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 2rem; }

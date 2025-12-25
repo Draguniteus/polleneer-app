@@ -1,13 +1,30 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🐝 Polleneer Platform</title>
-    <script src="./assets/index.js"></script>
-    <link rel="stylesheet" href="./assets/style.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polleneer - The Bee-Themed Social Network</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/themes/dark.css">
+    <link rel="icon" type="image/x-icon" href="/assets/images/icons/bee-favicon.ico">
+</head>
+<body>
+    <div id="app">
+        <!-- Dynamic content will be loaded here -->
+        <div class="loading-container">
+            <div class="bee-loader">
+                <div class="bee-wing left"></div>
+                <div class="bee-body"></div>
+                <div class="bee-wing right"></div>
+            </div>
+            <p class="loading-text">Initializing Hive...</p>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script src="/assets/js/utils/api.js" defer></script>
+    <script src="/assets/js/utils/auth.js" defer></script>
+    <script src="/assets/js/modules/ui.js" defer></script>
+    <script src="/assets/js/app.js" defer></script>
+</body>
 </html>
