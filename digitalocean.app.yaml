@@ -1,13 +1,21 @@
-name: polleneer-app
+﻿name: polleneer-app
 region: nyc
 services:
-- name: backend
+- name: polleneer
   github:
     branch: main
     deploy_on_push: true
-  source_dir: backend
-  build_command: npm ci --only=production
+  source_dir: /backend
+  build_command: npm install --production
   run_command: npm start
   http_port: 8080
-  instance_count: 1
-  instance_size_slug: basic-xxs
+  envs:
+  - key: NODE_ENV
+    scope: RUN_AND_BUILD_TIME
+    value: production
+  - key: PORT
+    scope: RUN_TIME
+    value: "8080"
+  - key: JWT_SECRET
+    scope: RUN_TIME
+    value: "polleneer-secret-key-2024-change-this-later"

@@ -1,9 +1,7 @@
 ﻿const express = require('express');
-const path = require('path');
 const cors = require('cors');
-const dotenv = require('dotenv');
-
-dotenv.config();
+const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -12,47 +10,48 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-// ✅ DIGITALOCEAN FIX: Always serve from ./public
-const publicPath = path.join(__dirname, 'public');
-console.log('📂 Serving from:', publicPath);
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Check if public folder exists
-const fs = require('fs');
-if (fs.existsSync(publicPath)) {
-  const files = fs.readdirSync(publicPath);
-  console.log('📄 Files in public:', files);
-} else {
-  console.log('⚠️ Public folder not found, creating...');
-  fs.mkdirSync(publicPath, { recursive: true });
-}
-
-// Serve static files
-app.use(express.static(publicPath));
-
-// Test API endpoint
+// API Routes
 app.get('/api/test', (req, res) => {
-  console.log('✅ API Test called');
-  res.json({ 
-    message: '🐝 Polleneer API is working on DigitalOcean!', 
-    status: 'success',
-    time: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production'
-  });
+    res.json({ 
+        message: 'API working', 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+    });
 });
 
-// ✅ DIGITALOCEAN FIX: Serve index.html for all routes
+// Health check for DigitalOcean
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy' });
+});
+
+// Catch-all route for React app
 app.get('*', (req, res) => {
-  console.log('📄 Serving index.html for:', req.url);
-  res.sendFile(path.join(publicPath, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('\n' + '='.repeat(50));
-  console.log('🐝 POLLENEER - DIGITALOCEAN PRODUCTION');
-  console.log('='.repeat(50));
-  console.log(`✅ Server running on port: ${PORT}`);
-  console.log(`📁 Serving from: ${publicPath}`);
-  console.log(`🌐 Mode: ${process.env.NODE_ENV || 'production'}`);
-  console.log('='.repeat(50) + '\n');
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`✅ Node version: ${process.version}`);
 });
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+});
+
+module.exports = app;
