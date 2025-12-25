@@ -1,8 +1,5 @@
 {
   "name": "polleneer-app",
   "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "start": "cd backend && node server.js"
-  }
+  "private": true
 }
