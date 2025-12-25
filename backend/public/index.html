@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polleneer - The Bee-Themed Social Network</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="/assets/css/themes/dark.css">
+    <link rel="stylesheet" href="/assets/css/main.css?v=1.0.1">
+    <link rel="stylesheet" href="/assets/css/themes/dark.css?v=1.0.1">
     <link rel="icon" type="image/x-icon" href="/assets/images/icons/bee-favicon.ico">
 </head>
 <body>
@@ -22,9 +22,30 @@
     </div>
 
     <!-- Application JavaScript -->
-    <script src="/assets/js/utils/api.js" defer></script>
-    <script src="/assets/js/utils/auth.js" defer></script>
-    <script src="/assets/js/modules/ui.js" defer></script>
-    <script src="/assets/js/app.js" defer></script>
+    <script src="/assets/js/utils/api.js?v=1.0.1" defer></script>
+    <script src="/assets/js/utils/auth.js?v=1.0.1" defer></script>
+    <script src="/assets/js/modules/ui.js?v=1.0.1" defer></script>
+    <script src="/assets/js/app.js?v=1.0.1" defer></script>
+    
+    <!-- Remove old cached files reference -->
+    <script>
+        // Clear old service workers or caches
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+        
+        // Clear old caches
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) {
+                    caches.delete(name);
+                }
+            });
+        }
+    </script>
 </body>
 </html>
