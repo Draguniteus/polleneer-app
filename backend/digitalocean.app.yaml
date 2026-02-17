@@ -1,0 +1,12 @@
+name: polleneer-app
+region: nyc
+build_command: npm install
+run_command: npm start
+http_port: 8080
+envs:
+- key: NODE_ENV
+  scope: RUN_AND_BUILD_TIME
+  value: production
+- key: PORT
+  scope: RUN_TIME
+  value: "8080"
