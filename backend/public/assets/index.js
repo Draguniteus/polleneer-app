@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             padding: 40px;
             text-align: center;
         ">
-            <h1 style="font-size: 48px; margin-bottom: 20px;">?? Polleneer Platform</h1>
+            <h1 style="font-size: 48px; margin-bottom: 20px;">🐝 Polleneer Platform</h1>
             <h2 style="font-size: 28px; margin-bottom: 40px; opacity: 0.9;">Welcome to the Hive!</h2>
             
             <div style="
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     font-size: 18px;
                     background: orange;
                 ">
-                    ?? Testing connection...
+                    🔄 Testing connection...
                 </div>
                 <p id="message" style="font-size: 16px; margin: 20px 0;">Loading...</p>
                 <button onclick="testApiConnection()" style="
@@ -61,19 +61,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 text-align: left;
                 backdrop-filter: blur(10px);
             ">
-                <h3 style="font-size: 24px; margin-bottom: 15px;">?? Next Steps:</h3>
+                <h3 style="font-size: 24px; margin-bottom: 15px;">🚀 Next Steps:</h3>
                 <ul style="list-style: none; padding: 0; font-size: 16px;">
                     <li style="margin: 10px 0; padding-left: 20px; position: relative;">
-                        <span style="position: absolute; left: 0;">?</span> Fixed API connection
+                        <span style="position: absolute; left: 0;">✅</span> Fixed API connection
                     </li>
                     <li style="margin: 10px 0; padding-left: 20px; position: relative;">
-                        <span style="position: absolute; left: 0;">??</span> User Authentication
+                        <span style="position: absolute; left: 0;">🔜</span> User Authentication
                     </li>
                     <li style="margin: 10px 0; padding-left: 20px; position: relative;">
-                        <span style="position: absolute; left: 0;">??</span> 91 Bee Roles
+                        <span style="position: absolute; left: 0;">🔜</span> 91 Bee Roles
                     </li>
                     <li style="margin: 10px 0; padding-left: 20px; position: relative;">
-                        <span style="position: absolute; left: 0;">??</span> Honey Points System
+                        <span style="position: absolute; left: 0;">🔜</span> Honey Points System
                     </li>
                 </ul>
             </div>
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             statusEl.style.background = 'orange';
-            statusEl.textContent = '?? Testing connection...';
+            statusEl.textContent = '🔄 Testing connection...';
             messageEl.textContent = 'Loading...';
             
             const response = await fetch('/api/test');
@@ -117,13 +117,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             statusEl.style.background = 'green';
-            statusEl.textContent = '? Connected to API!';
+            statusEl.textContent = '✅ Connected to API!';
             messageEl.textContent = data.message || 'API Connected!';
             
             console.log('API Success:', data);
         } catch (error) {
             statusEl.style.background = 'red';
-            statusEl.textContent = '? Connection failed';
+            statusEl.textContent = '❌ Connection failed';
             messageEl.textContent = `API Connection Failed: ${error.message}`;
             console.error('API Error:', error);
         }
