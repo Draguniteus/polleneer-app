@@ -1,5 +1,6 @@
-﻿type: web
+type: web
 name: polleneer-app
 region: nyc
+source_dir: /backend
 build_command: cd ../frontend && node simple-production-build.mjs && cp -r dist/* ../backend/public/
 run_command: node server.js
