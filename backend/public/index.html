@@ -2459,37 +2459,62 @@
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=BeeKeeper" alt="Profile" class="user-avatar-small" id="modalUserAvatar">
                     <textarea class="post-textarea" id="postContent" placeholder="What's buzzing in your mind? Start pollinating ideas..." style="min-height: 150px;"></textarea>
                 </div>
-                
+
                 <div style="margin: 20px 0;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <div class="file-input-wrapper">
                             <input type="file" class="file-input" id="mediaUpload" accept="image/*,video/*" multiple onchange="handleMediaUpload(event)">
                             <button class="action-btn" onclick="document.getElementById('mediaUpload').click()">
                                 <i class="fas fa-image"></i>
-                                <span>Add Media</span>
+                                <span>Media</span>
                             </button>
                         </div>
-                        
+
+                        <button class="action-btn" onclick="showGifPicker()">
+                            <span style="font-weight:bold;font-size:12px;border:1.5px solid currentColor;border-radius:4px;padding:0 4px;line-height:1.4;">GIF</span>
+                            <span>GIF</span>
+                        </button>
+
+                        <button class="action-btn" onclick="showStickerPicker()">
+                            <i class="fas fa-note-sticky"></i>
+                            <span>Stickers</span>
+                        </button>
+
+                        <button class="action-btn" onclick="showEmojiPicker()">
+                            <i class="fas fa-face-smile"></i>
+                            <span>Emoji</span>
+                        </button>
+
                         <button class="action-btn" onclick="showLinkModal()">
                             <i class="fas fa-link"></i>
-                            <span>Add Link</span>
+                            <span>Link</span>
                         </button>
-                        
+
                         <button class="action-btn" onclick="createPoll()">
                             <i class="fas fa-poll"></i>
-                            <span>Create Poll</span>
+                            <span>Poll</span>
                         </button>
-                        
+
+                        <button class="action-btn" onclick="showLocationPicker()">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Location</span>
+                        </button>
+
+                        <button class="action-btn" onclick="showSchedulePost()">
+                            <i class="fas fa-clock"></i>
+                            <span>Schedule</span>
+                        </button>
+
                         <div class="hashtag-input-container">
                             <input type="text" class="hashtag-input" id="hashtagInput" placeholder="#hashtag" onkeypress="if(event.key === 'Enter') addTagFromInput()">
                         </div>
                     </div>
-                    
+
                     <div style="margin-bottom: 15px;" id="postTagsContainer">
                         <label style="display: block; margin-bottom: 5px; font-weight: 500;">Tags</label>
                         <div style="display: flex; flex-wrap: wrap; gap: 5px;" id="postTags"></div>
                     </div>
-                    
+
                     <div style="margin-bottom: 20px;" id="postPollContainer" class="hidden">
                         <label style="display: block; margin-bottom: 5px; font-weight: 500;">Poll Options</label>
                         <div id="pollOptions"></div>
@@ -2498,13 +2523,13 @@
                             <span>Add Option</span>
                         </button>
                     </div>
-                    
+
                     <div style="margin-bottom: 20px;" id="postMediaContainer" class="hidden">
                         <label style="display: block; margin-bottom: 5px; font-weight: 500;">Media Preview</label>
                         <div id="mediaPreview"></div>
                     </div>
                 </div>
-                
+
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button class="action-btn" onclick="closeModal('createPostModal')">
                         Cancel
@@ -3494,6 +3519,7 @@
             const suggestedUsers = document.getElementById('suggestedUsers');
             if (!suggestedUsers) return;
             
+            if (!currentUser) return;
             const suggestions = users.filter(u => u.id !== currentUser.id).slice(0, 4);
             
             suggestedUsers.innerHTML = suggestions.map(user => `
@@ -5136,6 +5162,7 @@ function switchFriendsTab(tab) {
 
 // 15. refreshSuggestions - now actually shuffles and reloads
 function refreshSuggestions() {
+    if (!currentUser) return;
     // Shuffle the users array
     const shuffled = users.filter(u => u.id !== currentUser.id).sort(() => Math.random() - 0.5);
     const suggestedUsers = document.getElementById('suggestedUsers');
@@ -6289,65 +6316,31 @@ function newDirectMessage() {
 
 
 
-// ===== UPDATE CREATE POST MODAL BUTTONS =====
-// Override showCreatePostModal to add GIF, Sticker, Emoji, Location, Schedule buttons
+// ===== CLEAN showCreatePostModal (buttons now in HTML template) =====
 function showCreatePostModal() {
     if (!currentUser) { showToast('Please log in first!'); return; }
     const modalAvatar = document.getElementById('modalUserAvatar');
     if (modalAvatar) modalAvatar.src = currentUser.avatar;
-    document.getElementById('postContent').value = '';
+    const postContent = document.getElementById('postContent');
+    if (postContent) postContent.value = '';
     const mediaPreview = document.getElementById('mediaPreview');
     if (mediaPreview) { mediaPreview.style.display = 'none'; mediaPreview.innerHTML = ''; }
-    const tagsContainer = document.getElementById('postTagsContainer');
+    const mediaContainer = document.getElementById('postMediaContainer');
+    if (mediaContainer) mediaContainer.classList.add('hidden');
+    const tagsContainer = document.getElementById('postTags');
     if (tagsContainer) tagsContainer.innerHTML = '';
     const pollContainer = document.getElementById('postPollContainer');
-    if (pollContainer) pollContainer.style.display = 'none';
-
+    if (pollContainer) pollContainer.classList.add('hidden');
+    const oldLocation = document.getElementById('postLocation');
+    if (oldLocation) oldLocation.remove();
     openModal('createPostModal');
-    document.getElementById('postContent').focus();
-
-    // Inject additional action buttons if not already there
-    const existingExtra = document.getElementById('extraPostActions');
-    if (!existingExtra) {
-        const actionArea = document.querySelector('#createPostModal .action-btn')?.parentElement;
-        if (actionArea) {
-            const extraDiv = document.createElement('div');
-            extraDiv.id = 'extraPostActions';
-            extraDiv.style.cssText = 'display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;';
-            extraDiv.innerHTML = `
-                <button class="action-btn" onclick="showGifPicker()" style="display:flex;align-items:center;gap:5px;">
-                    <span style="font-weight:bold;font-size:13px;border:1px solid currentColor;border-radius:4px;padding:0 4px;">GIF</span>
-                    <span>GIF</span>
-                </button>
-                <button class="action-btn" onclick="showStickerPicker()">
-                    <i class="fas fa-note-sticky"></i>
-                    <span>Stickers</span>
-                </button>
-                <button class="action-btn" onclick="showEmojiPicker()">
-                    <i class="fas fa-face-smile"></i>
-                    <span>Emoji</span>
-                </button>
-                <button class="action-btn" onclick="showLocationPicker()">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Location</span>
-                </button>
-                <button class="action-btn" onclick="showSchedulePost()">
-                    <i class="fas fa-clock"></i>
-                    <span>Schedule</span>
-                </button>
-            `;
-            actionArea.parentElement.insertBefore(extraDiv, actionArea.nextSibling);
-        }
-    }
+    if (postContent) postContent.focus();
 }
 
 // ===== ADD NAV LINKS FOR NEW FEATURES =====
 // Override goToHome to add new nav buttons in sidebar
-const _originalGoToHome = goToHome;
-function goToHome() {
-    _originalGoToHome();
-    injectSidebarExtras();
-}
+// goToHome sidebar injection handled via DOMContentLoaded + MutationObserver
+// (removed _originalGoToHome override to prevent circular reference issues)
 
 function injectSidebarExtras() {
     // Add Analytics and Lists to the sidebar if not present
