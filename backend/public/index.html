@@ -5376,6 +5376,1076 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
+
+
+// ============================================
+// PHASE 2: Missing X/Twitter Features
+// ============================================
+
+// ===== ENHANCED POST COMPOSER =====
+// Add GIF, Sticker, Emoji, and Location buttons to the create post modal
+
+// GIF Search using Tenor/GIPHY-style interface
+function showGifPicker() {
+    const container = document.getElementById('postMediaContainer') || document.createElement('div');
+
+    const gifModal = document.createElement('div');
+    gifModal.id = 'gifPickerOverlay';
+    gifModal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    gifModal.onclick = function(e) { if(e.target === gifModal) gifModal.remove(); };
+
+    gifModal.innerHTML = `
+        <div style="background:var(--bg-card);border-radius:15px;width:90%;max-width:500px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;">
+            <div style="padding:15px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="color:var(--honey-yellow);"><i class="fas fa-film"></i> GIFs</h3>
+                <button onclick="document.getElementById('gifPickerOverlay').remove()" style="background:none;border:none;color:var(--text-primary);font-size:1.5em;cursor:pointer;">&times;</button>
+            </div>
+            <div style="padding:10px;">
+                <input type="text" id="gifSearchInput" placeholder="Search GIFs..." oninput="searchGifs(this.value)" 
+                    style="width:100%;padding:10px 15px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;">
+            </div>
+            <div id="gifResults" style="padding:10px;overflow-y:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:50vh;">
+                ${getDefaultGifs()}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(gifModal);
+    document.getElementById('gifSearchInput').focus();
+}
+
+function getDefaultGifs() {
+    // Curated bee-themed and popular GIF URLs (using static URLs for demo)
+    const gifs = [
+        { url: 'https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif', alt: 'Bee flying' },
+        { url: 'https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif', alt: 'Celebration' },
+        { url: 'https://media.giphy.com/media/xUPGGDNsLvqsBOhuU0/giphy.gif', alt: 'Dancing' },
+        { url: 'https://media.giphy.com/media/l4pTfx2qLszoacZRS/giphy.gif', alt: 'Thumbs up' },
+        { url: 'https://media.giphy.com/media/3ohzdIuqJoo8QdKlnW/giphy.gif', alt: 'Laughing' },
+        { url: 'https://media.giphy.com/media/l0MYt5jPR6QX5APm0/giphy.gif', alt: 'Mind blown' },
+        { url: 'https://media.giphy.com/media/xT0xeJpnrWC3XWblEk/giphy.gif', alt: 'Fire' },
+        { url: 'https://media.giphy.com/media/l41YtZOb9EUABnuqA/giphy.gif', alt: 'Wow' },
+        { url: 'https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif', alt: 'Cat' },
+        { url: 'https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif', alt: 'Applause' },
+        { url: 'https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif', alt: 'Love' },
+        { url: 'https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif', alt: 'Party' },
+    ];
+
+    return gifs.map(g => `
+        <img src="${g.url}" alt="${g.alt}" 
+            style="width:100%;border-radius:10px;cursor:pointer;object-fit:cover;height:120px;" 
+            loading="lazy"
+            onclick="selectGif('${g.url}')"
+            onerror="this.style.display='none'">
+    `).join('');
+}
+
+function searchGifs(query) {
+    const results = document.getElementById('gifResults');
+    if (!query.trim()) {
+        results.innerHTML = getDefaultGifs();
+        return;
+    }
+    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">Searching for "' + query + '"...<br><small>Full GIF API integration coming with backend (Phase 3)</small></div>' + getDefaultGifs();
+}
+
+function selectGif(url) {
+    const preview = document.getElementById('mediaPreview');
+    if (preview) {
+        preview.style.display = 'block';
+        preview.innerHTML = `
+            <div style="position:relative;display:inline-block;">
+                <img src="${url}" style="max-width:100%;border-radius:10px;max-height:200px;">
+                <button onclick="removeMedia()" style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.7);border:none;color:white;width:25px;height:25px;border-radius:50%;cursor:pointer;">&times;</button>
+            </div>
+        `;
+    }
+    const overlay = document.getElementById('gifPickerOverlay');
+    if (overlay) overlay.remove();
+    showToast('GIF added! 🎬');
+}
+
+function removeMedia() {
+    const preview = document.getElementById('mediaPreview');
+    if (preview) {
+        preview.style.display = 'none';
+        preview.innerHTML = '';
+    }
+}
+
+// Sticker Picker
+function showStickerPicker() {
+    const stickerModal = document.createElement('div');
+    stickerModal.id = 'stickerPickerOverlay';
+    stickerModal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    stickerModal.onclick = function(e) { if(e.target === stickerModal) stickerModal.remove(); };
+
+    const beeStickers = [
+        { emoji: '🐝', name: 'Bee' }, { emoji: '🍯', name: 'Honey' }, { emoji: '🌸', name: 'Flower' },
+        { emoji: '🌻', name: 'Sunflower' }, { emoji: '🐛', name: 'Bug' }, { emoji: '🦋', name: 'Butterfly' },
+        { emoji: '🌺', name: 'Hibiscus' }, { emoji: '🌷', name: 'Tulip' }, { emoji: '🪻', name: 'Lavender' },
+        { emoji: '🌼', name: 'Blossom' }, { emoji: '🏵️', name: 'Rosette' }, { emoji: '💐', name: 'Bouquet' },
+        { emoji: '🪴', name: 'Plant' }, { emoji: '🌿', name: 'Herb' }, { emoji: '🍃', name: 'Leaf' },
+        { emoji: '🌾', name: 'Rice' }, { emoji: '🪹', name: 'Nest' }, { emoji: '🐞', name: 'Lady Bug' },
+    ];
+
+    const funStickers = [
+        { emoji: '⭐', name: 'Star' }, { emoji: '✨', name: 'Sparkles' }, { emoji: '💫', name: 'Dizzy' },
+        { emoji: '🔥', name: 'Fire' }, { emoji: '💛', name: 'Yellow Heart' }, { emoji: '🧡', name: 'Orange Heart' },
+        { emoji: '👑', name: 'Crown' }, { emoji: '🏆', name: 'Trophy' }, { emoji: '🎯', name: 'Bullseye' },
+        { emoji: '💪', name: 'Strong' }, { emoji: '🚀', name: 'Rocket' }, { emoji: '⚡', name: 'Lightning' },
+        { emoji: '🎉', name: 'Party' }, { emoji: '🎊', name: 'Confetti' }, { emoji: '🥳', name: 'Celebrate' },
+        { emoji: '😎', name: 'Cool' }, { emoji: '🤩', name: 'Starstruck' }, { emoji: '💯', name: '100' },
+    ];
+
+    stickerModal.innerHTML = `
+        <div style="background:var(--bg-card);border-radius:15px;width:90%;max-width:400px;max-height:70vh;overflow:hidden;">
+            <div style="padding:15px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="color:var(--honey-yellow);"><i class="fas fa-note-sticky"></i> Stickers</h3>
+                <button onclick="document.getElementById('stickerPickerOverlay').remove()" style="background:none;border:none;color:var(--text-primary);font-size:1.5em;cursor:pointer;">&times;</button>
+            </div>
+            <div style="padding:15px;overflow-y:auto;max-height:55vh;">
+                <h4 style="margin-bottom:10px;color:var(--honey-yellow);font-size:13px;">🐝 BEE HIVE</h4>
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:20px;">
+                    ${beeStickers.map(s => `<button onclick="insertSticker('${s.emoji}')" title="${s.name}" style="font-size:28px;padding:8px;background:var(--bg-input);border:1px solid transparent;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--honey-yellow)';this.style.transform='scale(1.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='scale(1)'">${s.emoji}</button>`).join('')}
+                </div>
+                <h4 style="margin-bottom:10px;color:var(--honey-yellow);font-size:13px;">⭐ POPULAR</h4>
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;">
+                    ${funStickers.map(s => `<button onclick="insertSticker('${s.emoji}')" title="${s.name}" style="font-size:28px;padding:8px;background:var(--bg-input);border:1px solid transparent;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--honey-yellow)';this.style.transform='scale(1.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='scale(1)'">${s.emoji}</button>`).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(stickerModal);
+}
+
+function insertSticker(emoji) {
+    const textarea = document.getElementById('postContent');
+    if (textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + emoji + textarea.value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+        textarea.focus();
+    }
+    const overlay = document.getElementById('stickerPickerOverlay');
+    if (overlay) overlay.remove();
+}
+
+// Emoji Picker (built-in, keyboard-style)
+function showEmojiPicker() {
+    const emojiModal = document.createElement('div');
+    emojiModal.id = 'emojiPickerOverlay';
+    emojiModal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    emojiModal.onclick = function(e) { if(e.target === emojiModal) emojiModal.remove(); };
+
+    const categories = {
+        'Smileys': ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🥰','😍','🤩','😘','😗','😚','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🫡','🤐','🤨','😐','😑','😶','🫥','😏','😒','🙄','😬','😮‍💨','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐'],
+        'Gestures': ['👋','🤚','🖐️','✋','🖖','🫱','🫲','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏','🙌','🫶','👐','🤲','🤝','🙏','💪','🦾'],
+        'Hearts': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟'],
+        'Nature': ['🐝','🦋','🐛','🐞','🐜','🪲','🪳','🕷️','🦗','🌸','💐','🌷','🌹','🥀','🌺','🌻','🌼','🌱','🪴','🌿','☘️','🍀','🌾','🍃','🍂','🍁','🌍','🌈','☀️','⭐','🌙','✨','⚡','🔥','🌊'],
+        'Objects': ['🎵','🎶','🎤','🎧','🎸','🎹','🎺','📸','📱','💻','⌨️','🎮','🕹️','🏆','🥇','🎯','🎪','🎨','🎭','🎬','📚','📝','💰','💎','🔔','📢','💡','🚀','⏰','🎁','🎂','🍰','☕','🍺','🥂'],
+    };
+
+    emojiModal.innerHTML = `
+        <div style="background:var(--bg-card);border-radius:15px;width:90%;max-width:420px;max-height:75vh;overflow:hidden;display:flex;flex-direction:column;">
+            <div style="padding:15px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="color:var(--honey-yellow);"><i class="fas fa-face-smile"></i> Emoji</h3>
+                <button onclick="document.getElementById('emojiPickerOverlay').remove()" style="background:none;border:none;color:var(--text-primary);font-size:1.5em;cursor:pointer;">&times;</button>
+            </div>
+            <div style="padding:15px;overflow-y:auto;">
+                ${Object.entries(categories).map(([cat, emojis]) => `
+                    <h4 style="margin:10px 0 8px;color:var(--text-secondary);font-size:12px;text-transform:uppercase;">${cat}</h4>
+                    <div style="display:flex;flex-wrap:wrap;gap:2px;">
+                        ${emojis.map(e => `<button onclick="insertEmoji('${e}')" style="font-size:22px;padding:5px;background:none;border:none;cursor:pointer;border-radius:5px;transition:background 0.2s;" onmouseover="this.style.background='var(--bg-input)'" onmouseout="this.style.background='none'">${e}</button>`).join('')}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(emojiModal);
+}
+
+function insertEmoji(emoji) {
+    const textarea = document.getElementById('postContent');
+    if (textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + emoji + textarea.value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+        textarea.focus();
+    }
+}
+
+// Location tagging
+function showLocationPicker() {
+    const location = prompt('📍 Add your location:');
+    if (location && location.trim()) {
+        const locationTag = document.createElement('div');
+        locationTag.id = 'postLocation';
+        locationTag.style.cssText = 'display:flex;align-items:center;gap:5px;padding:8px 12px;background:var(--bg-input);border-radius:20px;font-size:13px;color:var(--honey-yellow);margin-top:10px;width:fit-content;';
+        locationTag.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location.trim()} <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;margin-left:5px;">&times;</button>`;
+
+        const textarea = document.getElementById('postContent');
+        if (textarea && textarea.parentElement) {
+            textarea.parentElement.appendChild(locationTag);
+        }
+        showToast('📍 Location added!');
+    }
+}
+
+// Schedule post
+function showSchedulePost() {
+    const now = new Date();
+    const min = now.toISOString().slice(0, 16);
+
+    const scheduleModal = document.createElement('div');
+    scheduleModal.id = 'schedulePostOverlay';
+    scheduleModal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    scheduleModal.onclick = function(e) { if(e.target === scheduleModal) scheduleModal.remove(); };
+
+    scheduleModal.innerHTML = `
+        <div style="background:var(--bg-card);border-radius:15px;padding:25px;width:90%;max-width:350px;">
+            <h3 style="margin-bottom:15px;color:var(--honey-yellow);"><i class="fas fa-clock"></i> Schedule Buzz</h3>
+            <input type="datetime-local" id="scheduleDateTime" min="${min}" 
+                style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;margin-bottom:15px;">
+            <div style="display:flex;gap:10px;">
+                <button onclick="confirmSchedule()" style="flex:1;background:var(--honey-yellow);color:#000;border:none;padding:10px;border-radius:10px;cursor:pointer;font-weight:bold;">Schedule</button>
+                <button onclick="document.getElementById('schedulePostOverlay').remove()" style="flex:1;background:var(--bg-input);border:1px solid var(--border-color);padding:10px;border-radius:10px;cursor:pointer;color:var(--text-primary);">Cancel</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(scheduleModal);
+}
+
+function confirmSchedule() {
+    const dt = document.getElementById('scheduleDateTime').value;
+    if (!dt) { showToast('Please select a date and time'); return; }
+
+    const scheduled = new Date(dt);
+    const now = new Date();
+    if (scheduled <= now) { showToast('Please select a future time'); return; }
+
+    const diffMs = scheduled - now;
+    const hours = Math.floor(diffMs / 3600000);
+    const mins = Math.floor((diffMs % 3600000) / 60000);
+
+    document.getElementById('schedulePostOverlay').remove();
+    showToast(`⏰ Post scheduled for ${scheduled.toLocaleString()} (in ${hours}h ${mins}m)`);
+}
+
+
+
+// ===== ENHANCED NOTIFICATIONS =====
+function showNotifications() {
+    if (!currentUser) return;
+
+    // Richer notification data
+    if (notifications.length <= 4) {
+        notifications = [
+            { id: 1, type: 'like', text: 'FloraCreative liked your post', user: 'FloraCreative', time: '5m ago', read: false, postId: 1 },
+            { id: 2, type: 'pollinate', text: 'TechWorker pollinated your idea', user: 'TechWorker', time: '12m ago', read: false, postId: 2 },
+            { id: 3, type: 'follow', text: 'ScienceBee started following you', user: 'ScienceBee', time: '1h ago', read: true },
+            { id: 4, type: 'trending', text: 'Your post is trending! 🔥', time: '2h ago', read: true, postId: 1 },
+            { id: 5, type: 'mention', text: 'ArtistBee mentioned you in a comment', user: 'ArtistBee', time: '3h ago', read: true, postId: 3 },
+            { id: 6, type: 'like', text: 'GardenFairy and 3 others liked your post', user: 'GardenFairy', time: '5h ago', read: true, postId: 2 },
+            { id: 7, type: 'honey', text: 'You earned 200 Honey Points this week! 🍯', time: '1d ago', read: true },
+            { id: 8, type: 'system', text: 'Welcome to Polleneer! Complete your profile for +100 points', time: '2d ago', read: true },
+        ];
+    }
+
+    notifications.forEach(n => n.read = true);
+    updateBadgeCounts();
+
+    const iconMap = { like: 'fa-heart', pollinate: 'fa-retweet', follow: 'fa-user-plus', trending: 'fa-fire', mention: 'fa-at', honey: 'fa-coins', system: 'fa-bell', comment: 'fa-comment' };
+    const colorMap = { like: '#FF6B6B', pollinate: '#4ECDC4', follow: '#45B7D1', trending: '#FF8C00', mention: '#9B59B6', honey: '#FFC30B', system: '#87CEEB', comment: '#2ECC71' };
+
+    document.getElementById('mainContent').innerHTML = `
+        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+            <h3 style="margin-bottom: 5px; color: var(--honey-yellow);"><i class="fas fa-bell"></i> Notifications</h3>
+            <div style="display:flex;gap:10px;margin-bottom:20px;border-bottom:1px solid var(--border-color);padding-bottom:15px;">
+                <button id="notif-tab-all" onclick="filterNotifications('all')" style="background:var(--honey-yellow);color:#000;border:none;padding:6px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;">All</button>
+                <button id="notif-tab-mentions" onclick="filterNotifications('mention')" style="background:var(--bg-input);border:1px solid var(--border-color);padding:6px 18px;border-radius:20px;cursor:pointer;font-size:13px;color:var(--text-primary);">Mentions</button>
+                <button id="notif-tab-likes" onclick="filterNotifications('like')" style="background:var(--bg-input);border:1px solid var(--border-color);padding:6px 18px;border-radius:20px;cursor:pointer;font-size:13px;color:var(--text-primary);">Likes</button>
+            </div>
+            <div id="notificationsList">
+                ${notifications.map(n => `
+                    <div class="post-card" style="padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background 0.2s;" 
+                         onmouseover="this.style.background='var(--bg-input)'" onmouseout="this.style.background=''"
+                         onclick="${n.postId ? `viewThread(${n.postId})` : n.user ? `searchUser('${n.user}')` : ''}" data-notif-type="${n.type}">
+                        <div style="width:40px;height:40px;border-radius:50%;background:${colorMap[n.type] || '#666'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas ${iconMap[n.type] || 'fa-bell'}" style="color:white;"></i>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="line-height:1.4;">${n.text}</div>
+                            <div style="font-size:12px;color:var(--text-secondary);margin-top:3px;">${n.time}</div>
+                        </div>
+                        ${!n.read ? '<div style="width:8px;height:8px;border-radius:50%;background:var(--honey-yellow);flex-shrink:0;"></div>' : ''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function filterNotifications(type) {
+    ['all','mentions','likes'].forEach(t => {
+        const btn = document.getElementById(`notif-tab-${t}`);
+        if(btn) { btn.style.background = 'var(--bg-input)'; btn.style.color = 'var(--text-primary)'; }
+    });
+    const activeTab = document.getElementById(`notif-tab-${type === 'mention' ? 'mentions' : type === 'like' ? 'likes' : 'all'}`);
+    if(activeTab) { activeTab.style.background = 'var(--honey-yellow)'; activeTab.style.color = '#000'; }
+
+    const items = document.querySelectorAll('[data-notif-type]');
+    items.forEach(item => {
+        item.style.display = (type === 'all' || item.dataset.notifType === type) ? 'flex' : 'none';
+    });
+}
+
+// ===== THREAD / REPLY VIEW =====
+function viewThread(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (!post) { showToast('Post not found'); return; }
+
+    const user = users.find(u => u.id === post.userId);
+    if (!user) return;
+
+    const postComments = comments[postId] || SAMPLE_COMMENTS[postId] || [];
+
+    document.getElementById('mainContent').innerHTML = `
+        <div style="max-width:700px;margin:0 auto;">
+            <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;padding:10px 0;">
+                <button onclick="goToHome()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-size:1.2em;"><i class="fas fa-arrow-left"></i></button>
+                <h3>Thread</h3>
+            </div>
+
+            <!-- Main post (expanded) -->
+            <div class="post-card" style="padding:20px;">
+                <div style="display:flex;gap:12px;margin-bottom:15px;">
+                    <img src="${user.avatar}" alt="${user.username}" style="width:48px;height:48px;border-radius:50%;cursor:pointer;" onclick="goToUserProfile(${user.id})">
+                    <div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <strong style="cursor:pointer;" onclick="goToUserProfile(${user.id})">${user.displayName || user.username}</strong>
+                            ${user.role === 'queen' || user.role === 'admin' ? '<i class="fas fa-check-circle" style="color:var(--honey-yellow);font-size:14px;" title="Verified"></i>' : ''}
+                            <span class="user-role-badge" style="font-size:11px;">${getRoleName(user.role)}</span>
+                        </div>
+                        <div style="color:var(--text-secondary);font-size:13px;">@${user.username}</div>
+                    </div>
+                </div>
+
+                <div style="font-size:16px;line-height:1.6;margin-bottom:15px;">${formatPostContent(post.content)}</div>
+
+                ${post.tags && post.tags.length > 0 ? `<div style="margin-bottom:12px;">${post.tags.map(t => `<span style="color:var(--honey-yellow);cursor:pointer;margin-right:8px;" onclick="searchTag('${t}')">${t}</span>`).join('')}</div>` : ''}
+
+                ${post.media ? `<img src="${post.media}" style="width:100%;border-radius:12px;margin-bottom:15px;max-height:400px;object-fit:cover;">` : ''}
+
+                <div style="color:var(--text-secondary);font-size:13px;padding:12px 0;border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);">
+                    ${post.createdAt} · <span style="color:var(--text-primary);font-weight:bold;">${(post.views || 0).toLocaleString()}</span> Views
+                </div>
+
+                <div style="display:flex;gap:20px;padding:12px 0;border-bottom:1px solid var(--border-color);font-size:14px;">
+                    <span><strong>${post.pollinations || 0}</strong> <span style="color:var(--text-secondary);">Pollinations</span></span>
+                    <span><strong>${post.likes || 0}</strong> <span style="color:var(--text-secondary);">Likes</span></span>
+                    <span><strong>${postComments.length}</strong> <span style="color:var(--text-secondary);">Replies</span></span>
+                </div>
+
+                <div style="display:flex;justify-content:space-around;padding:8px 0;border-bottom:1px solid var(--border-color);">
+                    <button onclick="toggleComments(${post.id})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;padding:8px;border-radius:50%;transition:color 0.2s;" onmouseover="this.style.color='var(--sky-blue)'" onmouseout="this.style.color='var(--text-secondary)'"><i class="far fa-comment"></i></button>
+                    <button onclick="pollinatePost(${post.id})" style="background:none;border:none;color:${post.isPollinated ? 'var(--leaf-green)' : 'var(--text-secondary)'};cursor:pointer;padding:8px;border-radius:50%;"><i class="${post.isPollinated ? 'fas' : 'far'} fa-retweet"></i></button>
+                    <button onclick="quotePollinate(${post.id})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;padding:8px;border-radius:50%;" onmouseover="this.style.color='var(--honey-yellow)'" onmouseout="this.style.color='var(--text-secondary)'" title="Quote Pollinate"><i class="fas fa-quote-left"></i></button>
+                    <button onclick="likePost(${post.id})" style="background:none;border:none;color:${post.isLiked ? '#FF6B6B' : 'var(--text-secondary)'};cursor:pointer;padding:8px;border-radius:50%;"><i class="${post.isLiked ? 'fas' : 'far'} fa-heart"></i></button>
+                    <button onclick="sharePost(${post.id})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;padding:8px;border-radius:50%;" onmouseover="this.style.color='var(--sky-blue)'" onmouseout="this.style.color='var(--text-secondary)'"><i class="fas fa-share-from-square"></i></button>
+                </div>
+            </div>
+
+            <!-- Reply composer -->
+            <div class="post-card" style="padding:15px;margin-top:2px;display:flex;gap:12px;">
+                <img src="${currentUser.avatar}" alt="You" style="width:36px;height:36px;border-radius:50%;">
+                <div style="flex:1;">
+                    <textarea id="thread-reply-input" placeholder="Post your reply..." style="width:100%;background:transparent;border:none;color:var(--text-primary);resize:none;font-size:15px;min-height:50px;outline:none;font-family:inherit;"></textarea>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                        <div style="display:flex;gap:12px;">
+                            <button onclick="document.getElementById('mediaUpload').click()" style="background:none;border:none;color:var(--honey-yellow);cursor:pointer;"><i class="fas fa-image"></i></button>
+                            <button onclick="showGifPicker()" style="background:none;border:none;color:var(--honey-yellow);cursor:pointer;font-weight:bold;font-size:13px;">GIF</button>
+                            <button onclick="showEmojiPicker()" style="background:none;border:none;color:var(--honey-yellow);cursor:pointer;"><i class="fas fa-face-smile"></i></button>
+                        </div>
+                        <button onclick="submitThreadReply(${post.id})" style="background:var(--honey-yellow);color:#000;border:none;padding:8px 20px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;">Reply</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Replies -->
+            <div id="threadReplies" style="margin-top:2px;">
+                ${postComments.map(c => {
+                    const commenter = users.find(u => u.id === c.userId) || { username: 'Unknown', displayName: 'Unknown', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Unknown' };
+                    return `
+                        <div class="post-card" style="padding:15px;margin-top:2px;display:flex;gap:12px;">
+                            <img src="${commenter.avatar}" alt="${commenter.username}" style="width:36px;height:36px;border-radius:50%;cursor:pointer;" onclick="goToUserProfile(${c.userId})">
+                            <div style="flex:1;">
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                                    <strong style="font-size:14px;cursor:pointer;" onclick="goToUserProfile(${c.userId})">${commenter.displayName || commenter.username}</strong>
+                                    <span style="color:var(--text-secondary);font-size:13px;">@${commenter.username} · ${c.createdAt}</span>
+                                </div>
+                                <div style="line-height:1.5;margin-bottom:8px;">${c.text}</div>
+                                <div style="display:flex;gap:20px;">
+                                    <button onclick="likeComment(${c.id}, ${post.id})" data-comment-like="${c.id}" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;"><i class="far fa-heart"></i> Like</button>
+                                    <button onclick="replyToComment(${post.id}, ${c.id})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;"><i class="far fa-comment"></i> Reply</button>
+                                    <button onclick="pollinatePost(${post.id})" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;"><i class="far fa-retweet"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+
+                ${postComments.length === 0 ? '<div class="post-card" style="padding:30px;margin-top:2px;text-align:center;color:var(--text-secondary);">No replies yet. Be the first to buzz! 🐝</div>' : ''}
+            </div>
+        </div>
+    `;
+}
+
+function submitThreadReply(postId) {
+    const input = document.getElementById('thread-reply-input');
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) { showToast('Write something first!'); return; }
+
+    if (!comments[postId]) comments[postId] = [];
+    const newComment = { id: Date.now(), userId: currentUser.id, text: text, createdAt: 'Just now' };
+    comments[postId].push(newComment);
+
+    const post = posts.find(p => p.id === postId);
+    if (post) post.comments += 1;
+
+    currentUser.honeyPoints += 10;
+    localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
+
+    showToast('Reply posted! +10 Honey Points 🍯');
+    viewThread(postId);
+}
+
+// ===== QUOTE POLLINATION (Quote Retweet) =====
+function quotePollinate(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    const user = users.find(u => u.id === post.userId);
+    if (!user) return;
+
+    const quoteModal = document.createElement('div');
+    quoteModal.id = 'quotePollinateOverlay';
+    quoteModal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    quoteModal.onclick = function(e) { if(e.target === quoteModal) quoteModal.remove(); };
+
+    quoteModal.innerHTML = `
+        <div style="background:var(--bg-card);border-radius:15px;width:90%;max-width:550px;overflow:hidden;">
+            <div style="padding:15px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="color:var(--honey-yellow);"><i class="fas fa-quote-left"></i> Quote Pollinate</h3>
+                <button onclick="document.getElementById('quotePollinateOverlay').remove()" style="background:none;border:none;color:var(--text-primary);font-size:1.5em;cursor:pointer;">&times;</button>
+            </div>
+            <div style="padding:15px;">
+                <div style="display:flex;gap:12px;margin-bottom:12px;">
+                    <img src="${currentUser.avatar}" style="width:40px;height:40px;border-radius:50%;">
+                    <textarea id="quoteText" placeholder="Add your thoughts..." style="flex:1;background:transparent;border:none;color:var(--text-primary);resize:none;font-size:15px;min-height:60px;outline:none;font-family:inherit;"></textarea>
+                </div>
+
+                <!-- Quoted post preview -->
+                <div style="border:1px solid var(--border-color);border-radius:12px;padding:12px;margin-bottom:15px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                        <img src="${user.avatar}" style="width:20px;height:20px;border-radius:50%;">
+                        <strong style="font-size:13px;">${user.displayName || user.username}</strong>
+                        <span style="color:var(--text-secondary);font-size:12px;">@${user.username} · ${post.createdAt}</span>
+                    </div>
+                    <div style="font-size:13px;color:var(--text-secondary);line-height:1.4;">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</div>
+                </div>
+
+                <div style="display:flex;justify-content:flex-end;">
+                    <button onclick="submitQuotePollination(${postId})" style="background:var(--honey-yellow);color:#000;border:none;padding:10px 25px;border-radius:20px;cursor:pointer;font-weight:bold;">Pollinate</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(quoteModal);
+    document.getElementById('quoteText').focus();
+}
+
+function submitQuotePollination(postId) {
+    const quoteText = document.getElementById('quoteText').value.trim();
+    const originalPost = posts.find(p => p.id === postId);
+    if (!originalPost) return;
+    const originalUser = users.find(u => u.id === originalPost.userId);
+
+    const newPost = {
+        id: posts.length + 100,
+        userId: currentUser.id,
+        content: quoteText ? quoteText + '\n\n' : '',
+        quotedPost: { postId: postId, content: originalPost.content.substring(0, 200), username: originalUser ? originalUser.username : 'Unknown', avatar: originalUser ? originalUser.avatar : '' },
+        tags: [],
+        likes: 0, comments: 0, pollinations: 0, views: 0,
+        createdAt: 'Just now',
+        isLiked: false, isPollinated: false
+    };
+
+    posts.unshift(newPost);
+    originalPost.pollinations += 1;
+
+    currentUser.honeyPoints += 15;
+    localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
+
+    document.getElementById('quotePollinateOverlay').remove();
+    showToast('🐝 Quote pollinated! +15 Honey Points');
+
+    if (currentPage === 'home') goToHome();
+}
+
+// ===== ANALYTICS DASHBOARD =====
+function showAnalytics() {
+    if (!currentUser) return;
+
+    const myPosts = posts.filter(p => p.userId === currentUser.id);
+    const totalLikes = myPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+    const totalViews = myPosts.reduce((sum, p) => sum + (p.views || 0), 0);
+    const totalPollinations = myPosts.reduce((sum, p) => sum + (p.pollinations || 0), 0);
+    const totalComments = myPosts.reduce((sum, p) => sum + (p.comments || 0), 0);
+    const engagementRate = totalViews > 0 ? (((totalLikes + totalComments + totalPollinations) / totalViews) * 100).toFixed(1) : 0;
+
+    document.getElementById('mainContent').innerHTML = `
+        <div class="customization-panel" style="max-width:800px;margin:0 auto;">
+            <h3 style="margin-bottom:25px;color:var(--honey-yellow);"><i class="fas fa-chart-line"></i> Analytics Dashboard</h3>
+
+            <!-- Key Metrics -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:25px;">
+                ${[
+                    { label: 'Total Views', value: totalViews.toLocaleString(), icon: 'fa-eye', color: '#87CEEB' },
+                    { label: 'Total Likes', value: totalLikes.toLocaleString(), icon: 'fa-heart', color: '#FF6B6B' },
+                    { label: 'Pollinations', value: totalPollinations.toLocaleString(), icon: 'fa-retweet', color: '#4ECDC4' },
+                    { label: 'Comments', value: totalComments.toLocaleString(), icon: 'fa-comment', color: '#9B59B6' },
+                    { label: 'Engagement', value: engagementRate + '%', icon: 'fa-chart-pie', color: '#FF8C00' },
+                    { label: 'Honey Earned', value: currentUser.honeyPoints.toLocaleString(), icon: 'fa-coins', color: '#FFC30B' },
+                ].map(m => `
+                    <div class="post-card" style="padding:18px;text-align:center;">
+                        <i class="fas ${m.icon}" style="font-size:1.5em;color:${m.color};margin-bottom:8px;"></i>
+                        <div style="font-size:24px;font-weight:bold;margin-bottom:4px;">${m.value}</div>
+                        <div style="font-size:12px;color:var(--text-secondary);">${m.label}</div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Engagement Bar Chart -->
+            <div class="post-card" style="padding:20px;margin-bottom:15px;">
+                <h4 style="margin-bottom:15px;">Post Performance</h4>
+                ${myPosts.length > 0 ? myPosts.slice(0, 5).map((p, i) => {
+                    const maxLikes = Math.max(...myPosts.map(pp => pp.likes || 1));
+                    const barWidth = ((p.likes || 0) / maxLikes * 100);
+                    return `
+                        <div style="margin-bottom:12px;cursor:pointer;" onclick="viewThread(${p.id})">
+                            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;">${p.content.substring(0, 50)}...</span>
+                                <span style="color:var(--text-secondary);">${p.likes} ❤️</span>
+                            </div>
+                            <div style="background:var(--bg-input);border-radius:5px;height:8px;overflow:hidden;">
+                                <div style="background:linear-gradient(90deg,var(--honey-yellow),var(--hive-orange));height:100%;width:${barWidth}%;border-radius:5px;transition:width 0.5s;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('') : '<div style="text-align:center;color:var(--text-secondary);padding:20px;">Create your first post to see analytics!</div>'}
+            </div>
+
+            <!-- Follower Growth -->
+            <div class="post-card" style="padding:20px;">
+                <h4 style="margin-bottom:15px;">Profile Stats</h4>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;text-align:center;">
+                    <div>
+                        <div style="font-size:28px;font-weight:bold;color:var(--honey-yellow);">${currentUser.followers}</div>
+                        <div style="font-size:12px;color:var(--text-secondary);">Followers</div>
+                    </div>
+                    <div>
+                        <div style="font-size:28px;font-weight:bold;color:var(--hive-orange);">${currentUser.following}</div>
+                        <div style="font-size:12px;color:var(--text-secondary);">Following</div>
+                    </div>
+                    <div>
+                        <div style="font-size:28px;font-weight:bold;color:var(--leaf-green);">${myPosts.length}</div>
+                        <div style="font-size:12px;color:var(--text-secondary);">Posts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+
+// ===== VERIFIED BADGES =====
+// Override createPostHTML to add verified badges and quote pollination support
+const _originalCreatePostHTML = createPostHTML;
+function createPostHTML(post) {
+    let html = _originalCreatePostHTML(post);
+
+    // Add verified badge for queen/admin users
+    const user = users.find(u => u.id === post.userId);
+    if (user && (user.role === 'queen' || user.role === 'admin')) {
+        html = html.replace(
+            `<span class="user-role-badge">${getRoleName(user.role)}</span>`,
+            `<i class="fas fa-check-circle" style="color:var(--honey-yellow);font-size:13px;" title="Verified Bee"></i> <span class="user-role-badge">${getRoleName(user.role)}</span>`
+        );
+    }
+
+    // If this post has a quoted post, add the quote card
+    if (post.quotedPost) {
+        const quoteHTML = `
+            <div style="border:1px solid var(--border-color);border-radius:12px;padding:12px;margin:10px 0;cursor:pointer;" onclick="viewThread(${post.quotedPost.postId})">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                    <img src="${post.quotedPost.avatar}" style="width:18px;height:18px;border-radius:50%;">
+                    <span style="font-size:12px;font-weight:bold;">@${post.quotedPost.username}</span>
+                </div>
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.3;">${post.quotedPost.content}${post.quotedPost.content.length >= 200 ? '...' : ''}</div>
+            </div>
+        `;
+        // Insert before the post stats
+        html = html.replace('class="post-stats"', 'class="quoted-inject"></div>' + quoteHTML + '<div class="post-stats"');
+    }
+
+    // Make posts clickable to view thread
+    html = html.replace(
+        `<div class="post-content"`,
+        `<div class="post-content" onclick="viewThread(${post.id})" style="cursor:pointer;"`
+    );
+
+    return html;
+}
+
+// ===== USER LISTS =====
+function showLists() {
+    if (!currentUser) return;
+
+    const savedLists = JSON.parse(localStorage.getItem('polleneer_lists_' + currentUser.id) || '[]');
+
+    // Default lists if none exist
+    if (savedLists.length === 0) {
+        savedLists.push(
+            { id: 1, name: 'Favorite Bees', description: 'My top pollinating friends', members: [2, 3], isPrivate: false },
+            { id: 2, name: 'Tech Hive', description: 'Tech-focused bees', members: [3], isPrivate: false }
+        );
+        localStorage.setItem('polleneer_lists_' + currentUser.id, JSON.stringify(savedLists));
+    }
+
+    document.getElementById('mainContent').innerHTML = `
+        <div class="customization-panel" style="max-width:700px;margin:0 auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h3 style="color:var(--honey-yellow);"><i class="fas fa-list"></i> Lists</h3>
+                <button onclick="createNewList()" style="background:var(--honey-yellow);color:#000;border:none;padding:8px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;">
+                    <i class="fas fa-plus"></i> New List
+                </button>
+            </div>
+
+            <div style="display:grid;gap:10px;">
+                ${savedLists.map(list => `
+                    <div class="post-card" style="padding:18px;cursor:pointer;transition:transform 0.2s;" 
+                         onclick="viewList(${list.id})"
+                         onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='none'">
+                        <div style="display:flex;justify-content:space-between;align-items:start;">
+                            <div>
+                                <h4 style="margin-bottom:4px;">${list.name} ${list.isPrivate ? '<i class="fas fa-lock" style="font-size:12px;color:var(--text-secondary);"></i>' : ''}</h4>
+                                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">${list.description}</p>
+                                <div style="display:flex;gap:5px;">
+                                    ${list.members.slice(0, 3).map(mid => {
+                                        const member = users.find(u => u.id === mid);
+                                        return member ? `<img src="${member.avatar}" style="width:24px;height:24px;border-radius:50%;border:2px solid var(--bg-card);">` : '';
+                                    }).join('')}
+                                    ${list.members.length > 3 ? `<span style="font-size:12px;color:var(--text-secondary);padding-top:5px;">+${list.members.length - 3}</span>` : ''}
+                                </div>
+                            </div>
+                            <span style="font-size:13px;color:var(--text-secondary);">${list.members.length} members</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function createNewList() {
+    const name = prompt('Name your new list:');
+    if (!name || !name.trim()) return;
+    const desc = prompt('Add a description (optional):') || '';
+
+    const savedLists = JSON.parse(localStorage.getItem('polleneer_lists_' + currentUser.id) || '[]');
+    savedLists.push({
+        id: Date.now(),
+        name: name.trim(),
+        description: desc.trim(),
+        members: [],
+        isPrivate: false
+    });
+    localStorage.setItem('polleneer_lists_' + currentUser.id, JSON.stringify(savedLists));
+    showToast(`List "${name}" created! 📋`);
+    showLists();
+}
+
+function viewList(listId) {
+    const savedLists = JSON.parse(localStorage.getItem('polleneer_lists_' + currentUser.id) || '[]');
+    const list = savedLists.find(l => l.id === listId);
+    if (!list) return;
+
+    const memberUsers = list.members.map(mid => users.find(u => u.id === mid)).filter(Boolean);
+    const memberPosts = posts.filter(p => list.members.includes(p.userId));
+
+    document.getElementById('mainContent').innerHTML = `
+        <div style="max-width:700px;margin:0 auto;">
+            <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;">
+                <button onclick="showLists()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-size:1.2em;"><i class="fas fa-arrow-left"></i></button>
+                <div>
+                    <h3>${list.name}</h3>
+                    <span style="font-size:13px;color:var(--text-secondary);">${list.members.length} members · ${memberPosts.length} posts</span>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:5px;">
+                ${memberUsers.map(u => `
+                    <div style="text-align:center;flex-shrink:0;cursor:pointer;" onclick="goToUserProfile(${u.id})">
+                        <img src="${u.avatar}" style="width:45px;height:45px;border-radius:50%;border:2px solid var(--honey-yellow);">
+                        <div style="font-size:11px;margin-top:3px;max-width:60px;overflow:hidden;text-overflow:ellipsis;">@${u.username}</div>
+                    </div>
+                `).join('')}
+                <div style="text-align:center;flex-shrink:0;cursor:pointer;" onclick="addMemberToList(${list.id})">
+                    <div style="width:45px;height:45px;border-radius:50%;border:2px dashed var(--border-color);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div style="font-size:11px;margin-top:3px;color:var(--text-secondary);">Add</div>
+                </div>
+            </div>
+
+            <div>
+                ${memberPosts.length > 0 ? memberPosts.map(p => createPostHTML(p)).join('') : 
+                '<div class="post-card" style="padding:30px;text-align:center;color:var(--text-secondary);">No posts from list members yet.</div>'}
+            </div>
+        </div>
+    `;
+}
+
+function addMemberToList(listId) {
+    const username = prompt('Enter username to add:');
+    if (!username) return;
+    const user = users.find(u => u.username.toLowerCase() === username.toLowerCase().replace('@', ''));
+    if (!user) { showToast('User not found'); return; }
+
+    const savedLists = JSON.parse(localStorage.getItem('polleneer_lists_' + currentUser.id) || '[]');
+    const list = savedLists.find(l => l.id === listId);
+    if (!list) return;
+
+    if (list.members.includes(user.id)) { showToast('User already in list'); return; }
+    list.members.push(user.id);
+    localStorage.setItem('polleneer_lists_' + currentUser.id, JSON.stringify(savedLists));
+    showToast(`Added @${user.username} to "${list.name}" 🐝`);
+    viewList(listId);
+}
+
+// ===== ENHANCED DMs =====
+function showMessages() {
+    if (!currentUser) return;
+
+    // Richer message data
+    const conversations = [
+        { id: 1, user: 'FloraCreative', userId: 2, avatar: users.find(u=>u.id===2)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Flora', lastMessage: 'Hey! Loved your garden post! The cross-pollination idea is brilliant 🌸', time: '10m ago', unread: 2 },
+        { id: 2, user: 'TechWorker', userId: 3, avatar: users.find(u=>u.id===3)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Tech', lastMessage: 'Can we collaborate on that algorithm? I have some ideas for the swarm optimization', time: '1h ago', unread: 1 },
+        { id: 3, user: 'ScienceBee', userId: 4, avatar: users.find(u=>u.id===4)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Science', lastMessage: 'The bee colony simulation results are fascinating!', time: '3h ago', unread: 0 },
+        { id: 4, user: 'ArtistBee', userId: 5, avatar: users.find(u=>u.id===5)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Artist', lastMessage: 'I designed a new hexagonal logo concept for Polleneer 🎨', time: '1d ago', unread: 0 },
+    ];
+
+    document.getElementById('mainContent').innerHTML = `
+        <div class="customization-panel" style="max-width:700px;margin:0 auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h3 style="color:var(--honey-yellow);"><i class="fas fa-envelope"></i> Messages</h3>
+                <button onclick="newDirectMessage()" style="background:var(--honey-yellow);color:#000;border:none;padding:8px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;">
+                    <i class="fas fa-pen"></i> New
+                </button>
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <input type="text" placeholder="Search messages..." style="width:100%;padding:10px 15px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;">
+            </div>
+
+            <div style="display:grid;gap:2px;">
+                ${conversations.map(c => `
+                    <div class="post-card" style="padding:15px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background 0.2s;border-radius:0;${c.unread > 0 ? 'border-left:3px solid var(--honey-yellow);' : ''}"
+                         onclick="openConversation(${c.id}, '${c.user}', '${c.avatar}', ${c.userId})"
+                         onmouseover="this.style.background='var(--bg-input)'" onmouseout="this.style.background=''">
+                        <div style="position:relative;">
+                            <img src="${c.avatar}" alt="${c.user}" style="width:50px;height:50px;border-radius:50%;">
+                            ${c.unread > 0 ? `<div style="position:absolute;bottom:-2px;right:-2px;background:var(--honey-yellow);color:#000;font-size:10px;font-weight:bold;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;">${c.unread}</div>` : ''}
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <strong style="font-size:15px;">${c.user}</strong>
+                                <span style="font-size:12px;color:var(--text-secondary);">${c.time}</span>
+                            </div>
+                            <div style="color:var(--text-secondary);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;${c.unread > 0 ? 'color:var(--text-primary);font-weight:500;' : ''}">${c.lastMessage}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function openConversation(convId, userName, userAvatar, userId) {
+    const sampleMessages = [
+        { from: 'them', text: 'Hey! I saw your latest post about cross-pollination. Amazing concept! 🐝', time: '10:30 AM' },
+        { from: 'me', text: 'Thanks! I\'ve been thinking about how bee behavior can inspire social platform design.', time: '10:32 AM' },
+        { from: 'them', text: 'That\'s exactly what makes Polleneer special. The pollination metaphor is so natural.', time: '10:35 AM' },
+        { from: 'me', text: 'Right? Every interaction should feel like a flower visit 🌸', time: '10:37 AM' },
+        { from: 'them', text: 'Would love to collaborate on some ideas! Maybe we can create a hive together?', time: '10:40 AM' },
+    ];
+
+    document.getElementById('mainContent').innerHTML = `
+        <div style="max-width:700px;margin:0 auto;display:flex;flex-direction:column;height:calc(100vh - 120px);">
+            <!-- Header -->
+            <div style="display:flex;align-items:center;gap:12px;padding:15px;border-bottom:1px solid var(--border-color);">
+                <button onclick="showMessages()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-size:1.2em;"><i class="fas fa-arrow-left"></i></button>
+                <img src="${userAvatar}" style="width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="goToUserProfile(${userId})">
+                <div style="cursor:pointer;" onclick="goToUserProfile(${userId})">
+                    <strong>${userName}</strong>
+                    <div style="font-size:12px;color:var(--text-secondary);">@${userName.toLowerCase().replace(/\s/g,'')} · Online</div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div id="conversationMessages" style="flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:10px;">
+                ${sampleMessages.map(m => `
+                    <div style="display:flex;justify-content:${m.from === 'me' ? 'flex-end' : 'flex-start'};">
+                        <div style="max-width:70%;padding:10px 15px;border-radius:${m.from === 'me' ? '15px 15px 5px 15px' : '15px 15px 15px 5px'};background:${m.from === 'me' ? 'var(--honey-yellow)' : 'var(--bg-input)'};color:${m.from === 'me' ? '#000' : 'var(--text-primary)'};">
+                            <div style="line-height:1.4;">${m.text}</div>
+                            <div style="font-size:11px;margin-top:4px;opacity:0.7;text-align:right;">${m.time}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Input -->
+            <div style="padding:12px;border-top:1px solid var(--border-color);display:flex;gap:10px;align-items:end;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button onclick="showGifPicker()" style="background:none;border:none;color:var(--honey-yellow);cursor:pointer;font-size:1.1em;"><i class="fas fa-image"></i></button>
+                    <button onclick="showEmojiPicker()" style="background:none;border:none;color:var(--honey-yellow);cursor:pointer;font-size:1.1em;"><i class="fas fa-face-smile"></i></button>
+                </div>
+                <input type="text" id="dmInput" placeholder="Send a message..." style="flex:1;padding:10px 15px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;"
+                    onkeypress="if(event.key==='Enter')sendDM('${userName}')">
+                <button onclick="sendDM('${userName}')" style="background:var(--honey-yellow);color:#000;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Scroll to bottom
+    const msgContainer = document.getElementById('conversationMessages');
+    if (msgContainer) msgContainer.scrollTop = msgContainer.scrollHeight;
+}
+
+function sendDM(userName) {
+    const input = document.getElementById('dmInput');
+    if (!input || !input.value.trim()) return;
+
+    const msgContainer = document.getElementById('conversationMessages');
+    const msgHTML = `
+        <div style="display:flex;justify-content:flex-end;">
+            <div style="max-width:70%;padding:10px 15px;border-radius:15px 15px 5px 15px;background:var(--honey-yellow);color:#000;">
+                <div style="line-height:1.4;">${input.value.trim()}</div>
+                <div style="font-size:11px;margin-top:4px;opacity:0.7;text-align:right;">Just now</div>
+            </div>
+        </div>
+    `;
+    msgContainer.innerHTML += msgHTML;
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+
+    input.value = '';
+
+    // Simulate reply after 2s
+    setTimeout(() => {
+        const replies = ['That sounds great! 🐝', 'Absolutely! Let\'s make it happen.', 'Love that idea! 🍯', 'I\'m in! When should we start?', 'Amazing, let me think about it! ✨'];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        const replyHTML = `
+            <div style="display:flex;justify-content:flex-start;">
+                <div style="max-width:70%;padding:10px 15px;border-radius:15px 15px 15px 5px;background:var(--bg-input);color:var(--text-primary);">
+                    <div style="line-height:1.4;">${reply}</div>
+                    <div style="font-size:11px;margin-top:4px;opacity:0.7;">Just now</div>
+                </div>
+            </div>
+        `;
+        msgContainer.innerHTML += replyHTML;
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }, 2000);
+}
+
+function newDirectMessage() {
+    const username = prompt('Who would you like to message? (Enter username):');
+    if (!username) return;
+    const user = users.find(u => u.username.toLowerCase() === username.toLowerCase().replace('@', ''));
+    if (!user) { showToast('User not found. Try a different username.'); return; }
+    openConversation(Date.now(), user.displayName || user.username, user.avatar, user.id);
+}
+
+
+
+// ===== UPDATE CREATE POST MODAL BUTTONS =====
+// Override showCreatePostModal to add GIF, Sticker, Emoji, Location, Schedule buttons
+function showCreatePostModal() {
+    if (!currentUser) { showToast('Please log in first!'); return; }
+    const modalAvatar = document.getElementById('modalUserAvatar');
+    if (modalAvatar) modalAvatar.src = currentUser.avatar;
+    document.getElementById('postContent').value = '';
+    const mediaPreview = document.getElementById('mediaPreview');
+    if (mediaPreview) { mediaPreview.style.display = 'none'; mediaPreview.innerHTML = ''; }
+    const tagsContainer = document.getElementById('postTagsContainer');
+    if (tagsContainer) tagsContainer.innerHTML = '';
+    const pollContainer = document.getElementById('postPollContainer');
+    if (pollContainer) pollContainer.style.display = 'none';
+
+    openModal('createPostModal');
+    document.getElementById('postContent').focus();
+
+    // Inject additional action buttons if not already there
+    const existingExtra = document.getElementById('extraPostActions');
+    if (!existingExtra) {
+        const actionArea = document.querySelector('#createPostModal .action-btn')?.parentElement;
+        if (actionArea) {
+            const extraDiv = document.createElement('div');
+            extraDiv.id = 'extraPostActions';
+            extraDiv.style.cssText = 'display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;';
+            extraDiv.innerHTML = `
+                <button class="action-btn" onclick="showGifPicker()" style="display:flex;align-items:center;gap:5px;">
+                    <span style="font-weight:bold;font-size:13px;border:1px solid currentColor;border-radius:4px;padding:0 4px;">GIF</span>
+                    <span>GIF</span>
+                </button>
+                <button class="action-btn" onclick="showStickerPicker()">
+                    <i class="fas fa-note-sticky"></i>
+                    <span>Stickers</span>
+                </button>
+                <button class="action-btn" onclick="showEmojiPicker()">
+                    <i class="fas fa-face-smile"></i>
+                    <span>Emoji</span>
+                </button>
+                <button class="action-btn" onclick="showLocationPicker()">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Location</span>
+                </button>
+                <button class="action-btn" onclick="showSchedulePost()">
+                    <i class="fas fa-clock"></i>
+                    <span>Schedule</span>
+                </button>
+            `;
+            actionArea.parentElement.insertBefore(extraDiv, actionArea.nextSibling);
+        }
+    }
+}
+
+// ===== ADD NAV LINKS FOR NEW FEATURES =====
+// Override goToHome to add new nav buttons in sidebar
+const _originalGoToHome = goToHome;
+function goToHome() {
+    _originalGoToHome();
+    injectSidebarExtras();
+}
+
+function injectSidebarExtras() {
+    // Add Analytics and Lists to the sidebar if not present
+    setTimeout(() => {
+        const sidebar = document.querySelector('.left-sidebar nav, .sidebar-nav');
+        if (sidebar && !document.getElementById('nav-analytics')) {
+            // Find the communities nav item to insert after it
+            const navItems = sidebar.querySelectorAll('a, .nav-link, [onclick]');
+            const lastNavItem = navItems[navItems.length - 1];
+
+            if (lastNavItem && lastNavItem.parentElement) {
+                const analyticsLink = document.createElement('a');
+                analyticsLink.id = 'nav-analytics';
+                analyticsLink.href = '#';
+                analyticsLink.className = lastNavItem.className;
+                analyticsLink.onclick = function(e) { e.preventDefault(); showAnalytics(); };
+                analyticsLink.innerHTML = '<i class="fas fa-chart-line"></i><span>Analytics</span>';
+                lastNavItem.parentElement.insertBefore(analyticsLink, lastNavItem.nextSibling);
+
+                const listsLink = document.createElement('a');
+                listsLink.id = 'nav-lists';
+                listsLink.href = '#';
+                listsLink.className = lastNavItem.className;
+                listsLink.onclick = function(e) { e.preventDefault(); showLists(); };
+                listsLink.innerHTML = '<i class="fas fa-list"></i><span>Lists</span>';
+                analyticsLink.parentElement.insertBefore(listsLink, analyticsLink.nextSibling);
+            }
+        }
+    }, 500);
+}
+
+// Run sidebar injection on load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(injectSidebarExtras, 3000);
+});
+
+// ===== MAKE TRENDING TOPICS CLICKABLE =====
+function loadTrendingTopics() {
+    const trendingList = document.getElementById('trendingList');
+    if (!trendingList) return;
+
+    trendingList.innerHTML = TRENDING_TOPICS.map(topic => `
+        <li class="trend-item" onclick="searchTag('${topic.tag}')" style="cursor:pointer;padding:12px;border-radius:10px;transition:background 0.2s;" onmouseover="this.style.background='var(--bg-input)'" onmouseout="this.style.background=''">
+            <div class="trend-category" style="font-size:12px;color:var(--text-secondary);">${topic.category} · Trending</div>
+            <div class="trend-tag" style="font-weight:bold;margin:3px 0;">${topic.tag}</div>
+            <div class="trend-stats" style="font-size:12px;color:var(--text-secondary);">${topic.posts} posts</div>
+        </li>
+    `).join('');
+}
+
+// ===== UPDATE goToCommunities TO USE JOIN/LEAVE TOGGLE =====
+function goToCommunities() {
+    currentPage = 'communities';
+    const joinedHives = JSON.parse(localStorage.getItem('polleneer_joined_hives') || '[]');
+
+    const communities = [
+        { name: 'Art Collective', members: '3.7k', icon: 'A', color: '#FF69B4', desc: 'For visual artists, digital creators, and art lovers' },
+        { name: 'Tech Innovators', members: '4.2k', icon: 'T', color: '#87CEEB', desc: 'Cutting-edge tech discussions and innovation' },
+        { name: 'Music Lovers', members: '5.1k', icon: 'M', color: '#9370DB', desc: 'Share and discover amazing music' },
+        { name: 'Food & Travel', members: '2.9k', icon: 'F', color: '#FF8C00', desc: 'Foodie adventures and travel stories' },
+        { name: 'Gaming Hive', members: '6.3k', icon: 'G', color: '#228B22', desc: 'Gamers unite! Reviews, streams, and esports' },
+        { name: 'Science & Nature', members: '3.1k', icon: 'S', color: '#FFC30B', desc: 'Explore the wonders of the natural world' },
+    ];
+
+    document.getElementById('mainContent').innerHTML = `
+        <div class="customization-panel" style="max-width:700px;margin:0 auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h3 style="color:var(--honey-yellow);"><i class="fas fa-users"></i> Communities</h3>
+                <button onclick="createCommunity()" style="background:var(--honey-yellow);color:#000;border:none;padding:8px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;">
+                    <i class="fas fa-plus"></i> Create Hive
+                </button>
+            </div>
+
+            <div style="display:grid;gap:12px;">
+                ${communities.map(c => {
+                    const isJoined = joinedHives.includes(c.name);
+                    return `
+                        <div class="post-card" style="padding:18px;display:flex;align-items:center;gap:15px;">
+                            <div style="width:55px;height:55px;border-radius:12px;background:${c.color};display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;color:white;flex-shrink:0;">${c.icon}</div>
+                            <div style="flex:1;">
+                                <h4 style="margin-bottom:3px;">${c.name}</h4>
+                                <p style="font-size:12px;color:var(--text-secondary);margin-bottom:5px;">${c.desc}</p>
+                                <span style="font-size:12px;color:var(--text-secondary);">${c.members} members</span>
+                            </div>
+                            <button onclick="joinCommunity('${c.name}')" 
+                                style="background:${isJoined ? 'transparent' : c.color};color:${isJoined ? 'var(--text-primary)' : 'white'};border:${isJoined ? '1px solid var(--border-color)' : 'none'};padding:8px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;white-space:nowrap;">
+                                ${isJoined ? 'Joined ✓' : 'Join'}
+                            </button>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+    updateActiveNavLink('communities');
+}
+
+
 </script>
 </body>
 </html>
