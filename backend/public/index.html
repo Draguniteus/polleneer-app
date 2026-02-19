@@ -2283,8 +2283,8 @@
         }
 
 
-        /* ContentEditable placeholder */
-        .post-textarea[contenteditable]:empty:before {
+/* ContentEditable placeholder for all compose areas */
+        [contenteditable]:empty:before {
             content: attr(data-placeholder);
             color: var(--text-secondary);
             pointer-events: none;
@@ -3944,7 +3944,7 @@
                 <div class="inline-compose">
                     <div class="compose-top">
                         <img src="${currentUser.avatar}" alt="Profile" style="width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="goToProfile()">
-                        <textarea class="compose-textarea" id="inlinePostContent" placeholder="What's buzzing in your mind?" oninput="handleInlineCompose(this)" onfocus="expandInlineCompose()"></textarea>
+                        <div class="compose-textarea" id="inlinePostContent" contenteditable="true" data-placeholder="What's buzzing in your mind?" oninput="handleInlineCompose(this); highlightHashtags(this)" onfocus="expandInlineCompose()" style="outline:none;"></div>
                     </div>
                     <div class="media-preview-inline" id="inlineMediaPreview"></div>
                     <div class="compose-actions hidden" id="inlineComposeActions">
@@ -5641,10 +5641,10 @@ function searchGifs(query) {
 
 function renderGiphyResults(gifs) {
     return gifs.map(g => `
-        <img src="$${g.images.fixed_height.url}" alt="$${g.title}" 
+        <img src="${g.images.fixed_height.url}" alt="${g.title}" 
             style="width:100%;border-radius:10px;cursor:pointer;object-fit:cover;height:120px;" 
             loading="lazy"
-            onclick="selectGif('$${g.images.original.url}')"
+            onclick="selectGif('${g.images.original.url}')"
             onerror="this.style.display='none'">
     `).join('') + '<div style="grid-column:1/-1;text-align:center;padding:8px;"><img src="https://giphy.com/static/img/poweredby_giphy.png" alt="Powered by GIPHY" style="height:20px;opacity:0.6;"></div>';
 }
@@ -5842,14 +5842,20 @@ function showEmojiPicker() {
 }
 
 function insertEmoji(emoji) {
-    const textarea = document.getElementById('postContent');
-    if (textarea) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        textarea.value = textarea.value.substring(0, start) + emoji + textarea.value.substring(end);
-        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
-        textarea.focus();
+    const targetId = window._emojiTarget || 'postContent';
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    if (el.contentEditable === 'true') {
+        el.focus();
+        document.execCommand('insertText', false, emoji);
+    } else {
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        el.value = el.value.substring(0, start) + emoji + el.value.substring(end);
+        el.selectionStart = el.selectionEnd = start + emoji.length;
+        el.focus();
     }
+    window._emojiTarget = 'postContent';
 }
 
 // Location tagging
@@ -6692,12 +6698,17 @@ function expandInlineCompose() {
     if (textarea) textarea.style.minHeight = '80px';
 }
 
-function handleInlineCompose(textarea) {
+function handleInlineCompose(el) {
     const btn = document.getElementById('inlineBuzzBtn');
-    if (btn) btn.disabled = !textarea.value.trim();
-    // Auto-resize
-    textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+    const text = el.contentEditable === 'true' ? (el.innerText || el.textContent || '').trim() : (el.value || '').trim();
+    if (btn) btn.disabled = !text;
+    // Auto-resize for contentEditable
+    if (el.contentEditable === 'true') {
+        el.style.minHeight = Math.min(Math.max(el.scrollHeight, 28), 200) + 'px';
+    } else {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+    }
 }
 
 function triggerInlineMedia() {
@@ -6731,9 +6742,12 @@ function clearInlineMedia() {
     const input = document.getElementById('inlineMediaUpload');
     if (input) input.value = '';
     // Re-check if buzz button should be disabled
-    const textarea = document.getElementById('inlinePostContent');
+    const el = document.getElementById('inlinePostContent');
     const btn = document.getElementById('inlineBuzzBtn');
-    if (btn && textarea) btn.disabled = !textarea.value.trim();
+    if (btn && el) {
+        const text = el.contentEditable === 'true' ? (el.innerText || '').trim() : (el.value || '').trim();
+        btn.disabled = !text;
+    }
 }
 
 function showEmojiPickerInline() {
@@ -6799,14 +6813,16 @@ function createPollInline() {
 }
 
 function submitInlinePost() {
-    const textarea = document.getElementById('inlinePostContent');
-    if (!textarea || !textarea.value.trim()) return;
+    const el = document.getElementById('inlinePostContent');
+    if (!el) return;
+    const rawText = el.contentEditable === 'true' ? getPlainText('inlinePostContent') : (el.value || '');
+    if (!rawText.trim()) return;
     if (!currentUser) { showToast('Please log in first!'); return; }
 
     const mediaPreview = document.getElementById('inlineMediaPreview');
     const mediaImg = mediaPreview ? mediaPreview.querySelector('img') : null;
 
-    const inlineText = textarea.value.trim();
+    const inlineText = rawText.trim();
     const newPost = {
         id: posts.length + 1,
         userId: currentUser.id,
@@ -6825,9 +6841,13 @@ function submitInlinePost() {
     posts.unshift(newPost);
 
     // Clear compose area
-    textarea.value = '';
-    textarea.style.height = 'auto';
-    textarea.style.minHeight = '28px';
+    if (el.contentEditable === 'true') {
+        el.innerHTML = '';
+    } else {
+        el.value = '';
+    }
+    el.style.height = 'auto';
+    el.style.minHeight = '28px';
     if (mediaPreview) { mediaPreview.style.display = 'none'; mediaPreview.innerHTML = ''; }
     const inlineUpload = document.getElementById('inlineMediaUpload');
     if (inlineUpload) inlineUpload.value = '';
@@ -7236,15 +7256,32 @@ function clearEditable(elementId) {
 }
 
 function toggleBold() {
+    const active = getActiveCompose();
+    if (active) active.focus();
     document.execCommand('bold', false, null);
-    const pc = document.getElementById('postContent');
-    if (pc) pc.focus();
 }
 
 function toggleItalic() {
+    const active = getActiveCompose();
+    if (active) active.focus();
     document.execCommand('italic', false, null);
-    const pc = document.getElementById('postContent');
-    if (pc) pc.focus();
+}
+
+function getActiveCompose() {
+    // Check which compose area is visible/active
+    const modal = document.getElementById('createPostModal');
+    if (modal && modal.classList.contains('active')) {
+        return document.getElementById('postContent');
+    }
+    // Check if modal is visible via display
+    if (modal && getComputedStyle(modal).display !== 'none' && getComputedStyle(modal).visibility !== 'hidden') {
+        return document.getElementById('postContent');
+    }
+    // Fallback to inline compose
+    const inline = document.getElementById('inlinePostContent');
+    if (inline && inline.offsetParent !== null) return inline;
+    // Last resort
+    return document.getElementById('postContent') || document.getElementById('inlinePostContent');
 }
 
 // Live hashtag highlighting in contentEditable
@@ -7333,14 +7370,15 @@ document.addEventListener('keydown', function(e) {
 
 // Paste handler — strip formatting
 document.addEventListener('DOMContentLoaded', function() {
-    const pc = document.getElementById('postContent');
-    if (pc) {
-        pc.addEventListener('paste', function(e) {
+    // Paste handler for all contentEditable compose areas
+    document.addEventListener('paste', function(e) {
+        const el = e.target;
+        if (el && el.contentEditable === 'true' && (el.id === 'postContent' || el.id === 'inlinePostContent')) {
             e.preventDefault();
             const text = (e.clipboardData || window.clipboardData).getData('text/plain');
             document.execCommand('insertText', false, text);
-        });
-    }
+        }
+    });
 });
 
 
