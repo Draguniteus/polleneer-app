@@ -676,9 +676,9 @@
         /* Main Layout */
         .app-container {
             display: flex;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 60px auto 0;
-            padding: 20px;
+            padding: 20px 40px;
             gap: 20px;
         }
 
@@ -930,7 +930,15 @@
         /* Main Content */
         .main-content {
             flex: 1;
-            max-width: 600px;
+            min-width: 0;
+        }
+
+        /* Feed content width control — readable width while sidebar stays right */
+        .main-content .feed,
+        .main-content .inline-compose,
+        .main-content .create-post,
+        .main-content .customization-panel {
+            max-width: 680px;
         }
 
         /* Create Post */
@@ -5430,7 +5438,7 @@ function showSettings() {
     const savedTheme = localStorage.getItem('polleneer_theme') || 'dark';
 
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 25px; color: var(--honey-yellow);"><i class="fas fa-cog"></i> Settings</h3>
 
             <div class="post-card" style="padding: 20px; margin-bottom: 15px;">
@@ -5578,7 +5586,7 @@ function editSettingsField(field) {
 // 4. showHelp - was empty, now shows help center
 function showHelp() {
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 25px; color: var(--honey-yellow);"><i class="fas fa-question-circle"></i> Help Center</h3>
 
             <div id="helpAccordion">
@@ -5677,7 +5685,7 @@ function searchUser(username) {
     }
 
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 20px; color: var(--honey-yellow);">
                 <i class="fas fa-search"></i> User Results for "${username}"
             </h3>
@@ -5710,7 +5718,7 @@ function searchTag(tag) {
     );
 
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 20px; color: var(--honey-yellow);">
                 <i class="fas fa-hashtag"></i> ${tag}
             </h3>
@@ -5746,7 +5754,7 @@ function handleSearch() {
         );
 
         document.getElementById('mainContent').innerHTML = `
-            <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+            <div class="customization-panel">
                 <h3 style="margin-bottom: 20px; color: var(--honey-yellow);">
                     <i class="fas fa-search"></i> Results for "${query}"
                 </h3>
@@ -5850,7 +5858,7 @@ function manageFriends() {
     const following = users.filter(u => u.id !== currentUser.id);
 
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 20px; color: var(--honey-yellow);"><i class="fas fa-users"></i> Friends & Connections</h3>
 
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
@@ -6066,7 +6074,7 @@ function showNotifications() {
     updateBadgeCounts();
 
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 20px; color: var(--honey-yellow);"><i class="fas fa-bell"></i> Notifications</h3>
             ${notifications.length > 0 ? notifications.map(n => `
                 <div class="post-card" style="padding: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; ${!n.read ? 'border-left: 3px solid var(--honey-yellow);' : ''}">
@@ -6090,7 +6098,7 @@ function showMessages() {
     updateBadgeCounts();
 
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 20px; color: var(--honey-yellow);"><i class="fas fa-envelope"></i> Messages</h3>
             ${messages.length > 0 ? messages.map(m => `
                 <div class="post-card" style="padding: 15px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;" onclick="showToast('Full messaging coming soon!')">
@@ -6796,7 +6804,7 @@ function showNotifications() {
     const colorMap = { like: '#FF6B6B', pollinate: '#4ECDC4', follow: '#45B7D1', trending: '#FF8C00', mention: '#9B59B6', honey: '#FFC30B', system: '#87CEEB', comment: '#2ECC71' };
 
     document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width: 700px; margin: 0 auto;">
+        <div class="customization-panel">
             <h3 style="margin-bottom: 5px; color: var(--honey-yellow);"><i class="fas fa-bell"></i> Notifications</h3>
             <div style="display:flex;gap:10px;margin-bottom:20px;border-bottom:1px solid var(--border-color);padding-bottom:15px;">
                 <button id="notif-tab-all" onclick="filterNotifications('all')" style="background:var(--honey-yellow);color:#000;border:none;padding:6px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;">All</button>
