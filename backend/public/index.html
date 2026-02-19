@@ -3845,7 +3845,7 @@
                             <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:8px;">Choose a pattern overlay</label>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                                 <div class="pattern-option active" data-pattern="honeycomb" onclick="selectPattern('honeycomb')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B22;transition:all 0.2s;">
-                                    <div style="position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='%23FFC30B' stroke-width='1.5'/%3E%3C/svg%3E");background-size:28px 50px;opacity:0.5;"></div>
+                                    <div style="position:absolute;inset:0;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2756%27 height=%27100%27 viewBox=%270 0 56 100%27%3E%3Cpath d=%27M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100%27 fill=%27none%27 stroke=%27%23FFC30B%27 stroke-width=%271.5%27/%3E%3C/svg%3E');background-size:28px 50px;opacity:0.5;"></div>
                                     <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Honeycomb</span>
                                 </div>
                                 <div class="pattern-option" data-pattern="dots" onclick="selectPattern('dots')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
@@ -3857,11 +3857,11 @@
                                     <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Diagonal</span>
                                 </div>
                                 <div class="pattern-option" data-pattern="waves" onclick="selectPattern('waves')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
-                                    <div style="position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20' viewBox='0 0 100 20'%3E%3Cpath d='M0 10 Q25 0 50 10 Q75 20 100 10' fill='none' stroke='%23FFC30B' stroke-width='1.5'/%3E%3C/svg%3E");background-size:50px 20px;opacity:0.4;"></div>
+                                    <div style="position:absolute;inset:0;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%2720%27 viewBox=%270 0 100 20%27%3E%3Cpath d=%27M0 10 Q25 0 50 10 Q75 20 100 10%27 fill=%27none%27 stroke=%27%23FFC30B%27 stroke-width=%271.5%27/%3E%3C/svg%3E');background-size:50px 20px;opacity:0.4;"></div>
                                     <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Waves</span>
                                 </div>
                                 <div class="pattern-option" data-pattern="hexgrid" onclick="selectPattern('hexgrid')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
-                                    <div style="position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23FFC30B' fill-opacity='0.15'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");opacity:0.5;"></div>
+                                    <div style="position:absolute;inset:0;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2728%27 height=%2749%27 viewBox=%270 0 28 49%27%3E%3Cg fill-rule=%27evenodd%27%3E%3Cg fill=%27%23FFC30B%27 fill-opacity=%270.15%27%3E%3Cpath d=%27M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');opacity:0.5;"></div>
                                     <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Hex Grid</span>
                                 </div>
                                 <div class="pattern-option" data-pattern="crosshatch" onclick="selectPattern('crosshatch')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
@@ -5304,12 +5304,12 @@
             var c = patternColor || '#FFC30B';
             var cEnc = encodeURIComponent(c);
             var patterns = {
-                honeycomb: "url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='" + cEnc + "' stroke-width='1.5'/%3E%3C/svg%3E")",
-                dots: "radial-gradient(circle, " + c + " 1.5px, transparent 1.5px)",
-                diagonal: "repeating-linear-gradient(45deg, transparent, transparent 8px, " + c + "33 8px, " + c + "33 9px)",
-                waves: "url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20' viewBox='0 0 100 20'%3E%3Cpath d='M0 10 Q25 0 50 10 Q75 20 100 10' fill='none' stroke='" + cEnc + "' stroke-width='1.5'/%3E%3C/svg%3E")",
-                hexgrid: "url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='" + cEnc + "' fill-opacity='0.2'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")",
-                crosshatch: "repeating-linear-gradient(0deg, transparent, transparent 10px, " + c + "22 10px, " + c + "22 11px), repeating-linear-gradient(90deg, transparent, transparent 10px, " + c + "22 10px, " + c + "22 11px)"
+                honeycomb: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'56\' height=\'100\' viewBox=\'0 0 56 100\'%3E%3Cpath d=\'M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100\' fill=\'none\' stroke=\'' + cEnc + '\' stroke-width=\'1.5\'/%3E%3C/svg%3E")',
+                dots: 'radial-gradient(circle, ' + c + ' 1.5px, transparent 1.5px)',
+                diagonal: 'repeating-linear-gradient(45deg, transparent, transparent 8px, ' + c + '33 8px, ' + c + '33 9px)',
+                waves: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'20\' viewBox=\'0 0 100 20\'%3E%3Cpath d=\'M0 10 Q25 0 50 10 Q75 20 100 10\' fill=\'none\' stroke=\'' + cEnc + '\' stroke-width=\'1.5\'/%3E%3C/svg%3E")',
+                hexgrid: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'28\' height=\'49\' viewBox=\'0 0 28 49\'%3E%3Cg fill-rule=\'evenodd\'%3E%3Cg fill=\'' + cEnc + '\' fill-opacity=\'0.2\'%3E%3Cpath d=\'M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+                crosshatch: 'repeating-linear-gradient(0deg, transparent, transparent 10px, ' + c + '22 10px, ' + c + '22 11px), repeating-linear-gradient(90deg, transparent, transparent 10px, ' + c + '22 10px, ' + c + '22 11px)'
             };
             var sizes = {
                 honeycomb: '28px 50px',
