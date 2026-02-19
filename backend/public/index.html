@@ -3891,6 +3891,7 @@
                     <button class="customization-tab" onclick="switchCustomizationTab('background')">Background</button>
                     <button class="customization-tab" onclick="switchCustomizationTab('css')">CSS Editor</button>
                     <button class="customization-tab" onclick="switchCustomizationTab('music')">Music Player</button>
+                    <button class="customization-tab" data-tab-flair="true" onclick="switchCustomizationTab('flair')"><i class="fas fa-magic" style="margin-right:4px;"></i>Flair</button>
                 </div>
                 
                 <div class="customization-section active" id="colorsSection">
@@ -4158,6 +4159,13 @@
                         <i class="fas fa-trash"></i>
                         <span>Remove Profile Song</span>
                     </button>
+                </div>
+
+                <!-- Flair Section (Avatar Border + Mood/Status) -->
+                <div class="customization-section" id="flairSection">
+                    <div id="flairContentInner">
+                        <!-- Populated dynamically by switchCustomizationTab -->
+                    </div>
                 </div>
                 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
@@ -5325,10 +5333,6 @@
                 if (onclick === "switchCustomizationTab('" + tab + "')") {
                     btn.classList.add('active');
                 }
-                // Handle Flair tab button (injected dynamically, uses data attribute)
-                if (tab === 'flair' && btn.getAttribute('data-tab-flair')) {
-                    btn.classList.add('active');
-                }
             });
 
             // Hide all sections
@@ -5336,30 +5340,17 @@
                 section.classList.remove('active');
             });
 
-            // Hide flair content if it exists
-            var flairContent = document.getElementById('flairContent');
-            if (flairContent) flairContent.style.display = 'none';
-
-            if (tab === 'flair') {
-                // Show Flair panel (avatar border + mood settings)
-                if (!flairContent) {
-                    flairContent = document.createElement('div');
-                    flairContent.id = 'flairContent';
-                    flairContent.className = 'customization-section';
-                    flairContent.style.display = 'block';
-                    // Append after the last section
-                    var lastSection = document.querySelectorAll('.customization-section');
-                    if (lastSection.length > 0) {
-                        lastSection[lastSection.length - 1].parentNode.appendChild(flairContent);
+            // Show the requested section
+            var section = document.getElementById(tab + 'Section');
+            if (section) {
+                section.classList.add('active');
+                // If flair tab, populate its content
+                if (tab === 'flair') {
+                    var inner = document.getElementById('flairContentInner');
+                    if (inner) {
+                        inner.innerHTML = renderAvatarBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderMoodSettings();
                     }
                 }
-                flairContent.style.display = 'block';
-                flairContent.classList.add('active');
-                flairContent.innerHTML = renderAvatarBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderMoodSettings();
-            } else {
-                // Show the requested section
-                var section = document.getElementById(tab + 'Section');
-                if (section) section.classList.add('active');
             }
         }
 
@@ -10411,30 +10402,7 @@ function loadPinnedPost() {
 // =====================================================================
 
 
-// Inject the Flair tab button into the customize modal
-(function() {
-    var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(node) {
-                if (node.nodeType === 1) {
-                    var tabBar = node.querySelector ? node.querySelector('.customization-tabs') : null;
-                    if (!tabBar) {
-                        if (node.classList && node.classList.contains('customization-tabs')) tabBar = node;
-                    }
-                    if (tabBar && !tabBar.querySelector('[data-tab-flair]')) {
-                        var flairBtn = document.createElement('button');
-                        flairBtn.className = 'customization-tab';
-                        flairBtn.setAttribute('data-tab-flair', 'true');
-                        flairBtn.onclick = function() { switchCustomizationTab('flair'); };
-                        flairBtn.innerHTML = '<i class="fas fa-magic" style="margin-right:4px;"></i>Flair';
-                        tabBar.appendChild(flairBtn);
-                    }
-                }
-            });
-        });
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-})();
+
 
 
 </script>
