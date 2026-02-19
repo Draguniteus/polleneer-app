@@ -5867,7 +5867,7 @@ function showStickerTab(tab) {
         emojiBtn.style.color = '#000';
         giphyBtn.style.background = 'transparent';
         giphyBtn.style.color = 'var(--text-secondary)';
-        // Re-render emoji tab (trigger the modal rebuild)
+        // Re-render emoji tab
         document.getElementById('stickerPickerOverlay').remove();
         showStickerPicker();
     } else {
@@ -5875,47 +5875,194 @@ function showStickerTab(tab) {
         emojiBtn.style.color = 'var(--text-secondary)';
         giphyBtn.style.background = 'var(--honey-yellow)';
         giphyBtn.style.color = '#000';
-        contentDiv.innerHTML = '<div style="padding:10px;margin-bottom:10px;"><input type="text" id="stickerSearchInput" placeholder="Search GIPHY stickers..." oninput="searchGiphyStickers(this.value)" style="width:100%;padding:10px 15px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;"></div><div id="giphyStickerResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>';
-        // Load trending stickers
-        loadGiphyStickers('');
+        contentDiv.innerHTML = `
+            <div style="padding:8px 4px;">
+                <div style="position:relative;">
+                    <input type="text" id="stickerSearchInput" placeholder="Search for Stickers" oninput="searchGiphyStickersDebounced(this.value)"
+                        style="width:100%;padding:10px 16px 10px 36px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;outline:none;">
+                    <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:14px;"></i>
+                </div>
+            </div>
+            <div id="giphyStickerResults" style="padding:4px;overflow-y:auto;max-height:45vh;"></div>
+        `;
+        // Show sticker categories by default
+        showStickerCategories();
         const input = document.getElementById('stickerSearchInput');
         if (input) input.focus();
     }
 }
 
-let _stickerSearchTimeout = null;
-function searchGiphyStickers(query) {
-    clearTimeout(_stickerSearchTimeout);
-    _stickerSearchTimeout = setTimeout(() => loadGiphyStickers(query), 300);
-}
+// Sticker categories — like the GIF picker approach
+const STICKER_CATEGORIES = [
+    { name: 'Love', query: 'love heart' },
+    { name: 'Happy', query: 'happy smile' },
+    { name: 'Sad', query: 'sad cry' },
+    { name: 'Angry', query: 'angry mad' },
+    { name: 'Yes', query: 'yes agree thumbs up' },
+    { name: 'No', query: 'no disagree' },
+    { name: 'Celebrate', query: 'celebrate party' },
+    { name: 'Thank You', query: 'thank you thanks' },
+    { name: 'LOL', query: 'laughing lol funny' },
+    { name: 'OMG', query: 'omg shocked surprised' },
+    { name: 'Cool', query: 'cool sunglasses' },
+    { name: 'Hi', query: 'hi hello wave' },
+    { name: 'Bye', query: 'bye goodbye' },
+    { name: 'Hug', query: 'hug' },
+    { name: 'Dance', query: 'dance' },
+    { name: 'Food', query: 'food yummy' },
+    { name: 'Animals', query: 'cute animals' },
+    { name: 'Fire', query: 'fire lit' },
+    { name: 'Stars', query: 'stars sparkle' },
+    { name: 'Clap', query: 'clap applause' },
+];
 
-function loadGiphyStickers(query) {
+let _stickerSearchTimeout = null;
+let _stickerOffset = 0;
+let _stickerQuery = '';
+let _stickerLoading = false;
+let _stickerScrollObserver = null;
+
+function showStickerCategories() {
     const results = document.getElementById('giphyStickerResults');
     if (!results) return;
-    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Loading stickers...</div>';
+    results.style.cssText = 'padding:4px;overflow-y:auto;max-height:45vh;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;';
+    results.innerHTML = STICKER_CATEGORIES.map(cat => `
+        <div onclick="stickerCategoryClick('${cat.query}')"
+             style="position:relative;border-radius:10px;overflow:hidden;cursor:pointer;height:80px;background:var(--bg-input);"
+             class="sticker-cat-tile" data-query="${cat.query}">
+            <div style="position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(0,0,0,0.7));z-index:1;"></div>
+            <div style="position:absolute;bottom:8px;left:10px;z-index:2;color:white;font-weight:700;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,0.5);">${cat.name}</div>
+        </div>
+    `).join('');
 
-    const endpoint = query.trim() 
-        ? 'https://api.giphy.com/v1/stickers/search?api_key=' + GIPHY_API_KEY + '&q=' + encodeURIComponent(query) + '&limit=18&rating=g'
-        : 'https://api.giphy.com/v1/stickers/trending?api_key=' + GIPHY_API_KEY + '&limit=18&rating=g';
+    // Load preview stickers for tiles from trending
+    loadStickerCategoryThumbnails();
+}
 
-    fetch(endpoint)
+function loadStickerCategoryThumbnails() {
+    fetch('https://api.giphy.com/v1/stickers/trending?api_key=' + GIPHY_API_KEY + '&limit=20&rating=g')
         .then(r => r.json())
         .then(data => {
-            if (data.data && data.data.length > 0) {
-                results.innerHTML = data.data.map(s => 
-                    '<img src="' + s.images.fixed_height.url + '" alt="' + (s.title || 'sticker') + '" style="width:100%;border-radius:10px;cursor:pointer;height:100px;object-fit:cover;" loading="lazy" onclick="selectGiphySticker(\'' + s.images.original.url + '\')" onerror="this.style.display=\'none\'">'
-                ).join('') + '<div style="grid-column:1/-1;text-align:center;padding:8px;"><img src="https://giphy.com/static/img/poweredby_giphy.png" alt="Powered by GIPHY" style="height:18px;opacity:0.6;"></div>';
+            const tiles = document.querySelectorAll('.sticker-cat-tile');
+            tiles.forEach((tile, i) => {
+                const sticker = data.data[i % data.data.length];
+                if (sticker) {
+                    const url = sticker.images.fixed_width.url;
+                    tile.style.backgroundImage = 'url(' + url + ')';
+                    tile.style.backgroundSize = 'cover';
+                    tile.style.backgroundPosition = 'center';
+                }
+            });
+        })
+        .catch(() => {});
+}
+
+function stickerCategoryClick(query) {
+    const input = document.getElementById('stickerSearchInput');
+    if (input) input.value = query;
+    _stickerOffset = 0;
+    _stickerQuery = query;
+    loadStickerResults(query, false);
+}
+
+function searchGiphyStickersDebounced(query) {
+    clearTimeout(_stickerSearchTimeout);
+    if (!query.trim()) {
+        showStickerCategories();
+        return;
+    }
+    _stickerSearchTimeout = setTimeout(() => {
+        _stickerOffset = 0;
+        _stickerQuery = query.trim();
+        loadStickerResults(_stickerQuery, false);
+    }, 300);
+}
+
+// Keep old name for compatibility
+function searchGiphyStickers(query) { searchGiphyStickersDebounced(query); }
+
+function loadStickerResults(query, append) {
+    const results = document.getElementById('giphyStickerResults');
+    if (!results || _stickerLoading) return;
+    _stickerLoading = true;
+
+    if (!append) {
+        results.style.cssText = 'padding:4px;overflow-y:auto;max-height:45vh;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;';
+        results.innerHTML = '<div style="width:100%;text-align:center;padding:20px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i></div>';
+    }
+
+    const limit = 25;
+    fetch('https://api.giphy.com/v1/stickers/search?api_key=' + GIPHY_API_KEY + '&q=' + encodeURIComponent(query) + '&limit=' + limit + '&offset=' + _stickerOffset + '&rating=g')
+        .then(r => r.json())
+        .then(data => {
+            _stickerLoading = false;
+            if (!data.data || data.data.length === 0) {
+                if (!append) {
+                    results.innerHTML = '<div style="width:100%;text-align:center;padding:30px;color:var(--text-secondary);">No stickers found</div>';
+                }
+                return;
+            }
+
+            const html = data.data.map(s => {
+                const w = parseInt(s.images.fixed_width_small.width) || 100;
+                const h = parseInt(s.images.fixed_width_small.height) || 100;
+                const aspect = h / w;
+                const displayW = 100;
+                const displayH = Math.round(displayW * aspect);
+                return '<img src="' + s.images.fixed_width_small.url + '" alt="' + (s.title || '').replace(/"/g, '') + '" ' +
+                    'style="width:' + displayW + 'px;height:' + displayH + 'px;border-radius:8px;cursor:pointer;object-fit:cover;flex-shrink:0;background:transparent;" ' +
+                    'loading="lazy" onclick="selectGiphySticker(\'' + s.images.original.url + '\')" ' +
+                    'onerror="this.style.display=\'none\'">';
+            }).join('');
+
+            if (append) {
+                const sentinel = document.getElementById('stickerLoadMore');
+                if (sentinel) sentinel.remove();
+                results.insertAdjacentHTML('beforeend', html);
             } else {
-                results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">No stickers found</div>';
+                results.innerHTML = html;
+            }
+
+            _stickerOffset += data.data.length;
+
+            // Infinite scroll sentinel
+            if (data.pagination && _stickerOffset < data.pagination.total_count) {
+                const sentinel = document.createElement('div');
+                sentinel.id = 'stickerLoadMore';
+                sentinel.style.cssText = 'width:100%;text-align:center;padding:15px;color:var(--text-secondary);';
+                sentinel.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                results.appendChild(sentinel);
+                setupStickerInfiniteScroll();
             }
         })
         .catch(() => {
-            results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">Could not load stickers</div>';
+            _stickerLoading = false;
+            if (!append) {
+                results.innerHTML = '<div style="width:100%;text-align:center;padding:20px;color:var(--text-secondary);">Could not load stickers</div>';
+            }
         });
 }
 
+function setupStickerInfiniteScroll() {
+    if (_stickerScrollObserver) _stickerScrollObserver.disconnect();
+    const sentinel = document.getElementById('stickerLoadMore');
+    if (!sentinel) return;
+
+    _stickerScrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !_stickerLoading && _stickerQuery) {
+                loadStickerResults(_stickerQuery, true);
+            }
+        });
+    }, { root: document.getElementById('giphyStickerResults'), threshold: 0.1 });
+
+    _stickerScrollObserver.observe(sentinel);
+}
+
+// Keep old function as no-op
+function loadGiphyStickers(q) { if(q) { _stickerQuery = q; loadStickerResults(q, false); } else { showStickerCategories(); } }
+
 function selectGiphySticker(url) {
-    // Insert as media (image) into the post, like a GIF
     selectGif(url);
     const overlay = document.getElementById('stickerPickerOverlay');
     if (overlay) overlay.remove();
