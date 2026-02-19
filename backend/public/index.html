@@ -5694,6 +5694,15 @@
                 isAdmin = false;
             }
             
+            // Ensure currentUser has all required fields for profile
+            if (!currentUser.displayName) currentUser.displayName = currentUser.username || 'User';
+            if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! 🐝';
+            if (!currentUser.joined) currentUser.joined = new Date().toISOString().split('T')[0];
+            if (!currentUser.followers) currentUser.followers = 0;
+            if (!currentUser.following) currentUser.following = 0;
+            if (!currentUser.avatar) currentUser.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (currentUser.username || 'User');
+            if (!currentUser.id) currentUser.id = 999;
+
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
             showApp();
             updateUIForUser();
@@ -9364,22 +9373,7 @@ function selectGif(url) {
     }
 })();
 
-// Patch the login flow to ensure fields are always set
-const _origHandleLogin = handleLogin;
-function handleLogin(e) {
-    _origHandleLogin(e);
-    // After login, ensure currentUser has all required fields
-    if (currentUser) {
-        if (!currentUser.displayName) currentUser.displayName = currentUser.username || 'User';
-        if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! 🐝';
-        if (!currentUser.joined) currentUser.joined = new Date().toISOString().split('T')[0];
-        if (!currentUser.followers) currentUser.followers = 0;
-        if (!currentUser.following) currentUser.following = 0;
-        if (!currentUser.avatar) currentUser.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (currentUser.username || 'User');
-        if (!currentUser.id) currentUser.id = 999;
-        localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-    }
-}
+// Login field population moved into main handleLogin
 
 // FIX 2: Completely redesigned goToProfile with X/Twitter-style layout
 function goToProfile(section) {
