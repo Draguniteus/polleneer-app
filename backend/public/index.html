@@ -3351,7 +3351,7 @@
             <!-- Right Sidebar -->
             <aside class="right-sidebar">
                 <!-- Profile Song Player -->
-                <div class="profile-song-player" id="profileSongPlayer">
+                <div class="profile-song-player" id="profileSongPlayer" style="display:none;">
                     <div class="player-header">
                         <div class="player-title-row">
                             <i class="fas fa-music player-icon"></i>
@@ -3774,26 +3774,102 @@
                 </div>
                 
                 <div class="customization-section" id="musicSection">
-                    <h4 style="margin-bottom: 15px;">Music Player</h4>
-                    <div class="music-player" id="musicPlayerDemo">
-                        <div class="player-controls">
-                            <button class="play-btn" id="demoPlayBtn">
-                                <i class="fas fa-play"></i>
+                    <h4 style="margin-bottom: 15px;"><i class="fas fa-music" style="color:var(--honey-yellow);margin-right:8px;"></i>Profile Song Player</h4>
+
+                    <!-- Current Song Preview -->
+                    <div style="background:var(--bg-secondary);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--border-color);">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                            <button class="player-play-btn" id="customizePlayBtn" onclick="toggleProfileSong()" style="width:40px;height:40px;font-size:14px;">
+                                <i class="fas fa-play" id="customizePlayIcon"></i>
                             </button>
-                            <div class="song-info">
-                                <div class="song-title" id="demoSongTitle">Selected Song</div>
-                                <div class="song-artist" id="demoSongArtist">Artist</div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="customizeSongTitle">No song selected</div>
+                                <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="customizeSongArtist">Upload an MP3 to get started</div>
+                            </div>
+                            <div class="player-visualizer" id="customizeVisualizer" style="opacity:0.5;">
+                                <div class="player-visualizer-bar" style="height:4px;"></div>
+                                <div class="player-visualizer-bar" style="height:6px;"></div>
+                                <div class="player-visualizer-bar" style="height:8px;"></div>
+                                <div class="player-visualizer-bar" style="height:5px;"></div>
+                                <div class="player-visualizer-bar" style="height:7px;"></div>
+                            </div>
+                        </div>
+                        <!-- Progress bar in customize -->
+                        <div class="player-progress-bar" onclick="seekProfileSong(event)" style="margin-bottom:4px;">
+                            <div class="player-progress-fill" id="customizeProgressFill"></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-secondary);">
+                            <span id="customizeCurrentTime">0:00</span>
+                            <span id="customizeDuration">0:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Upload Section -->
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;margin-bottom:8px;font-weight:600;font-size:13px;"><i class="fas fa-upload" style="color:var(--honey-yellow);margin-right:6px;"></i>Upload MP3</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="file" id="customizeSongInput" accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/m4a,audio/*" style="display:none;" onchange="handleSongUpload(event)">
+                            <button class="action-btn" onclick="document.getElementById('customizeSongInput').click()" style="flex:1;padding:12px;border-radius:10px;border:1px dashed var(--border-color);background:var(--bg-input);cursor:pointer;transition:all 0.3s;text-align:center;">
+                                <i class="fas fa-cloud-upload-alt" style="font-size:18px;color:var(--honey-yellow);display:block;margin-bottom:4px;"></i>
+                                <span style="font-size:12px;color:var(--text-secondary);">Choose audio file (MP3, WAV, OGG &middot; Max 10MB)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Song Info Edit -->
+                    <div style="margin-bottom:16px;" id="customizeSongInfoEdit" style="display:none;">
+                        <label style="display:block;margin-bottom:8px;font-weight:600;font-size:13px;"><i class="fas fa-pen" style="color:var(--honey-yellow);margin-right:6px;"></i>Song Info</label>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <input type="text" class="form-control" id="customizeTitleInput" placeholder="Song title" style="padding:10px 12px;border-radius:8px;background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-primary);font-size:13px;" oninput="updateSongInfoFromCustomize()">
+                            <input type="text" class="form-control" id="customizeArtistInput" placeholder="Artist name" style="padding:10px 12px;border-radius:8px;background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-primary);font-size:13px;" oninput="updateSongInfoFromCustomize()">
+                        </div>
+                    </div>
+
+                    <!-- Player Settings -->
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;margin-bottom:8px;font-weight:600;font-size:13px;"><i class="fas fa-sliders-h" style="color:var(--honey-yellow);margin-right:6px;"></i>Player Settings</label>
+                        <div style="background:var(--bg-secondary);border-radius:10px;padding:12px;border:1px solid var(--border-color);">
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;">Auto-play on profile visit</div>
+                                    <div style="font-size:11px;color:var(--text-secondary);">Song starts when someone views your profile</div>
+                                </div>
+                                <label style="position:relative;display:inline-block;width:40px;height:22px;cursor:pointer;">
+                                    <input type="checkbox" id="autoplayToggle" checked onchange="savePlayerSettings()" style="opacity:0;width:0;height:0;">
+                                    <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--bg-input);border-radius:11px;transition:0.3s;"></span>
+                                    <span style="position:absolute;content:'';height:18px;width:18px;left:2px;bottom:2px;background:var(--text-secondary);border-radius:50%;transition:0.3s;" id="autoplaySlider"></span>
+                                </label>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;">Loop song</div>
+                                    <div style="font-size:11px;color:var(--text-secondary);">Repeat when song ends</div>
+                                </div>
+                                <label style="position:relative;display:inline-block;width:40px;height:22px;cursor:pointer;">
+                                    <input type="checkbox" id="loopToggle" checked onchange="savePlayerSettings()" style="opacity:0;width:0;height:0;">
+                                    <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--bg-input);border-radius:11px;transition:0.3s;"></span>
+                                    <span style="position:absolute;content:'';height:18px;width:18px;left:2px;bottom:2px;background:var(--text-secondary);border-radius:50%;transition:0.3s;" id="loopSlider"></span>
+                                </label>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;">Default volume</div>
+                                    <div style="font-size:11px;color:var(--text-secondary);">Starting volume for visitors</div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <i class="fas fa-volume-down" style="color:var(--text-secondary);font-size:11px;"></i>
+                                    <input type="range" class="player-volume-slider" id="defaultVolumeSlider" min="0" max="100" value="70" onchange="savePlayerSettings()" style="width:80px;">
+                                    <span style="font-size:11px;color:var(--text-secondary);min-width:28px;" id="defaultVolumeLabel">70%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div style="margin-top: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Add Music URL</label>
-                        <input type="text" class="form-control" id="musicUrl" placeholder="Enter YouTube, SoundCloud, or Spotify URL">
-                        <button class="action-btn" onclick="testMusic()" style="margin-top: 10px; width: 100%;">
-                            <i class="fas fa-music"></i>
-                            <span>Test Music</span>
-                        </button>
-                    </div>
+
+                    <!-- Remove Song -->
+                    <button class="action-btn" onclick="removeProfileSong(); syncCustomizePanel();" style="width:100%;color:#ff4444;border-color:#ff4444;padding:10px;border-radius:10px;" id="removeSongBtn">
+                        <i class="fas fa-trash"></i>
+                        <span>Remove Profile Song</span>
+                    </button>
                 </div>
                 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
@@ -3962,21 +4038,26 @@
             profileAudioElement.addEventListener('timeupdate', updatePlayerProgress);
 
             profileAudioElement.addEventListener('ended', function() {
-                // Loop the song
-                profileAudioElement.currentTime = 0;
-                profileAudioElement.play();
+                // Check loop setting
+                const settings = JSON.parse(localStorage.getItem('polleneer_player_settings') || '{}');
+                if (settings.loop !== false) {
+                    profileAudioElement.currentTime = 0;
+                    profileAudioElement.play();
+                }
             });
 
             profileAudioElement.addEventListener('play', function() {
                 document.getElementById('profileSongPlayer').classList.add('playing');
                 document.getElementById('playerPlayIcon').className = 'fas fa-pause';
                 startVisualizerAnimation();
+                syncCustomizePlayIcon();
             });
 
             profileAudioElement.addEventListener('pause', function() {
                 document.getElementById('profileSongPlayer').classList.remove('playing');
                 document.getElementById('playerPlayIcon').className = 'fas fa-play';
                 stopVisualizerAnimation();
+                syncCustomizePlayIcon();
             });
 
             // Set initial volume
@@ -3990,6 +4071,24 @@
                     dropdown.classList.remove('show');
                 }
             });
+        }
+
+        
+        // Show/hide profile song player based on current page
+        function updateProfileSongPlayerVisibility() {
+            const player = document.getElementById('profileSongPlayer');
+            if (!player) return;
+
+            if (currentPage === 'profile') {
+                player.style.display = 'block';
+                // If song is loaded and was playing before navigation, keep state
+            } else {
+                player.style.display = 'none';
+                // Pause audio when navigating away from profile
+                if (profileAudioElement && !profileAudioElement.paused) {
+                    profileAudioElement.pause();
+                }
+            }
         }
 
         function triggerSongUpload() {
@@ -4038,6 +4137,7 @@
 
                 loadSongIntoPlayer(profileSongData);
                 showToast('Profile song set! \u{1F3B6}');
+                syncCustomizePanel();
             };
 
             reader.onerror = function() {
@@ -4084,6 +4184,14 @@
             const progress = (profileAudioElement.currentTime / profileAudioElement.duration) * 100;
             document.getElementById('playerProgressFill').style.width = progress + '%';
             document.getElementById('playerCurrentTime').textContent = formatPlayerTime(profileAudioElement.currentTime);
+
+            // Also update customize panel if open
+            const custFill = document.getElementById('customizeProgressFill');
+            if (custFill) custFill.style.width = progress + '%';
+            const custTime = document.getElementById('customizeCurrentTime');
+            if (custTime) custTime.textContent = formatPlayerTime(profileAudioElement.currentTime);
+            const custDur = document.getElementById('customizeDuration');
+            if (custDur) custDur.textContent = formatPlayerTime(profileAudioElement.duration);
         }
 
         function seekProfileSong(event) {
@@ -4207,6 +4315,184 @@
                 bar.style.height = heights[i] + 'px';
             });
         }
+        // Sync customize panel with sidebar player state
+        function syncCustomizePanel() {
+            if (!profileSongData) {
+                document.getElementById('customizeSongTitle').textContent = 'No song selected';
+                document.getElementById('customizeSongArtist').textContent = 'Upload an MP3 to get started';
+                document.getElementById('customizeTitleInput') && (document.getElementById('customizeTitleInput').value = '');
+                document.getElementById('customizeArtistInput') && (document.getElementById('customizeArtistInput').value = '');
+                if (document.getElementById('customizeSongInfoEdit')) {
+                    document.getElementById('customizeSongInfoEdit').style.display = 'none';
+                }
+                if (document.getElementById('removeSongBtn')) {
+                    document.getElementById('removeSongBtn').style.display = 'none';
+                }
+                return;
+            }
+
+            // Update preview
+            const titleEl = document.getElementById('customizeSongTitle');
+            const artistEl = document.getElementById('customizeSongArtist');
+            if (titleEl) titleEl.textContent = profileSongData.title || 'Unknown Song';
+            if (artistEl) artistEl.textContent = profileSongData.artist || 'Unknown Artist';
+
+            // Update edit fields
+            const titleInput = document.getElementById('customizeTitleInput');
+            const artistInput = document.getElementById('customizeArtistInput');
+            if (titleInput) titleInput.value = profileSongData.title || '';
+            if (artistInput) artistInput.value = profileSongData.artist || '';
+
+            // Show edit section and remove button
+            if (document.getElementById('customizeSongInfoEdit')) {
+                document.getElementById('customizeSongInfoEdit').style.display = 'block';
+            }
+            if (document.getElementById('removeSongBtn')) {
+                document.getElementById('removeSongBtn').style.display = 'flex';
+            }
+
+            // Sync play icon
+            syncCustomizePlayIcon();
+
+            // Sync duration
+            if (profileAudioElement && profileAudioElement.duration) {
+                const durEl = document.getElementById('customizeDuration');
+                if (durEl) durEl.textContent = formatPlayerTime(profileAudioElement.duration);
+            }
+
+            // Load settings
+            loadPlayerSettings();
+        }
+
+        function syncCustomizePlayIcon() {
+            const icon = document.getElementById('customizePlayIcon');
+            if (!icon) return;
+            if (profileAudioElement && !profileAudioElement.paused) {
+                icon.className = 'fas fa-pause';
+            } else {
+                icon.className = 'fas fa-play';
+            }
+        }
+
+        function updateSongInfoFromCustomize() {
+            if (!profileSongData) return;
+
+            const titleInput = document.getElementById('customizeTitleInput');
+            const artistInput = document.getElementById('customizeArtistInput');
+
+            if (titleInput) profileSongData.title = titleInput.value || 'Untitled';
+            if (artistInput) profileSongData.artist = artistInput.value || 'Unknown';
+
+            // Update sidebar player
+            const sideTitle = document.getElementById('playerSongTitle');
+            const sideArtist = document.getElementById('playerSongArtist');
+            if (sideTitle) sideTitle.textContent = profileSongData.title;
+            if (sideArtist) sideArtist.textContent = profileSongData.artist;
+
+            // Update customize preview
+            const custTitle = document.getElementById('customizeSongTitle');
+            const custArtist = document.getElementById('customizeSongArtist');
+            if (custTitle) custTitle.textContent = profileSongData.title;
+            if (custArtist) custArtist.textContent = profileSongData.artist;
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('polleneer_profile_song', JSON.stringify(profileSongData));
+            } catch(e) {}
+        }
+
+        function savePlayerSettings() {
+            const settings = {
+                autoplay: document.getElementById('autoplayToggle') ? document.getElementById('autoplayToggle').checked : true,
+                loop: document.getElementById('loopToggle') ? document.getElementById('loopToggle').checked : true,
+                defaultVolume: document.getElementById('defaultVolumeSlider') ? parseInt(document.getElementById('defaultVolumeSlider').value) : 70
+            };
+
+            localStorage.setItem('polleneer_player_settings', JSON.stringify(settings));
+
+            // Apply settings immediately
+            if (profileAudioElement) {
+                profileAudioElement.loop = settings.loop;
+                profileAudioElement.volume = settings.defaultVolume / 100;
+            }
+
+            // Update volume label
+            const volLabel = document.getElementById('defaultVolumeLabel');
+            if (volLabel) volLabel.textContent = settings.defaultVolume + '%';
+
+            // Update volume slider in sidebar
+            const sideVol = document.getElementById('playerVolumeSlider');
+            if (sideVol) sideVol.value = settings.defaultVolume;
+
+            // Update toggle visual states
+            updateToggleVisuals();
+
+            showToast('Player settings saved!');
+        }
+
+        function loadPlayerSettings() {
+            const saved = localStorage.getItem('polleneer_player_settings');
+            if (!saved) return;
+
+            try {
+                const settings = JSON.parse(saved);
+
+                const autoplayEl = document.getElementById('autoplayToggle');
+                if (autoplayEl) autoplayEl.checked = settings.autoplay !== false;
+
+                const loopEl = document.getElementById('loopToggle');
+                if (loopEl) loopEl.checked = settings.loop !== false;
+
+                const volEl = document.getElementById('defaultVolumeSlider');
+                if (volEl) volEl.value = settings.defaultVolume || 70;
+
+                const volLabel = document.getElementById('defaultVolumeLabel');
+                if (volLabel) volLabel.textContent = (settings.defaultVolume || 70) + '%';
+
+                // Apply to audio element
+                if (profileAudioElement) {
+                    profileAudioElement.loop = settings.loop !== false;
+                }
+
+                updateToggleVisuals();
+            } catch(e) {}
+        }
+
+        function updateToggleVisuals() {
+            // Auto-play toggle
+            const autoplayToggle = document.getElementById('autoplayToggle');
+            const autoplaySlider = document.getElementById('autoplaySlider');
+            if (autoplayToggle && autoplaySlider) {
+                const parentSpan = autoplaySlider.previousElementSibling;
+                if (autoplayToggle.checked) {
+                    if (parentSpan) parentSpan.style.background = 'var(--honey-yellow)';
+                    autoplaySlider.style.transform = 'translateX(18px)';
+                    autoplaySlider.style.background = 'white';
+                } else {
+                    if (parentSpan) parentSpan.style.background = 'var(--bg-input)';
+                    autoplaySlider.style.transform = 'translateX(0)';
+                    autoplaySlider.style.background = 'var(--text-secondary)';
+                }
+            }
+
+            // Loop toggle
+            const loopToggle = document.getElementById('loopToggle');
+            const loopSlider = document.getElementById('loopSlider');
+            if (loopToggle && loopSlider) {
+                const parentSpan = loopSlider.previousElementSibling;
+                if (loopToggle.checked) {
+                    if (parentSpan) parentSpan.style.background = 'var(--honey-yellow)';
+                    loopSlider.style.transform = 'translateX(18px)';
+                    loopSlider.style.background = 'white';
+                } else {
+                    if (parentSpan) parentSpan.style.background = 'var(--bg-input)';
+                    loopSlider.style.transform = 'translateX(0)';
+                    loopSlider.style.background = 'var(--text-secondary)';
+                }
+            }
+        }
+
+
 
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -5223,6 +5509,7 @@
                 <div class="feed" id="homeFeed"></div>
             `;
             loadHomeFeed();
+            updateProfileSongPlayerVisibility();
             updateActiveNavLink('home');
         }
 
@@ -5244,6 +5531,7 @@
                 <div class="feed" id="exploreFeed"></div>
             `;
             loadExploreFeed();
+            updateProfileSongPlayerVisibility();
             updateActiveNavLink('explore');
         }
 
@@ -5292,21 +5580,7 @@
                         </div>
                     </div>
                     
-                    <!-- Music Player -->
-                    <div class="music-player" id="profileMusicPlayer" style="display: none;">
-                        <div class="player-controls">
-                            <button class="play-btn" id="profilePlayBtn" onclick="toggleMusic()">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="song-info">
-                                <div class="song-title" id="profileSongTitle">No song selected</div>
-                                <div class="song-artist" id="profileSongArtist">Add music in customization</div>
-                            </div>
-                            <div class="progress-bar" onclick="seekMusic(event)">
-                                <div class="progress" id="musicProgress"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Profile song player is now in the right sidebar -->
                     
                     <!-- Bulletin Posts -->
                     <div class="bulletin-section">
@@ -5366,6 +5640,7 @@
             applyProfileCustomization();
             loadProfileFeed(section);
             loadTopFriends();
+            updateProfileSongPlayerVisibility();
             updateActiveNavLink('profile');
         }
 
@@ -5379,6 +5654,7 @@
                 <div class="feed" id="bookmarksFeed"></div>
             `;
             loadBookmarksFeed();
+            updateProfileSongPlayerVisibility();
             updateActiveNavLink('bookmarks');
         }
 
@@ -5391,6 +5667,7 @@
                 </div>
             `;
             loadCommunities();
+            updateProfileSongPlayerVisibility();
             updateActiveNavLink('communities');
         }
 
@@ -5990,6 +6267,7 @@
         function showCustomization() {
             openModal('customizationModal');
             closeModal('profileMenuModal');
+            syncCustomizePanel();
         }
 
         function showAdminPanel() {
@@ -8629,17 +8907,7 @@ function goToProfile(section) {
                 </div>
             </div>
 
-            <!-- Music Player -->
-            <div id="profileMusicPlayer" style="display:none;background:var(--bg-card);border-radius:var(--site-radius, 15px);padding:15px;margin-top:10px;border:1px solid var(--border-color);">
-                <div class="player-controls">
-                    <button class="play-btn" id="profilePlayBtn" onclick="toggleMusic()"><i class="fas fa-play"></i></button>
-                    <div class="song-info">
-                        <div class="song-title" id="profileSongTitle">No song selected</div>
-                        <div class="song-artist" id="profileSongArtist">Add music in customization</div>
-                    </div>
-                    <div class="progress-bar" onclick="seekMusic(event)"><div class="progress" id="musicProgress"></div></div>
-                </div>
-            </div>
+            <!-- Profile song player moved to right sidebar -->
 
             <!-- Bulletin Board -->
             <div style="background:var(--bg-card);border-radius:var(--site-radius, 15px);padding:20px;margin-top:10px;border:1px solid var(--border-color);">
