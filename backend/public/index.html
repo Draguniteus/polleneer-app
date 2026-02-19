@@ -1608,6 +1608,15 @@
             position: relative;
             overflow: hidden;
         }
+        /* Profile Song Player - ONLY visible on profile page */
+        .profile-song-player {
+            display: none !important;
+        }
+        html[data-page="profile"] .profile-song-player {
+            display: block !important;
+        }
+
+
 
         .profile-song-player::before {
             content: '';
@@ -3351,7 +3360,7 @@
             <!-- Right Sidebar -->
             <aside class="right-sidebar">
                 <!-- Profile Song Player -->
-                <div class="profile-song-player" id="profileSongPlayer" style="display:none;">
+                <div class="profile-song-player" id="profileSongPlayer">
                     <div class="player-header">
                         <div class="player-title-row">
                             <i class="fas fa-music player-icon"></i>
@@ -4079,18 +4088,10 @@
         
         // Show/hide profile song player based on current page
         function updateProfileSongPlayerVisibility() {
-            const player = document.getElementById('profileSongPlayer');
-            if (!player) return;
-
-            if (currentPage === 'profile') {
-                player.style.display = 'block';
-                // If song is loaded and was playing before navigation, keep state
-            } else {
-                player.style.display = 'none';
-                // Pause audio when navigating away from profile
-                if (profileAudioElement && !profileAudioElement.paused) {
-                    profileAudioElement.pause();
-                }
+            // CSS handles display via data-page attribute on <html>
+            // This function only handles audio pause when leaving profile
+            if (currentPage !== 'profile' && profileAudioElement && !profileAudioElement.paused) {
+                profileAudioElement.pause();
             }
         }
 
@@ -4566,7 +4567,17 @@
         let users = [];
         let notifications = [];
         let messages = [];
-        let currentPage = 'home';
+        let _currentPage = 'home';
+        Object.defineProperty(window, 'currentPage', {
+            get: function() { return _currentPage; },
+            set: function(val) {
+                _currentPage = val;
+                document.documentElement.setAttribute('data-page', val);
+            },
+            configurable: true
+        });
+        // Set initial value to trigger the setter
+        currentPage = 'home';
         let customization = {
             colors: {},
             background: '',
@@ -5645,9 +5656,7 @@
             loadTopFriends();
             updateProfileSongPlayerVisibility();
             updateActiveNavLink('profile');
-            // Direct show as failsafe
-            var playerEl = document.getElementById('profileSongPlayer');
-            if (playerEl) playerEl.style.display = 'block';
+
         }
 
         function goToBookmarks() {
@@ -5682,17 +5691,9 @@
                 link.classList.remove('active');
             });
 
-            // Toggle profile song player visibility
-            var psp = document.getElementById('profileSongPlayer');
-            if (psp) {
-                if (page === 'profile') {
-                    psp.style.display = 'block';
-                } else {
-                    psp.style.display = 'none';
-                    if (profileAudioElement && !profileAudioElement.paused) {
-                        profileAudioElement.pause();
-                    }
-                }
+            // Pause profile audio when leaving profile page
+            if (page !== 'profile' && typeof profileAudioElement !== 'undefined' && profileAudioElement && !profileAudioElement.paused) {
+                profileAudioElement.pause();
             }
             
             const navLinks = {
