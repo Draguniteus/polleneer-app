@@ -2636,11 +2636,11 @@
                             <i class="fas fa-clock"></i>
                         </button>
 
-                        <button class="action-btn compose-icon-btn" onclick="toggleBold()" title="Bold">
+                        <button class="action-btn compose-icon-btn" onmousedown="event.preventDefault()" onclick="toggleBold()" title="Bold">
                             <i class="fas fa-bold"></i>
                         </button>
 
-                        <button class="action-btn compose-icon-btn" onclick="toggleItalic()" title="Italic">
+                        <button class="action-btn compose-icon-btn" onmousedown="event.preventDefault()" onclick="toggleItalic()" title="Italic">
                             <i class="fas fa-italic"></i>
                         </button>
 
@@ -3957,8 +3957,8 @@
                             <button onclick="createPollInline()" title="Poll"><i class="fas fa-poll"></i></button>
                             <button onclick="showLocationPicker()" title="Location"><i class="fas fa-map-marker-alt"></i></button>
                             <button onclick="showSchedulePost()" title="Schedule"><i class="fas fa-clock"></i></button>
-                            <button onclick="toggleBold()" title="Bold"><i class="fas fa-bold"></i></button>
-                            <button onclick="toggleItalic()" title="Italic"><i class="fas fa-italic"></i></button>
+                            <button onmousedown="event.preventDefault()" onclick="toggleBold()" title="Bold"><i class="fas fa-bold"></i></button>
+                            <button onmousedown="event.preventDefault()" onclick="toggleItalic()" title="Italic"><i class="fas fa-italic"></i></button>
                             <input type="file" id="inlineMediaUpload" accept="image/*,video/*" style="display:none;" onchange="handleInlineMediaUpload(event)">
                         </div>
                         <button class="compose-submit" id="inlineBuzzBtn" onclick="submitInlinePost()" disabled>
@@ -7535,26 +7535,55 @@ function clearEditable(elementId) {
     }
 }
 
+// Track the last known selection inside a compose area
+let _lastComposeRange = null;
+
+document.addEventListener('selectionchange', function() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    // Check if selection is inside a compose area
+    const node = container.nodeType === 3 ? container.parentNode : container;
+    if (node && node.closest && (node.closest('#postContent') || node.closest('#inlinePostContent'))) {
+        _lastComposeRange = range.cloneRange();
+    }
+});
+
 function toggleBold() {
     const active = getActiveCompose();
-    if (active) active.focus();
+    if (!active) return;
+    active.focus();
+    // Restore saved selection/cursor position
+    if (_lastComposeRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(_lastComposeRange);
+    }
     document.execCommand('bold', false, null);
 }
 
 function toggleItalic() {
     const active = getActiveCompose();
-    if (active) active.focus();
+    if (!active) return;
+    active.focus();
+    // Restore saved selection/cursor position
+    if (_lastComposeRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(_lastComposeRange);
+    }
     document.execCommand('italic', false, null);
 }
 
 function getActiveCompose() {
     // Check which compose area is visible/active
     const modal = document.getElementById('createPostModal');
-    if (modal && modal.classList.contains('active')) {
+    if (modal && (modal.classList.contains('show') || modal.classList.contains('active'))) {
         return document.getElementById('postContent');
     }
-    // Check if modal is visible via display
-    if (modal && getComputedStyle(modal).display !== 'none' && getComputedStyle(modal).visibility !== 'hidden') {
+    // Check if modal is visible via computed style
+    if (modal && getComputedStyle(modal).display !== 'none' && getComputedStyle(modal).visibility !== 'hidden' && getComputedStyle(modal).opacity !== '0') {
         return document.getElementById('postContent');
     }
     // Fallback to inline compose
@@ -7566,32 +7595,71 @@ function getActiveCompose() {
 
 // Live hashtag highlighting in contentEditable
 function highlightHashtags(el) {
+    // Walk text nodes only — preserves bold/italic/other formatting
     const sel = window.getSelection();
     if (!sel.rangeCount) return;
 
-    // Save cursor position
+    // Save cursor
     const range = sel.getRangeAt(0);
     const preCaretRange = range.cloneRange();
     preCaretRange.selectNodeContents(el);
     preCaretRange.setEnd(range.endContainer, range.endOffset);
     const caretOffset = preCaretRange.toString().length;
 
-    // Get plain text
     const text = el.innerText || el.textContent;
+    if (!text.includes('#')) return; // No hashtags, skip
 
-    // Build highlighted HTML
-    const html = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/#([\w\u00C0-\u024F]+)/g, '<span style="color: var(--honey-yellow); font-weight: 500;">#$1</span>')
-        .replace(/\n/g, '<br>');
+    const hashtagRegex = /#[\w\u00C0-\u024F]+/g;
+    let changed = false;
 
-    // Only update if hashtags present and content actually changed
-    if (text.includes('#') && el.innerHTML !== html) {
-        el.innerHTML = html;
+    // Collect text nodes
+    const textNodes = [];
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    while (node = walker.nextNode()) {
+        textNodes.push(node);
+    }
 
-        // Restore cursor position
+    // Process each text node for hashtags
+    textNodes.forEach(tn => {
+        if (!hashtagRegex.test(tn.textContent)) return;
+        hashtagRegex.lastIndex = 0; // Reset regex
+
+        // Check if this text node is already inside a hashtag span
+        if (tn.parentNode && tn.parentNode.dataset && tn.parentNode.dataset.hashtag) return;
+
+        const frag = document.createDocumentFragment();
+        let lastIdx = 0;
+        let match;
+        hashtagRegex.lastIndex = 0;
+
+        while ((match = hashtagRegex.exec(tn.textContent)) !== null) {
+            changed = true;
+            // Text before the hashtag
+            if (match.index > lastIdx) {
+                frag.appendChild(document.createTextNode(tn.textContent.slice(lastIdx, match.index)));
+            }
+            // Hashtag span
+            const span = document.createElement('span');
+            span.style.color = 'var(--honey-yellow)';
+            span.style.fontWeight = '500';
+            span.dataset.hashtag = 'true';
+            span.textContent = match[0];
+            frag.appendChild(span);
+            lastIdx = match.index + match[0].length;
+        }
+
+        // Remaining text after last hashtag
+        if (lastIdx < tn.textContent.length) {
+            frag.appendChild(document.createTextNode(tn.textContent.slice(lastIdx)));
+        }
+
+        if (changed && frag.childNodes.length > 0) {
+            tn.parentNode.replaceChild(frag, tn);
+        }
+    });
+
+    if (changed) {
         restoreCaret(el, caretOffset);
     }
 }
