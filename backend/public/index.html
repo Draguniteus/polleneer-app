@@ -1597,6 +1597,383 @@
             color: var(--text-secondary);
         }
 
+        
+        /* Profile Song Player */
+        .profile-song-player {
+            background: var(--bg-card);
+            border-radius: var(--site-radius);
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-song-player::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--honey-yellow), var(--hive-orange), var(--honey-yellow));
+            background-size: 200% 100%;
+            animation: playerGlow 3s ease infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-song-player.playing::before {
+            opacity: 1;
+        }
+
+        @keyframes playerGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .player-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-icon {
+            color: var(--honey-yellow);
+            font-size: 16px;
+        }
+
+        .player-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .player-settings-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .player-settings-btn:hover {
+            color: var(--honey-yellow);
+        }
+
+        .player-song-info {
+            margin-bottom: 12px;
+        }
+
+        .player-song-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-song-artist {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .player-play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--honey-yellow);
+            color: var(--bee-black);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .player-play-btn:hover {
+            background: var(--honey-dark);
+            transform: scale(1.1);
+        }
+
+        .player-progress-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .player-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--bg-input);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-progress-bar:hover {
+            height: 6px;
+        }
+
+        .player-progress-fill {
+            height: 100%;
+            background: var(--honey-yellow);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+
+        .player-progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--honey-yellow);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .player-progress-bar:hover .player-progress-fill::after {
+            opacity: 1;
+        }
+
+        .player-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .player-bottom-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .player-volume-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .player-volume-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 2px;
+            font-size: 12px;
+            transition: color 0.3s;
+        }
+
+        .player-volume-btn:hover {
+            color: var(--honey-yellow);
+        }
+
+        .player-volume-slider {
+            width: 60px;
+            height: 3px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--bg-input);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .player-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--honey-yellow);
+            cursor: pointer;
+        }
+
+        .player-volume-slider::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--honey-yellow);
+            border: none;
+            cursor: pointer;
+        }
+
+        .player-visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 16px;
+        }
+
+        .player-visualizer-bar {
+            width: 3px;
+            background: var(--honey-yellow);
+            border-radius: 1px;
+            transition: height 0.15s ease;
+            opacity: 0.6;
+        }
+
+        .profile-song-player.playing .player-visualizer-bar {
+            animation: visualizerBounce 0.8s ease infinite;
+            opacity: 1;
+        }
+
+        .profile-song-player.playing .player-visualizer-bar:nth-child(1) { animation-delay: 0s; }
+        .profile-song-player.playing .player-visualizer-bar:nth-child(2) { animation-delay: 0.1s; }
+        .profile-song-player.playing .player-visualizer-bar:nth-child(3) { animation-delay: 0.2s; }
+        .profile-song-player.playing .player-visualizer-bar:nth-child(4) { animation-delay: 0.15s; }
+        .profile-song-player.playing .player-visualizer-bar:nth-child(5) { animation-delay: 0.25s; }
+
+        @keyframes visualizerBounce {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+
+        /* No song state */
+        .player-empty-state {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .player-empty-icon {
+            font-size: 24px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        .player-empty-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .player-upload-btn {
+            background: var(--bg-input);
+            color: var(--honey-yellow);
+            border: 1px dashed var(--honey-yellow);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .player-upload-btn:hover {
+            background: var(--honey-yellow);
+            color: var(--bee-black);
+            border-style: solid;
+        }
+
+        /* Song settings modal */
+        .player-settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px 0;
+            z-index: 100;
+            min-width: 160px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .player-settings-dropdown.show {
+            display: block;
+        }
+
+        .player-settings-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .player-settings-item:hover {
+            background: var(--bg-input);
+        }
+
+        .player-settings-item i {
+            width: 16px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .player-settings-item.danger {
+            color: #ff4444;
+        }
+
+        .player-settings-item.danger i {
+            color: #ff4444;
+        }
+
+        /* Rainbow theme special player styling */
+        [data-theme="rainbow"] .profile-song-player::before {
+            background: linear-gradient(90deg, #FF1493, #FF4500, #FFD700, #00E676, #42A5F5, #CE93D8);
+            background-size: 200% 100%;
+        }
+
+        [data-theme="rainbow"] .player-play-btn {
+            background: linear-gradient(135deg, #FF1493, #FF4500, #FFD700);
+        }
+
+        [data-theme="rainbow"] .player-progress-fill {
+            background: linear-gradient(90deg, #FF1493, #FF4500, #FFD700, #00E676, #42A5F5);
+        }
+
+        [data-theme="rainbow"] .player-visualizer-bar {
+            background: linear-gradient(to top, #FF1493, #42A5F5);
+        }
+
+
         /* Auth Pages */
         .auth-container {
             display: flex;
@@ -2973,6 +3350,80 @@
 
             <!-- Right Sidebar -->
             <aside class="right-sidebar">
+                <!-- Profile Song Player -->
+                <div class="profile-song-player" id="profileSongPlayer">
+                    <div class="player-header">
+                        <div class="player-title-row">
+                            <i class="fas fa-music player-icon"></i>
+                            <span class="player-label">Profile Song</span>
+                        </div>
+                        <button class="player-settings-btn" onclick="togglePlayerSettings(event)" id="playerSettingsBtn" style="display:none;">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="player-settings-dropdown" id="playerSettingsDropdown">
+                            <button class="player-settings-item" onclick="triggerSongUpload()">
+                                <i class="fas fa-exchange-alt"></i> Change Song
+                            </button>
+                            <button class="player-settings-item" onclick="editSongInfo()">
+                                <i class="fas fa-pen"></i> Edit Info
+                            </button>
+                            <button class="player-settings-item danger" onclick="removeProfileSong()">
+                                <i class="fas fa-trash"></i> Remove Song
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active player (shown when song is set) -->
+                    <div id="playerActive" style="display:none;">
+                        <div class="player-song-info">
+                            <div class="player-song-title" id="playerSongTitle">Song Title</div>
+                            <div class="player-song-artist" id="playerSongArtist">Artist</div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-play-btn" id="playerPlayBtn" onclick="toggleProfileSong()">
+                                <i class="fas fa-play" id="playerPlayIcon"></i>
+                            </button>
+                            <div class="player-progress-container">
+                                <div class="player-progress-bar" id="playerProgressBar" onclick="seekProfileSong(event)">
+                                    <div class="player-progress-fill" id="playerProgressFill"></div>
+                                </div>
+                                <div class="player-time">
+                                    <span id="playerCurrentTime">0:00</span>
+                                    <span id="playerDuration">0:00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="player-bottom-row">
+                            <div class="player-volume-container">
+                                <button class="player-volume-btn" onclick="togglePlayerMute()">
+                                    <i class="fas fa-volume-up" id="playerVolumeIcon"></i>
+                                </button>
+                                <input type="range" class="player-volume-slider" id="playerVolumeSlider" min="0" max="100" value="70" oninput="setPlayerVolume(this.value)">
+                            </div>
+                            <div class="player-visualizer" id="playerVisualizer">
+                                <div class="player-visualizer-bar" style="height:4px;"></div>
+                                <div class="player-visualizer-bar" style="height:6px;"></div>
+                                <div class="player-visualizer-bar" style="height:8px;"></div>
+                                <div class="player-visualizer-bar" style="height:5px;"></div>
+                                <div class="player-visualizer-bar" style="height:7px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty state (shown when no song) -->
+                    <div id="playerEmptyState">
+                        <div class="player-empty-state">
+                            <div class="player-empty-icon">&#x1F3B5;</div>
+                            <div class="player-empty-text">No profile song set</div>
+                            <input type="file" id="songFileInput" accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/m4a,audio/*" style="display:none;" onchange="handleSongUpload(event)">
+                            <button class="player-upload-btn" onclick="triggerSongUpload()">
+                                <i class="fas fa-upload"></i> Upload Song
+                            </button>
+                        </div>
+                    </div>
+                    <audio id="profileAudio" preload="metadata"></audio>
+                </div>
+                
                 <!-- Who to Follow -->
                 <div class="follow-section">
                     <div class="section-header">
@@ -3477,7 +3928,288 @@
     });
 
     // Show loading immediately when page starts loading
-    document.addEventListener('DOMContentLoaded', () => {
+    
+        // ============================================
+        // PROFILE SONG PLAYER
+        // ============================================
+        let profileSongData = null;
+        let profileAudioElement = null;
+        let playerUpdateInterval = null;
+
+        function initProfileSongPlayer() {
+            profileAudioElement = document.getElementById('profileAudio');
+            if (!profileAudioElement) return;
+
+            // Load saved song from localStorage
+            const saved = localStorage.getItem('polleneer_profile_song');
+            if (saved) {
+                try {
+                    profileSongData = JSON.parse(saved);
+                    if (profileSongData && profileSongData.audioData) {
+                        loadSongIntoPlayer(profileSongData);
+                    }
+                } catch(e) {
+                    console.error('Error loading saved song:', e);
+                    localStorage.removeItem('polleneer_profile_song');
+                }
+            }
+
+            // Audio event listeners
+            profileAudioElement.addEventListener('loadedmetadata', function() {
+                document.getElementById('playerDuration').textContent = formatPlayerTime(profileAudioElement.duration);
+            });
+
+            profileAudioElement.addEventListener('timeupdate', updatePlayerProgress);
+
+            profileAudioElement.addEventListener('ended', function() {
+                // Loop the song
+                profileAudioElement.currentTime = 0;
+                profileAudioElement.play();
+            });
+
+            profileAudioElement.addEventListener('play', function() {
+                document.getElementById('profileSongPlayer').classList.add('playing');
+                document.getElementById('playerPlayIcon').className = 'fas fa-pause';
+                startVisualizerAnimation();
+            });
+
+            profileAudioElement.addEventListener('pause', function() {
+                document.getElementById('profileSongPlayer').classList.remove('playing');
+                document.getElementById('playerPlayIcon').className = 'fas fa-play';
+                stopVisualizerAnimation();
+            });
+
+            // Set initial volume
+            profileAudioElement.volume = 0.7;
+
+            // Close settings dropdown on outside click
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('playerSettingsDropdown');
+                const btn = document.getElementById('playerSettingsBtn');
+                if (dropdown && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        function triggerSongUpload() {
+            document.getElementById('playerSettingsDropdown').classList.remove('show');
+            document.getElementById('songFileInput').click();
+        }
+
+        function handleSongUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('File too large. Max 10MB allowed.', 'error');
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith('audio/')) {
+                showToast('Please upload an audio file (MP3, WAV, OGG, M4A)', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Extract filename as default title
+                let songTitle = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+                songTitle = songTitle.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()); // Title case
+
+                profileSongData = {
+                    title: songTitle,
+                    artist: 'My Collection',
+                    audioData: e.target.result,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    uploadedAt: new Date().toISOString()
+                };
+
+                // Save to localStorage
+                try {
+                    localStorage.setItem('polleneer_profile_song', JSON.stringify(profileSongData));
+                } catch(storageErr) {
+                    console.warn('Song too large for localStorage, playing in session only');
+                    showToast('Song loaded! (Too large to save permanently)', 'warning');
+                }
+
+                loadSongIntoPlayer(profileSongData);
+                showToast('Profile song set! \u{1F3B6}');
+            };
+
+            reader.onerror = function() {
+                showToast('Error reading file. Please try again.', 'error');
+            };
+
+            reader.readAsDataURL(file);
+            // Reset input so same file can be re-selected
+            event.target.value = '';
+        }
+
+        function loadSongIntoPlayer(songData) {
+            if (!profileAudioElement || !songData) return;
+
+            profileAudioElement.src = songData.audioData;
+            document.getElementById('playerSongTitle').textContent = songData.title || 'Unknown Song';
+            document.getElementById('playerSongArtist').textContent = songData.artist || 'Unknown Artist';
+
+            // Show active player, hide empty state
+            document.getElementById('playerActive').style.display = 'block';
+            document.getElementById('playerEmptyState').style.display = 'none';
+            document.getElementById('playerSettingsBtn').style.display = 'block';
+
+            // Reset progress
+            document.getElementById('playerProgressFill').style.width = '0%';
+            document.getElementById('playerCurrentTime').textContent = '0:00';
+        }
+
+        function toggleProfileSong() {
+            if (!profileAudioElement || !profileAudioElement.src) return;
+
+            if (profileAudioElement.paused) {
+                profileAudioElement.play().catch(err => {
+                    console.log('Playback prevented:', err);
+                });
+            } else {
+                profileAudioElement.pause();
+            }
+        }
+
+        function updatePlayerProgress() {
+            if (!profileAudioElement || !profileAudioElement.duration) return;
+
+            const progress = (profileAudioElement.currentTime / profileAudioElement.duration) * 100;
+            document.getElementById('playerProgressFill').style.width = progress + '%';
+            document.getElementById('playerCurrentTime').textContent = formatPlayerTime(profileAudioElement.currentTime);
+        }
+
+        function seekProfileSong(event) {
+            if (!profileAudioElement || !profileAudioElement.duration) return;
+
+            const bar = document.getElementById('playerProgressBar');
+            const rect = bar.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            profileAudioElement.currentTime = percent * profileAudioElement.duration;
+        }
+
+        function setPlayerVolume(value) {
+            if (!profileAudioElement) return;
+            const vol = value / 100;
+            profileAudioElement.volume = vol;
+
+            const icon = document.getElementById('playerVolumeIcon');
+            if (vol === 0) {
+                icon.className = 'fas fa-volume-mute';
+            } else if (vol < 0.5) {
+                icon.className = 'fas fa-volume-down';
+            } else {
+                icon.className = 'fas fa-volume-up';
+            }
+        }
+
+        function togglePlayerMute() {
+            if (!profileAudioElement) return;
+            const slider = document.getElementById('playerVolumeSlider');
+
+            if (profileAudioElement.volume > 0) {
+                profileAudioElement._savedVolume = profileAudioElement.volume;
+                profileAudioElement.volume = 0;
+                slider.value = 0;
+            } else {
+                profileAudioElement.volume = profileAudioElement._savedVolume || 0.7;
+                slider.value = profileAudioElement.volume * 100;
+            }
+            setPlayerVolume(slider.value);
+        }
+
+        function togglePlayerSettings(event) {
+            event.stopPropagation();
+            document.getElementById('playerSettingsDropdown').classList.toggle('show');
+        }
+
+        function editSongInfo() {
+            document.getElementById('playerSettingsDropdown').classList.remove('show');
+            if (!profileSongData) return;
+
+            const newTitle = prompt('Song title:', profileSongData.title || '');
+            if (newTitle !== null) {
+                profileSongData.title = newTitle || 'Untitled';
+                const newArtist = prompt('Artist name:', profileSongData.artist || '');
+                if (newArtist !== null) {
+                    profileSongData.artist = newArtist || 'Unknown';
+                }
+                document.getElementById('playerSongTitle').textContent = profileSongData.title;
+                document.getElementById('playerSongArtist').textContent = profileSongData.artist;
+
+                try {
+                    localStorage.setItem('polleneer_profile_song', JSON.stringify(profileSongData));
+                } catch(e) {}
+                showToast('Song info updated!');
+            }
+        }
+
+        function removeProfileSong() {
+            document.getElementById('playerSettingsDropdown').classList.remove('show');
+
+            if (profileAudioElement) {
+                profileAudioElement.pause();
+                profileAudioElement.src = '';
+            }
+
+            profileSongData = null;
+            localStorage.removeItem('polleneer_profile_song');
+
+            // Show empty state, hide active player
+            document.getElementById('playerActive').style.display = 'none';
+            document.getElementById('playerEmptyState').style.display = 'block';
+            document.getElementById('playerSettingsBtn').style.display = 'none';
+            document.getElementById('profileSongPlayer').classList.remove('playing');
+
+            showToast('Profile song removed');
+        }
+
+        function formatPlayerTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        // Visualizer animation
+        let visualizerAnimFrame = null;
+
+        function startVisualizerAnimation() {
+            const bars = document.querySelectorAll('.player-visualizer-bar');
+            function animate() {
+                bars.forEach(bar => {
+                    const height = Math.random() * 14 + 3;
+                    bar.style.height = height + 'px';
+                });
+                visualizerAnimFrame = requestAnimationFrame(() => {
+                    setTimeout(animate, 150);
+                });
+            }
+            animate();
+        }
+
+        function stopVisualizerAnimation() {
+            if (visualizerAnimFrame) {
+                cancelAnimationFrame(visualizerAnimFrame);
+                visualizerAnimFrame = null;
+            }
+            // Reset bars to static
+            const bars = document.querySelectorAll('.player-visualizer-bar');
+            const heights = [4, 6, 8, 5, 7];
+            bars.forEach((bar, i) => {
+                bar.style.height = heights[i] + 'px';
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
         showLoading('Loading Polleneer...');
     });
 
@@ -3732,6 +4464,7 @@
             initializeApp();
             setupEventListeners();
             loadSampleData();
+            initProfileSongPlayer();
             
             const savedUser = localStorage.getItem('polleneer_user');
             if (savedUser) {
