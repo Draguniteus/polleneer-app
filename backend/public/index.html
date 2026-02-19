@@ -141,6 +141,24 @@
             --flower-pink: #AF7AC5;
         }
 
+        /* Rose Garden Theme - Bold & Beautiful */
+        [data-theme="rose"] {
+            --bg-primary: #1A0A14;
+            --bg-secondary: #220E1A;
+            --bg-card: #2A1222;
+            --bg-input: #33162A;
+            --text-primary: #F8E0F0;
+            --text-secondary: #C990B0;
+            --border-color: #4A1E3A;
+            --shadow-color: rgba(255, 50, 130, 0.15);
+            --honey-yellow: #FF1493;
+            --honey-dark: #E00080;
+            --hive-orange: #FF69B4;
+            --pollen-gold: #FFB6C1;
+            --leaf-green: #E875A8;
+            --sky-blue: #DA70D6;
+            --flower-pink: #FF1493;
+        }
 
         /* Theme Picker Styles */
         .theme-picker-option {
@@ -2580,6 +2598,13 @@
                             <span>Frost Colony</span>
                             <i class="fas fa-check theme-check"></i>
                         </button>
+                        <div style="height: 1px; background: var(--border-color); margin: 4px 8px;"></div>
+                        <div style="padding: 6px 10px; font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Special</div>
+                        <button class="theme-picker-option" onclick="setTheme('rose')" data-theme-option="rose">
+                            <span class="theme-dot" style="background: linear-gradient(135deg, #FF1493, #DA70D6);"></span>
+                            <span>Rose Garden</span>
+                            <i class="fas fa-check theme-check"></i>
+                        </button>
                     </div>
                 </div>
                 
@@ -4086,7 +4111,8 @@
             spring: 'Blossom Fields',
             summer: 'Honey Coast',
             autumn: 'Amber Harvest',
-            winter: 'Frost Colony'
+            winter: 'Frost Colony',
+            rose: 'Rose Garden'
         };
 
         const THEME_ICONS = {
@@ -4095,7 +4121,8 @@
             spring: 'fa-seedling',
             summer: 'fa-umbrella-beach',
             autumn: 'fa-leaf',
-            winter: 'fa-snowflake'
+            winter: 'fa-snowflake',
+            rose: 'fa-heart'
         };
 
         function setTheme(theme) {
@@ -4109,7 +4136,7 @@
 
         function toggleTheme() {
             // Legacy support: cycle through themes
-            const themes = ['dark', 'light', 'spring', 'summer', 'autumn', 'winter'];
+            const themes = ['dark', 'light', 'spring', 'summer', 'autumn', 'winter', 'rose'];
             const current = document.documentElement.getAttribute('data-theme');
             const idx = themes.indexOf(current);
             const next = themes[(idx + 1) % themes.length];
@@ -5204,6 +5231,10 @@ function showSettings() {
                     <button class="settings-theme-card" onclick="setTheme('winter')" data-theme-card="winter" style="padding: 12px; border-radius: 12px; border: 2px solid transparent; background: var(--bg-input); cursor: pointer; text-align: center; color: var(--text-primary);">
                         <div style="width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 8px; background: linear-gradient(135deg, #5DADE2, #9B59B6);"></div>
                         <div style="font-size: 12px; font-weight: 600;">Frost Colony</div>
+                    </button>
+                    <button class="settings-theme-card" onclick="setTheme('rose')" data-theme-card="rose" style="padding: 12px; border-radius: 12px; border: 2px solid transparent; background: var(--bg-input); cursor: pointer; text-align: center; color: var(--text-primary);">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 8px; background: linear-gradient(135deg, #FF1493, #DA70D6);"></div>
+                        <div style="font-size: 12px; font-weight: 600;">Rose Garden</div>
                     </button>
                 </div>
             </div>
