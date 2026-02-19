@@ -2468,6 +2468,38 @@
             border-color: white;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
+        .color-option.selected::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .color-option {
+            position: relative;
+        }
+        .bg-type-btn.active {
+            border-color: var(--honey-yellow) !important;
+            background: var(--honey-yellow)22 !important;
+            color: var(--honey-yellow) !important;
+        }
+        .grad-dir-btn.active {
+            border-color: var(--honey-yellow) !important;
+            background: var(--honey-yellow)22 !important;
+            color: var(--honey-yellow) !important;
+        }
+        .pattern-option.active {
+            border-color: var(--honey-yellow) !important;
+            box-shadow: 0 0 8px rgba(255, 195, 11, 0.3);
+        }
+        .pattern-option:hover {
+            border-color: var(--text-secondary) !important;
+        }
 
         .css-editor {
             width: 100%;
@@ -3722,44 +3754,151 @@
                 </div>
                 
                 <div class="customization-section active" id="colorsSection">
-                    <h4 style="margin-bottom: 15px;">Profile Colors</h4>
-                    <div class="color-picker">
-                        <div class="color-option" style="background: #FFC30B;" onclick="selectColor('#FFC30B')" data-color="#FFC30B"></div>
-                        <div class="color-option" style="background: #FF69B4;" onclick="selectColor('#FF69B4')" data-color="#FF69B4"></div>
-                        <div class="color-option" style="background: #228B22;" onclick="selectColor('#228B22')" data-color="#228B22"></div>
-                        <div class="color-option" style="background: #87CEEB;" onclick="selectColor('#87CEEB')" data-color="#87CEEB"></div>
-                        <div class="color-option" style="background: #8B4513;" onclick="selectColor('#8B4513')" data-color="#8B4513"></div>
-                        <div class="color-option" style="background: #FF8C00;" onclick="selectColor('#FF8C00')" data-color="#FF8C00"></div>
-                        <div class="color-option" style="background: #9370DB;" onclick="selectColor('#9370DB')" data-color="#9370DB"></div>
-                        <div class="color-option" style="background: #20B2AA;" onclick="selectColor('#20B2AA')" data-color="#20B2AA"></div>
+                    <h4 style="margin-bottom: 15px;">Profile Accent Color</h4>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">Choose a color that highlights your profile — banner, avatar ring, tabs, buttons, and stats.</p>
+                    <div class="color-picker" style="display:flex;flex-wrap:wrap;gap:10px;">
+                        <div class="color-option" style="background:#FFC30B;" onclick="selectColor('#FFC30B')" data-color="#FFC30B" title="Honey Gold"></div>
+                        <div class="color-option" style="background:#FF69B4;" onclick="selectColor('#FF69B4')" data-color="#FF69B4" title="Hot Pink"></div>
+                        <div class="color-option" style="background:#FF4444;" onclick="selectColor('#FF4444')" data-color="#FF4444" title="Crimson"></div>
+                        <div class="color-option" style="background:#FF8C00;" onclick="selectColor('#FF8C00')" data-color="#FF8C00" title="Orange"></div>
+                        <div class="color-option" style="background:#228B22;" onclick="selectColor('#228B22')" data-color="#228B22" title="Forest Green"></div>
+                        <div class="color-option" style="background:#20B2AA;" onclick="selectColor('#20B2AA')" data-color="#20B2AA" title="Teal"></div>
+                        <div class="color-option" style="background:#87CEEB;" onclick="selectColor('#87CEEB')" data-color="#87CEEB" title="Sky Blue"></div>
+                        <div class="color-option" style="background:#4169E1;" onclick="selectColor('#4169E1')" data-color="#4169E1" title="Royal Blue"></div>
+                        <div class="color-option" style="background:#9370DB;" onclick="selectColor('#9370DB')" data-color="#9370DB" title="Purple"></div>
+                        <div class="color-option" style="background:#E0E0E0;" onclick="selectColor('#E0E0E0')" data-color="#E0E0E0" title="Silver"></div>
+                        <div class="color-option" style="background:#8B4513;" onclick="selectColor('#8B4513')" data-color="#8B4513" title="Brown"></div>
+                        <div class="color-option" style="background:#FFFFFF;border:2px solid var(--border-color);" onclick="selectColor('#FFFFFF')" data-color="#FFFFFF" title="White"></div>
                     </div>
-                    <div style="margin-top: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Custom Color</label>
-                        <input type="color" id="customColorPicker" style="width: 100%; height: 40px; border-radius: 8px; border: none; cursor: pointer;" onchange="selectColor(this.value)">
+                    <div style="margin-top:15px;display:flex;align-items:center;gap:12px;">
+                        <label style="font-weight:500;font-size:14px;white-space:nowrap;">Custom:</label>
+                        <input type="color" id="customColorPicker" value="#FFC30B" style="width:50px;height:36px;border-radius:8px;border:2px solid var(--border-color);cursor:pointer;padding:2px;" oninput="selectColor(this.value)">
+                        <span id="colorHexDisplay" style="font-family:monospace;font-size:13px;color:var(--text-secondary);">#FFC30B</span>
+                    </div>
+                    <div id="colorPreviewBox" style="margin-top:15px;padding:14px;border-radius:12px;border:2px solid var(--border-color);background:var(--bg-input);">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                            <div id="previewAvatarRing" style="width:48px;height:48px;border-radius:50%;border:3px solid #FFC30B;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;font-size:20px;">
+                                <i class="fas fa-user" style="color:var(--text-secondary);"></i>
+                            </div>
+                            <div>
+                                <div id="previewNameColor" style="font-weight:700;font-size:15px;">Your Name</div>
+                                <div style="font-size:12px;color:var(--text-secondary);">@username</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:16px;font-size:13px;">
+                            <span><strong>42</strong> <span id="previewStatColor" style="color:#FFC30B;">Following</span></span>
+                            <span><strong>108</strong> <span id="previewStatColor2" style="color:#FFC30B;">Followers</span></span>
+                        </div>
+                        <div id="previewTabBar" style="margin-top:10px;display:flex;gap:0;">
+                            <div style="flex:1;text-align:center;padding:8px;font-size:12px;font-weight:700;border-bottom:3px solid #FFC30B;">Posts</div>
+                            <div style="flex:1;text-align:center;padding:8px;font-size:12px;color:var(--text-secondary);border-bottom:3px solid transparent;">Media</div>
+                            <div style="flex:1;text-align:center;padding:8px;font-size:12px;color:var(--text-secondary);border-bottom:3px solid transparent;">Likes</div>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="customization-section" id="backgroundSection">
-                    <h4 style="margin-bottom: 15px;">Profile Background</h4>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
-                        <button class="action-btn" onclick="setBackground('gradient')">
-                            <i class="fas fa-gradient"></i>
-                            <span>Gradient</span>
+                    <h4 style="margin-bottom: 15px;">Profile Banner Background</h4>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">Set the background for your profile banner area.</p>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:15px;">
+                        <button class="bg-type-btn active" data-bg-type="gradient" onclick="setBackground('gradient')" style="padding:12px;border-radius:10px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;transition:all 0.2s;font-family:inherit;">
+                            <i class="fas fa-palette"></i> Gradient
                         </button>
-                        <button class="action-btn" onclick="setBackground('pattern')">
-                            <i class="fas fa-th-large"></i>
-                            <span>Pattern</span>
+                        <button class="bg-type-btn" data-bg-type="solid" onclick="setBackground('solid')" style="padding:12px;border-radius:10px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;transition:all 0.2s;font-family:inherit;">
+                            <i class="fas fa-square-full"></i> Solid Color
                         </button>
-                        <button class="action-btn" onclick="setBackground('image')">
-                            <i class="fas fa-image"></i>
-                            <span>Image</span>
+                        <button class="bg-type-btn" data-bg-type="pattern" onclick="setBackground('pattern')" style="padding:12px;border-radius:10px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;transition:all 0.2s;font-family:inherit;">
+                            <i class="fas fa-th"></i> Pattern
                         </button>
-                        <button class="action-btn" onclick="setBackground('solid')">
-                            <i class="fas fa-square"></i>
-                            <span>Solid Color</span>
+                        <button class="bg-type-btn" data-bg-type="image" onclick="setBackground('image')" style="padding:12px;border-radius:10px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;transition:all 0.2s;font-family:inherit;">
+                            <i class="fas fa-image"></i> Image
                         </button>
                     </div>
-                    <div id="backgroundOptions"></div>
+                    <div id="backgroundOptions">
+                        <!-- Gradient options (default) -->
+                        <div id="bgGradientOptions">
+                            <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;">
+                                <div style="flex:1;">
+                                    <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px;">Color 1</label>
+                                    <input type="color" id="bgGradColor1" value="#FFC30B" style="width:100%;height:36px;border-radius:8px;border:2px solid var(--border-color);cursor:pointer;padding:2px;" oninput="updateBgPreview()">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px;">Color 2</label>
+                                    <input type="color" id="bgGradColor2" value="#FF8C00" style="width:100%;height:36px;border-radius:8px;border:2px solid var(--border-color);cursor:pointer;padding:2px;" oninput="updateBgPreview()">
+                                </div>
+                            </div>
+                            <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:6px;">Direction</label>
+                            <div style="display:flex;gap:6px;margin-bottom:12px;">
+                                <button class="grad-dir-btn active" data-dir="135deg" onclick="selectGradDirection('135deg')" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:12px;font-family:inherit;">Diagonal ↘</button>
+                                <button class="grad-dir-btn" data-dir="90deg" onclick="selectGradDirection('90deg')" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:12px;font-family:inherit;">Horizontal →</button>
+                                <button class="grad-dir-btn" data-dir="180deg" onclick="selectGradDirection('180deg')" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:12px;font-family:inherit;">Vertical ↓</button>
+                                <button class="grad-dir-btn" data-dir="radial" onclick="selectGradDirection('radial')" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);cursor:pointer;font-size:12px;font-family:inherit;">Radial ◎</button>
+                            </div>
+                        </div>
+                        <!-- Solid color options -->
+                        <div id="bgSolidOptions" style="display:none;">
+                            <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:6px;">Banner Color</label>
+                            <input type="color" id="bgSolidColor" value="#1a1a2e" style="width:100%;height:40px;border-radius:8px;border:2px solid var(--border-color);cursor:pointer;padding:2px;" oninput="updateBgPreview()">
+                        </div>
+                        <!-- Pattern options -->
+                        <div id="bgPatternOptions" style="display:none;">
+                            <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:8px;">Choose a pattern overlay</label>
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                                <div class="pattern-option active" data-pattern="honeycomb" onclick="selectPattern('honeycomb')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B22;transition:all 0.2s;">
+                                    <div style="position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='%23FFC30B' stroke-width='1.5'/%3E%3C/svg%3E");background-size:28px 50px;opacity:0.5;"></div>
+                                    <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Honeycomb</span>
+                                </div>
+                                <div class="pattern-option" data-pattern="dots" onclick="selectPattern('dots')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
+                                    <div style="position:absolute;inset:0;background-image:radial-gradient(circle, var(--honey-yellow) 1px, transparent 1px);background-size:12px 12px;opacity:0.4;"></div>
+                                    <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Dots</span>
+                                </div>
+                                <div class="pattern-option" data-pattern="diagonal" onclick="selectPattern('diagonal')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
+                                    <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,195,11,0.15) 8px, rgba(255,195,11,0.15) 9px);opacity:0.6;"></div>
+                                    <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Diagonal</span>
+                                </div>
+                                <div class="pattern-option" data-pattern="waves" onclick="selectPattern('waves')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
+                                    <div style="position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20' viewBox='0 0 100 20'%3E%3Cpath d='M0 10 Q25 0 50 10 Q75 20 100 10' fill='none' stroke='%23FFC30B' stroke-width='1.5'/%3E%3C/svg%3E");background-size:50px 20px;opacity:0.4;"></div>
+                                    <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Waves</span>
+                                </div>
+                                <div class="pattern-option" data-pattern="hexgrid" onclick="selectPattern('hexgrid')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
+                                    <div style="position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23FFC30B' fill-opacity='0.15'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");opacity:0.5;"></div>
+                                    <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Hex Grid</span>
+                                </div>
+                                <div class="pattern-option" data-pattern="crosshatch" onclick="selectPattern('crosshatch')" style="height:70px;border-radius:10px;border:2px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;background:#FFC30B11;transition:all 0.2s;">
+                                    <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(255,195,11,0.12) 10px, rgba(255,195,11,0.12) 11px), repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,195,11,0.12) 10px, rgba(255,195,11,0.12) 11px);opacity:0.6;"></div>
+                                    <span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;color:var(--text-primary);">Grid</span>
+                                </div>
+                            </div>
+                            <div style="margin-top:12px;display:flex;gap:12px;align-items:center;">
+                                <div style="flex:1;">
+                                    <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px;">Base Color</label>
+                                    <input type="color" id="bgPatternBaseColor" value="#1a1a2e" style="width:100%;height:32px;border-radius:8px;border:2px solid var(--border-color);cursor:pointer;padding:2px;" oninput="updateBgPreview()">
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px;">Pattern Color</label>
+                                    <input type="color" id="bgPatternColor" value="#FFC30B" style="width:100%;height:32px;border-radius:8px;border:2px solid var(--border-color);cursor:pointer;padding:2px;" oninput="updateBgPreview()">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image options -->
+                        <div id="bgImageOptions" style="display:none;">
+                            <p style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;">Upload a custom banner image, or click directly on the banner in your profile page.</p>
+                            <label style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:10px;border:2px dashed var(--border-color);cursor:pointer;transition:all 0.2s;justify-content:center;" onmouseover="this.style.borderColor='var(--honey-yellow)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                                <i class="fas fa-cloud-upload-alt" style="font-size:20px;color:var(--honey-yellow);"></i>
+                                <span style="font-weight:600;font-size:14px;">Choose Image</span>
+                                <input type="file" id="bgImageUpload" accept="image/*" style="display:none;" onchange="handleBgImageUpload(event)">
+                            </label>
+                            <div id="bgImagePreviewContainer" style="display:none;margin-top:10px;position:relative;">
+                                <img id="bgImagePreview" style="width:100%;height:120px;object-fit:cover;border-radius:10px;border:2px solid var(--border-color);">
+                                <button onclick="removeBgImage()" style="position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:none;color:white;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">&times;</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Banner preview -->
+                    <div style="margin-top:15px;">
+                        <label style="font-size:12px;color:var(--text-secondary);display:block;margin-bottom:6px;">Preview</label>
+                        <div id="bgPreviewBanner" style="height:80px;border-radius:10px;border:2px solid var(--border-color);background:linear-gradient(135deg, #FFC30B, #FF8C00);overflow:hidden;transition:all 0.3s;"></div>
+                    </div>
                 </div>
                 
                 <div class="customization-section" id="cssSection">
@@ -4571,11 +4710,17 @@
         Object.defineProperty(window, 'currentPage', {
             get: function() { return _currentPage; },
             set: function(val) {
+                var wasProfile = _currentPage === 'profile';
                 _currentPage = val;
                 document.documentElement.setAttribute('data-page', val);
                 // Auto-pause profile song when leaving profile page
                 if (val !== 'profile' && typeof profileAudioElement !== 'undefined' && profileAudioElement && !profileAudioElement.paused) {
                     profileAudioElement.pause();
+                }
+                // Remove profile custom CSS when leaving profile
+                if (wasProfile && val !== 'profile') {
+                    var customStyle = document.getElementById('profileCustomCSS');
+                    if (customStyle) customStyle.remove();
                 }
             },
             configurable: true
@@ -4733,10 +4878,16 @@
             if (currentUser && currentUser.profileColor) {
                 document.documentElement.style.setProperty('--primary', currentUser.profileColor);
             }
-            
+
             const siteStyle = localStorage.getItem('siteStyle') || 'default';
             document.body.setAttribute('data-site-style', siteStyle);
-            
+
+            // Load saved customization object
+            var saved = localStorage.getItem('polleneer_customization');
+            if (saved) {
+                try { customization = JSON.parse(saved); } catch(e) {}
+            }
+
             console.log('Customization applied');
         }
 
@@ -5029,33 +5180,213 @@
         function switchCustomizationTab(tab) {
             document.querySelectorAll('.customization-tab').forEach(btn => {
                 btn.classList.remove('active');
+                if (btn.getAttribute('onclick') === "switchCustomizationTab('" + tab + "')") {
+                    btn.classList.add('active');
+                }
             });
-            
-            event.target.classList.add('active');
-            
+
             document.querySelectorAll('.customization-section').forEach(section => {
                 section.classList.remove('active');
             });
-            
-            document.getElementById(tab + 'Section').classList.add('active');
+
+            var section = document.getElementById(tab + 'Section');
+            if (section) section.classList.add('active');
         }
 
         function selectColor(color) {
             selectedColor = color;
-            
+
             document.querySelectorAll('.color-option').forEach(option => {
                 option.classList.remove('selected');
                 if (option.getAttribute('data-color') === color) {
                     option.classList.add('selected');
                 }
             });
-            
-            document.getElementById('customColorPicker').value = color;
+
+            var picker = document.getElementById('customColorPicker');
+            if (picker) picker.value = color;
+            var hexDisplay = document.getElementById('colorHexDisplay');
+            if (hexDisplay) hexDisplay.textContent = color.toUpperCase();
+
+            // Live preview in the color preview box
+            var ring = document.getElementById('previewAvatarRing');
+            if (ring) ring.style.borderColor = color;
+            var stat1 = document.getElementById('previewStatColor');
+            var stat2 = document.getElementById('previewStatColor2');
+            if (stat1) stat1.style.color = color;
+            if (stat2) stat2.style.color = color;
+            var tabBar = document.getElementById('previewTabBar');
+            if (tabBar) {
+                var firstTab = tabBar.querySelector('div');
+                if (firstTab) firstTab.style.borderBottomColor = color;
+            }
+
+            // LIVE PREVIEW on actual profile page if currently viewing it
+            if (currentPage === 'profile') {
+                applyProfileAccentColor(color);
+            }
         }
 
         function setBackground(type) {
             selectedBackground = type;
-            showToast(`Background set to ${type}`);
+
+            // Update active button
+            document.querySelectorAll('.bg-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-bg-type') === type) btn.classList.add('active');
+            });
+
+            // Show/hide sub-panels
+            var panels = {
+                gradient: document.getElementById('bgGradientOptions'),
+                solid: document.getElementById('bgSolidOptions'),
+                pattern: document.getElementById('bgPatternOptions'),
+                image: document.getElementById('bgImageOptions')
+            };
+            Object.keys(panels).forEach(function(key) {
+                if (panels[key]) panels[key].style.display = key === type ? 'block' : 'none';
+            });
+
+            updateBgPreview();
+        }
+
+        var selectedGradDirection = '135deg';
+        var selectedPattern = 'honeycomb';
+        var bgImageData = null;
+
+        function selectGradDirection(dir) {
+            selectedGradDirection = dir;
+            document.querySelectorAll('.grad-dir-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-dir') === dir) btn.classList.add('active');
+            });
+            updateBgPreview();
+        }
+
+        function selectPattern(pat) {
+            selectedPattern = pat;
+            document.querySelectorAll('.pattern-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.getAttribute('data-pattern') === pat) opt.classList.add('active');
+            });
+            updateBgPreview();
+        }
+
+        function handleBgImageUpload(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image must be under 5MB');
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                bgImageData = e.target.result;
+                var preview = document.getElementById('bgImagePreview');
+                var container = document.getElementById('bgImagePreviewContainer');
+                if (preview) { preview.src = bgImageData; }
+                if (container) { container.style.display = 'block'; }
+                updateBgPreview();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeBgImage() {
+            bgImageData = null;
+            var container = document.getElementById('bgImagePreviewContainer');
+            if (container) container.style.display = 'none';
+            var input = document.getElementById('bgImageUpload');
+            if (input) input.value = '';
+            updateBgPreview();
+        }
+
+        function getPatternCSS(pattern, patternColor) {
+            var c = patternColor || '#FFC30B';
+            var cEnc = encodeURIComponent(c);
+            var patterns = {
+                honeycomb: "url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='" + cEnc + "' stroke-width='1.5'/%3E%3C/svg%3E")",
+                dots: "radial-gradient(circle, " + c + " 1.5px, transparent 1.5px)",
+                diagonal: "repeating-linear-gradient(45deg, transparent, transparent 8px, " + c + "33 8px, " + c + "33 9px)",
+                waves: "url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20' viewBox='0 0 100 20'%3E%3Cpath d='M0 10 Q25 0 50 10 Q75 20 100 10' fill='none' stroke='" + cEnc + "' stroke-width='1.5'/%3E%3C/svg%3E")",
+                hexgrid: "url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='" + cEnc + "' fill-opacity='0.2'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")",
+                crosshatch: "repeating-linear-gradient(0deg, transparent, transparent 10px, " + c + "22 10px, " + c + "22 11px), repeating-linear-gradient(90deg, transparent, transparent 10px, " + c + "22 10px, " + c + "22 11px)"
+            };
+            var sizes = {
+                honeycomb: '28px 50px',
+                dots: '14px 14px',
+                diagonal: 'auto',
+                waves: '50px 20px',
+                hexgrid: '28px 49px',
+                crosshatch: 'auto'
+            };
+            return { image: patterns[pattern] || patterns.honeycomb, size: sizes[pattern] || 'auto' };
+        }
+
+        function getBannerBackground() {
+            var config = { type: selectedBackground };
+            if (selectedBackground === 'gradient') {
+                var c1 = document.getElementById('bgGradColor1');
+                var c2 = document.getElementById('bgGradColor2');
+                config.color1 = c1 ? c1.value : '#FFC30B';
+                config.color2 = c2 ? c2.value : '#FF8C00';
+                config.direction = selectedGradDirection;
+                if (config.direction === 'radial') {
+                    config.css = 'radial-gradient(circle, ' + config.color1 + ', ' + config.color2 + ')';
+                } else {
+                    config.css = 'linear-gradient(' + config.direction + ', ' + config.color1 + ', ' + config.color2 + ')';
+                }
+            } else if (selectedBackground === 'solid') {
+                var sc = document.getElementById('bgSolidColor');
+                config.color = sc ? sc.value : '#1a1a2e';
+                config.css = config.color;
+            } else if (selectedBackground === 'pattern') {
+                var bc = document.getElementById('bgPatternBaseColor');
+                var pc = document.getElementById('bgPatternColor');
+                config.baseColor = bc ? bc.value : '#1a1a2e';
+                config.patternColor = pc ? pc.value : '#FFC30B';
+                config.pattern = selectedPattern;
+                var pat = getPatternCSS(config.pattern, config.patternColor);
+                config.css = config.baseColor;
+                config.patternImage = pat.image;
+                config.patternSize = pat.size;
+            } else if (selectedBackground === 'image') {
+                if (bgImageData) {
+                    config.imageData = bgImageData;
+                    config.css = "url('" + bgImageData + "')";
+                } else {
+                    config.css = 'linear-gradient(135deg, var(--honey-yellow), var(--hive-orange))';
+                }
+            }
+            return config;
+        }
+
+        function updateBgPreview() {
+            var preview = document.getElementById('bgPreviewBanner');
+            if (!preview) return;
+            var config = getBannerBackground();
+            preview.style.backgroundImage = 'none';
+            preview.style.backgroundColor = 'transparent';
+
+            if (config.type === 'gradient') {
+                preview.style.background = config.css;
+            } else if (config.type === 'solid') {
+                preview.style.background = config.css;
+            } else if (config.type === 'pattern') {
+                preview.style.backgroundColor = config.baseColor;
+                preview.style.backgroundImage = config.patternImage;
+                preview.style.backgroundSize = config.patternSize;
+            } else if (config.type === 'image' && config.imageData) {
+                preview.style.backgroundImage = "url('" + config.imageData + "')";
+                preview.style.backgroundSize = 'cover';
+                preview.style.backgroundPosition = 'center';
+            } else {
+                preview.style.background = 'linear-gradient(135deg, var(--honey-yellow), var(--hive-orange))';
+            }
+
+            // Live preview on actual profile if viewing
+            if (currentPage === 'profile') {
+                applyBannerBackground(config);
+            }
         }
 
         function testMusic() {
@@ -5068,13 +5399,14 @@
         }
 
         function saveCustomization() {
+            // Save full color + background config
             customization.colors = { primary: selectedColor };
-            customization.background = selectedBackground;
-            customization.css = document.getElementById('customCSSEditor').value;
-            
+            customization.background = getBannerBackground();
+            customization.css = document.getElementById('customCSSEditor') ? document.getElementById('customCSSEditor').value : '';
+
             localStorage.setItem('polleneer_customization', JSON.stringify(customization));
             showToast('Customization saved!');
-            
+
             if (currentPage === 'profile') {
                 applyProfileCustomization();
             }
@@ -5083,21 +5415,155 @@
         function resetCustomization() {
             selectedColor = '#FFC30B';
             selectedBackground = 'gradient';
-            document.getElementById('customCSSEditor').value = '';
-            document.getElementById('musicUrl').value = '';
-            
+            selectedGradDirection = '135deg';
+            selectedPattern = 'honeycomb';
+            bgImageData = null;
+
+            // Reset colors UI
             document.querySelectorAll('.color-option').forEach(option => {
                 option.classList.remove('selected');
+                if (option.getAttribute('data-color') === '#FFC30B') option.classList.add('selected');
             });
-            document.querySelector('.color-option').classList.add('selected');
-            
+            var picker = document.getElementById('customColorPicker');
+            if (picker) picker.value = '#FFC30B';
+            var hexDisp = document.getElementById('colorHexDisplay');
+            if (hexDisp) hexDisp.textContent = '#FFC30B';
+
+            // Reset color preview
+            selectColor('#FFC30B');
+
+            // Reset background UI
+            var gc1 = document.getElementById('bgGradColor1');
+            var gc2 = document.getElementById('bgGradColor2');
+            if (gc1) gc1.value = '#FFC30B';
+            if (gc2) gc2.value = '#FF8C00';
+
+            document.querySelectorAll('.grad-dir-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-dir') === '135deg') btn.classList.add('active');
+            });
+
+            document.querySelectorAll('.bg-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-bg-type') === 'gradient') btn.classList.add('active');
+            });
+
+            document.querySelectorAll('.pattern-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.getAttribute('data-pattern') === 'honeycomb') opt.classList.add('active');
+            });
+
+            setBackground('gradient');
+
+            // Reset CSS editor
+            var cssEditor = document.getElementById('customCSSEditor');
+            if (cssEditor) cssEditor.value = '';
+
+            // Clear saved and remove custom CSS
+            customization = { colors: {}, background: '', css: '', music: customization.music || '' };
+            localStorage.removeItem('polleneer_customization');
+
+            var customStyle = document.getElementById('profileCustomCSS');
+            if (customStyle) customStyle.remove();
+
+            // Remove live preview from profile
+            if (currentPage === 'profile') {
+                goToProfile();
+            }
+
             showToast('Customization reset to default');
         }
 
+        function applyProfileAccentColor(color) {
+            // Apply accent color cascade to profile page elements
+            if (!color) return;
+
+            // Avatar ring glow
+            var avatar = document.getElementById('profileAvatar');
+            if (avatar) {
+                avatar.style.border = '4px solid ' + color;
+                avatar.style.boxShadow = '0 0 15px ' + color + '44';
+            }
+
+            // Profile tab underlines (active tab)
+            document.querySelectorAll('#profileTabBar button, [onclick*="switchProfileTab"]').forEach(function(tab) {
+                if (tab.style.borderBottomColor && tab.style.borderBottomColor !== 'transparent') {
+                    tab.style.borderBottomColor = color;
+                    tab.style.color = color;
+                }
+            });
+
+            // Edit Profile / Customize buttons
+            var editBtn = document.querySelector('[onclick="editProfileFull()"]');
+            if (editBtn) {
+                editBtn.style.background = color;
+                // Determine text color based on luminance
+                var r = parseInt(color.slice(1,3),16), g = parseInt(color.slice(3,5),16), b = parseInt(color.slice(5,7),16);
+                var lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+                editBtn.style.color = lum > 0.6 ? '#000' : '#FFF';
+            }
+
+            // Stat numbers (Following/Followers text)
+            document.querySelectorAll('[onclick="showFollowing()"] span, [onclick="showFollowers()"] span').forEach(function(span) {
+                if (span.style.color || window.getComputedStyle(span).color) {
+                    // Only color the text labels, not the numbers
+                }
+            });
+        }
+
+        function applyBannerBackground(config) {
+            var banner = document.getElementById('profileBannerArea');
+            if (!banner) return;
+
+            // Reset all background properties
+            banner.style.backgroundImage = 'none';
+            banner.style.backgroundColor = 'transparent';
+            banner.style.backgroundSize = '';
+            banner.style.backgroundPosition = '';
+
+            if (!config || !config.type) return;
+
+            if (config.type === 'gradient') {
+                banner.style.background = config.css;
+            } else if (config.type === 'solid') {
+                banner.style.background = config.css;
+            } else if (config.type === 'pattern') {
+                banner.style.backgroundColor = config.baseColor;
+                banner.style.backgroundImage = config.patternImage;
+                banner.style.backgroundSize = config.patternSize;
+            } else if (config.type === 'image' && config.imageData) {
+                banner.style.backgroundImage = "url('" + config.imageData + "')";
+                banner.style.backgroundSize = 'cover';
+                banner.style.backgroundPosition = 'center';
+            }
+        }
+
         function applyProfileCustomization() {
-            const profileHeader = document.getElementById('profileHeader');
-            if (profileHeader && customization.colors.primary) {
-                profileHeader.style.borderColor = customization.colors.primary;
+            // Load saved customization and apply to profile
+            var saved = localStorage.getItem('polleneer_customization');
+            if (saved) {
+                try { customization = JSON.parse(saved); } catch(e) {}
+            }
+
+            // Apply accent color
+            if (customization.colors && customization.colors.primary) {
+                applyProfileAccentColor(customization.colors.primary);
+            }
+
+            // Apply banner background
+            if (customization.background && customization.background.type) {
+                applyBannerBackground(customization.background);
+            }
+
+            // Apply custom CSS
+            if (customization.css) {
+                var existingStyle = document.getElementById('profileCustomCSS');
+                if (!existingStyle) {
+                    existingStyle = document.createElement('style');
+                    existingStyle.id = 'profileCustomCSS';
+                    document.head.appendChild(existingStyle);
+                }
+                existingStyle.textContent = customization.css;
             }
         }
 
@@ -6992,8 +7458,72 @@ function showAdminPanel() {
 // 18. showCustomization - now properly opens with modal management
 function showCustomization() {
     closeModal('profileMenuModal');
+
+    // Load saved customization into modal UI
+    var saved = localStorage.getItem('polleneer_customization');
+    if (saved) {
+        try {
+            var cfg = JSON.parse(saved);
+            // Load saved color
+            if (cfg.colors && cfg.colors.primary) {
+                selectedColor = cfg.colors.primary;
+                selectColor(selectedColor);
+            }
+            // Load saved background
+            if (cfg.background && cfg.background.type) {
+                selectedBackground = cfg.background.type;
+                if (cfg.background.type === 'gradient') {
+                    selectedGradDirection = cfg.background.direction || '135deg';
+                    var gc1 = document.getElementById('bgGradColor1');
+                    var gc2 = document.getElementById('bgGradColor2');
+                    if (gc1) gc1.value = cfg.background.color1 || '#FFC30B';
+                    if (gc2) gc2.value = cfg.background.color2 || '#FF8C00';
+                    document.querySelectorAll('.grad-dir-btn').forEach(function(btn) {
+                        btn.classList.remove('active');
+                        if (btn.getAttribute('data-dir') === selectedGradDirection) btn.classList.add('active');
+                    });
+                } else if (cfg.background.type === 'solid') {
+                    var sc = document.getElementById('bgSolidColor');
+                    if (sc) sc.value = cfg.background.color || '#1a1a2e';
+                } else if (cfg.background.type === 'pattern') {
+                    selectedPattern = cfg.background.pattern || 'honeycomb';
+                    var bc = document.getElementById('bgPatternBaseColor');
+                    var pc = document.getElementById('bgPatternColor');
+                    if (bc) bc.value = cfg.background.baseColor || '#1a1a2e';
+                    if (pc) pc.value = cfg.background.patternColor || '#FFC30B';
+                    document.querySelectorAll('.pattern-option').forEach(function(opt) {
+                        opt.classList.remove('active');
+                        if (opt.getAttribute('data-pattern') === selectedPattern) opt.classList.add('active');
+                    });
+                } else if (cfg.background.type === 'image' && cfg.background.imageData) {
+                    bgImageData = cfg.background.imageData;
+                    var preview = document.getElementById('bgImagePreview');
+                    var container = document.getElementById('bgImagePreviewContainer');
+                    if (preview) preview.src = bgImageData;
+                    if (container) container.style.display = 'block';
+                }
+                // Update type buttons
+                document.querySelectorAll('.bg-type-btn').forEach(function(btn) {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-bg-type') === selectedBackground) btn.classList.add('active');
+                });
+            }
+            // Load saved CSS
+            if (cfg.css) {
+                var cssEditor = document.getElementById('customCSSEditor');
+                if (cssEditor) cssEditor.value = cfg.css;
+            }
+        } catch(e) {}
+    }
+
     openModal('customizationModal');
     switchCustomizationTab('colors');
+
+    // Delay to let modal render, then update previews
+    setTimeout(function() {
+        setBackground(selectedBackground);
+        updateBgPreview();
+    }, 100);
 }
 
 // 19. editProfile - now opens bio editor with pre-filled data
@@ -8870,9 +9400,28 @@ function goToProfile(section) {
 
     const user = currentUser;
     const bannerUrl = user.bannerImage || localStorage.getItem('polleneer_banner_' + user.id) || '';
-    const bannerStyle = bannerUrl 
-        ? `background-image:url('${bannerUrl}');background-size:cover;background-position:center;`
-        : 'background:linear-gradient(135deg, var(--honey-yellow), var(--hive-orange));';
+    let bannerStyle = '';
+    if (bannerUrl) {
+        bannerStyle = `background-image:url('${bannerUrl}');background-size:cover;background-position:center;`;
+    } else {
+        // Check saved customization for banner background
+        var savedCustom = localStorage.getItem('polleneer_customization');
+        var bgConfig = null;
+        if (savedCustom) {
+            try { bgConfig = JSON.parse(savedCustom).background; } catch(e) {}
+        }
+        if (bgConfig && bgConfig.type === 'gradient' && bgConfig.css) {
+            bannerStyle = 'background:' + bgConfig.css + ';';
+        } else if (bgConfig && bgConfig.type === 'solid' && bgConfig.css) {
+            bannerStyle = 'background:' + bgConfig.css + ';';
+        } else if (bgConfig && bgConfig.type === 'pattern' && bgConfig.baseColor) {
+            bannerStyle = 'background-color:' + bgConfig.baseColor + ';background-image:' + bgConfig.patternImage + ';background-size:' + bgConfig.patternSize + ';';
+        } else if (bgConfig && bgConfig.type === 'image' && bgConfig.imageData) {
+            bannerStyle = "background-image:url('" + bgConfig.imageData + "');background-size:cover;background-position:center;";
+        } else {
+            bannerStyle = 'background:linear-gradient(135deg, var(--honey-yellow), var(--hive-orange));';
+        }
+    }
 
     document.getElementById('mainContent').innerHTML = `
         <div style="max-width:800px;margin:0 auto;">
@@ -8982,6 +9531,7 @@ function goToProfile(section) {
     if (typeof loadProfileFeed === 'function') loadProfileFeed(section);
     if (typeof loadTopFriends === 'function') loadTopFriends();
     updateActiveNavLink('profile');
+    applyProfileCustomization();
 }
 
 // FIX 3: Banner upload (like X)
