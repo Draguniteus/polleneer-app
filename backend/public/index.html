@@ -4573,6 +4573,10 @@
             set: function(val) {
                 _currentPage = val;
                 document.documentElement.setAttribute('data-page', val);
+                // Auto-pause profile song when leaving profile page
+                if (val !== 'profile' && typeof profileAudioElement !== 'undefined' && profileAudioElement && !profileAudioElement.paused) {
+                    profileAudioElement.pause();
+                }
             },
             configurable: true
         });
@@ -6317,6 +6321,7 @@
         }
 
         function showSettings() {
+            currentPage = 'settings';
             alert('Settings panel would open here.');
         }
 
@@ -6466,6 +6471,7 @@ function filterShop(category) {
 // 3. showSettings - was empty, now builds full settings page
 function showSettings() {
     if (!currentUser) { showToast('Please log in first!'); return; }
+    currentPage = 'settings';
     const savedTheme = localStorage.getItem('polleneer_theme') || 'dark';
 
     document.getElementById('mainContent').innerHTML = `
@@ -7813,6 +7819,7 @@ function confirmSchedule() {
 // ===== ENHANCED NOTIFICATIONS =====
 function showNotifications() {
     if (!currentUser) return;
+    currentPage = 'notifications';
 
     // Richer notification data
     if (notifications.length <= 4) {
@@ -8316,6 +8323,7 @@ function addMemberToList(listId) {
 // ===== ENHANCED DMs =====
 function showMessages() {
     if (!currentUser) return;
+    currentPage = 'messages';
 
     // Richer message data
     const conversations = [
