@@ -5318,19 +5318,49 @@
         // CUSTOMIZATION FUNCTIONS - FIXED
         // ============================================
         function switchCustomizationTab(tab) {
-            document.querySelectorAll('.customization-tab').forEach(btn => {
+            // Update tab button active states
+            document.querySelectorAll('.customization-tab').forEach(function(btn) {
                 btn.classList.remove('active');
-                if (btn.getAttribute('onclick') === "switchCustomizationTab('" + tab + "')") {
+                var onclick = btn.getAttribute('onclick') || '';
+                if (onclick === "switchCustomizationTab('" + tab + "')") {
+                    btn.classList.add('active');
+                }
+                // Handle Flair tab button (injected dynamically, uses data attribute)
+                if (tab === 'flair' && btn.getAttribute('data-tab-flair')) {
                     btn.classList.add('active');
                 }
             });
 
-            document.querySelectorAll('.customization-section').forEach(section => {
+            // Hide all sections
+            document.querySelectorAll('.customization-section').forEach(function(section) {
                 section.classList.remove('active');
             });
 
-            var section = document.getElementById(tab + 'Section');
-            if (section) section.classList.add('active');
+            // Hide flair content if it exists
+            var flairContent = document.getElementById('flairContent');
+            if (flairContent) flairContent.style.display = 'none';
+
+            if (tab === 'flair') {
+                // Show Flair panel (avatar border + mood settings)
+                if (!flairContent) {
+                    flairContent = document.createElement('div');
+                    flairContent.id = 'flairContent';
+                    flairContent.className = 'customization-section';
+                    flairContent.style.display = 'block';
+                    // Append after the last section
+                    var lastSection = document.querySelectorAll('.customization-section');
+                    if (lastSection.length > 0) {
+                        lastSection[lastSection.length - 1].parentNode.appendChild(flairContent);
+                    }
+                }
+                flairContent.style.display = 'block';
+                flairContent.classList.add('active');
+                flairContent.innerHTML = renderAvatarBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderMoodSettings();
+            } else {
+                // Show the requested section
+                var section = document.getElementById(tab + 'Section');
+                if (section) section.classList.add('active');
+            }
         }
 
         function selectColor(color) {
@@ -10349,24 +10379,21 @@ function loadPinnedPost() {
     '</div>';
 }
 
-// Add "Pin to profile" option to post menu
-var _origCreatePostHTML_pin = createPostHTML;
-function createPostHTML(post) {
-    var html = _origCreatePostHTML_pin(post);
+// Add "Pin to profile" option to post menu (non-hoisting override)
+(function() {
+    var _prevCreatePostHTML = createPostHTML;
+    createPostHTML = function(post) {
+        var html = _prevCreatePostHTML(post);
 
-    // Only add pin option for current user's posts
-    if (currentUser && post.userId === currentUser.id) {
-        var isPinned = getPinnedPostId() === post.id;
-        var pinBtn = isPinned ?
-            '<button style="width:100%;padding:10px 16px;border:none;background:transparent;color:var(--text-primary);cursor:pointer;text-align:left;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'transparent\'" onclick="unpinPost()"><i class="fas fa-thumbtack" style="color:var(--honey-yellow);width:24px;"></i> Unpin from profile</button>' :
-            '<button style="width:100%;padding:10px 16px;border:none;background:transparent;color:var(--text-primary);cursor:pointer;text-align:left;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'transparent\'" onclick="setPinnedPost(' + post.id + ')"><i class="fas fa-thumbtack" style="width:24px;"></i> Pin to your profile</button>';
+        // Only add pin option for current user's posts
+        if (currentUser && post.userId === currentUser.id) {
+            var isPinned = getPinnedPostId() === post.id;
+            var pinBtn = isPinned ?
+                '<button style="width:100%;padding:10px 16px;border:none;background:transparent;color:var(--text-primary);cursor:pointer;text-align:left;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'transparent\'" onclick="unpinPost()"><i class="fas fa-thumbtack" style="color:var(--honey-yellow);width:24px;"></i> Unpin from profile</button>' :
+                '<button style="width:100%;padding:10px 16px;border:none;background:transparent;color:var(--text-primary);cursor:pointer;text-align:left;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'transparent\'" onclick="setPinnedPost(' + post.id + ')"><i class="fas fa-thumbtack" style="width:24px;"></i> Pin to your profile</button>';
 
-        // Insert pin button into the post's dropdown menu
-        // The post menu has a pattern of button elements
-        var menuInsertPoint = html.lastIndexOf('</button>');
-        if (menuInsertPoint > 0) {
-            // Find the delete button area and insert before it
-            var deleteIdx = html.indexOf('Delete', html.indexOf('post-' + post.id));
+            // Insert pin button into the post's dropdown menu before Delete
+            var deleteIdx = html.indexOf('Delete');
             if (deleteIdx > 0) {
                 var btnStart = html.lastIndexOf('<button', deleteIdx);
                 if (btnStart > 0) {
@@ -10374,42 +10401,15 @@ function createPostHTML(post) {
                 }
             }
         }
-    }
-    return html;
-}
+        return html;
+    };
+})();
 
 // =====================================================================
 // ADD NEW TAB TO CUSTOMIZE MODAL: "Flair" 
 // (contains Avatar Border + Mood settings)
 // =====================================================================
-var _origSwitchCustomizationTab = switchCustomizationTab;
-function switchCustomizationTab(tab) {
-    if (tab === 'flair') {
-        // Handle the Flair tab ourselves
-        document.querySelectorAll('.customization-tab').forEach(function(t) {
-            t.classList.remove('active');
-            if (t.textContent.trim() === 'Flair') t.classList.add('active');
-        });
-        document.querySelectorAll('.customization-content').forEach(function(c) {
-            c.style.display = 'none';
-        });
 
-        var flairContent = document.getElementById('flairContent');
-        if (!flairContent) {
-            flairContent = document.createElement('div');
-            flairContent.id = 'flairContent';
-            flairContent.className = 'customization-content';
-            var existingContent = document.querySelector('.customization-content');
-            if (existingContent) existingContent.parentNode.appendChild(flairContent);
-        }
-        flairContent.style.display = 'block';
-        flairContent.innerHTML = renderAvatarBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderMoodSettings();
-        return;
-    }
-    _origSwitchCustomizationTab(tab);
-    var flairContent = document.getElementById('flairContent');
-    if (flairContent) flairContent.style.display = 'none';
-}
 
 // Inject the Flair tab button into the customize modal
 (function() {
