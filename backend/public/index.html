@@ -3107,6 +3107,196 @@
             z-index: 1;
         }
 
+        
+        /* Style: Neon Pulse */
+        @keyframes avatar-neon-pulse {
+            0%, 100% { box-shadow: 0 0 8px 2px var(--avatar-accent, var(--honey-yellow)), 0 0 20px 4px var(--avatar-accent, var(--honey-yellow)), inset 0 0 8px 2px rgba(255,195,11,0.1); }
+            50% { box-shadow: 0 0 20px 6px var(--avatar-accent, var(--honey-yellow)), 0 0 40px 12px var(--avatar-accent, var(--honey-yellow)), 0 0 60px 20px rgba(255,195,11,0.15), inset 0 0 12px 4px rgba(255,195,11,0.15); }
+        }
+        .avatar-border-container[data-border-style="neon"] #profileAvatar,
+        .avatar-border-container[data-border-style="neon"] img {
+            animation: avatar-neon-pulse 1.5s ease-in-out infinite;
+        }
+        /* Style: Double Ring */
+        .avatar-border-container[data-border-style="double"]::before {
+            opacity: 1;
+            background: transparent;
+            border: 3px solid var(--avatar-accent, var(--honey-yellow));
+            inset: -10px;
+        }
+        .avatar-border-container[data-border-style="double"]::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 2px solid var(--avatar-accent2, var(--hive-orange));
+            z-index: 0;
+        }
+        /* Style: Dashed Spin */
+        @keyframes avatar-dash-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .avatar-border-container[data-border-style="dashed"]::before {
+            opacity: 1;
+            background: transparent;
+            border: 3px dashed var(--avatar-accent, var(--honey-yellow));
+            animation: avatar-dash-spin 8s linear infinite;
+        }
+        /* Style: Fire Ring */
+        @keyframes avatar-fire-glow {
+            0%, 100% { box-shadow: 0 0 10px 3px #ff4500, 0 0 25px 5px #ff6600, 0 0 40px 8px rgba(255,69,0,0.3); }
+            33% { box-shadow: 0 0 15px 5px #ff6600, 0 0 30px 8px #ff8800, 0 0 50px 12px rgba(255,102,0,0.4); }
+            66% { box-shadow: 0 0 12px 4px #ffaa00, 0 0 28px 7px #ff6600, 0 0 45px 10px rgba(255,136,0,0.35); }
+        }
+        .avatar-border-container[data-border-style="fire"] #profileAvatar,
+        .avatar-border-container[data-border-style="fire"] img {
+            animation: avatar-fire-glow 1.2s ease-in-out infinite;
+        }
+        /* Style: Electric Bolt */
+        @keyframes avatar-electric {
+            0%, 90%, 100% { box-shadow: 0 0 5px 2px #00d4ff, 0 0 15px 4px rgba(0,212,255,0.3); }
+            92% { box-shadow: 0 0 30px 10px #00ffff, 0 0 60px 20px rgba(0,255,255,0.5); }
+            94% { box-shadow: 0 0 5px 2px #00d4ff, 0 0 15px 4px rgba(0,212,255,0.3); }
+            96% { box-shadow: 0 0 25px 8px #44ffff, 0 0 50px 15px rgba(68,255,255,0.4); }
+        }
+        .avatar-border-container[data-border-style="electric"] #profileAvatar,
+        .avatar-border-container[data-border-style="electric"] img {
+            animation: avatar-electric 2s ease-in-out infinite;
+        }
+        /* Style: Shadow Orbit */
+        @keyframes avatar-orbit {
+            0% { box-shadow: 8px 0 12px -2px var(--avatar-accent, var(--honey-yellow)); }
+            25% { box-shadow: 0 8px 12px -2px var(--avatar-accent2, var(--hive-orange)); }
+            50% { box-shadow: -8px 0 12px -2px var(--avatar-accent, var(--honey-yellow)); }
+            75% { box-shadow: 0 -8px 12px -2px var(--avatar-accent2, var(--hive-orange)); }
+            100% { box-shadow: 8px 0 12px -2px var(--avatar-accent, var(--honey-yellow)); }
+        }
+        .avatar-border-container[data-border-style="orbit"] #profileAvatar,
+        .avatar-border-container[data-border-style="orbit"] img {
+            animation: avatar-orbit 3s linear infinite;
+        }
+        /* Style: Hexagon Frame */
+        .avatar-border-container[data-border-style="hexagon"]::before {
+            opacity: 1;
+            border-radius: 0;
+            clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+            background: linear-gradient(135deg, var(--avatar-accent, var(--honey-yellow)), var(--avatar-accent2, var(--hive-orange)));
+            inset: -12px;
+        }
+        .avatar-border-container[data-border-style="hexagon"] img {
+            clip-path: polygon(50% 2%, 91% 26%, 91% 74%, 50% 98%, 9% 74%, 9% 26%);
+        }
+
+
+        /* ===== Banner Border Effects ===== */
+        .banner-border-wrapper {
+            position: relative;
+        }
+        .banner-border-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: calc(var(--site-radius, 15px) + 4px) calc(var(--site-radius, 15px) + 4px) 0 0;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .banner-border-wrapper > * {
+            position: relative;
+            z-index: 1;
+        }
+        /* Banner: Rotating Gradient */
+        .banner-border-wrapper[data-banner-style="rotating"]::before {
+            opacity: 1;
+            background: conic-gradient(
+                var(--banner-accent, var(--honey-yellow)),
+                var(--banner-accent2, var(--hive-orange)),
+                var(--banner-accent, var(--honey-yellow)),
+                var(--banner-accent2, var(--hive-orange)),
+                var(--banner-accent, var(--honey-yellow))
+            );
+            animation: avatar-rotate-border 4s linear infinite;
+        }
+        /* Banner: Pulsing Glow */
+        @keyframes banner-pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px 3px var(--banner-accent, var(--honey-yellow)), 0 0 30px 6px rgba(255,195,11,0.15); }
+            50% { box-shadow: 0 0 25px 8px var(--banner-accent, var(--honey-yellow)), 0 0 50px 15px rgba(255,195,11,0.25); }
+        }
+        .banner-border-wrapper[data-banner-style="pulse"] {
+            animation: banner-pulse-glow 2.5s ease-in-out infinite;
+        }
+        /* Banner: Static Gradient Frame */
+        .banner-border-wrapper[data-banner-style="static"]::before {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--banner-accent, var(--honey-yellow)), var(--banner-accent2, var(--hive-orange)));
+        }
+        /* Banner: Rainbow */
+        .banner-border-wrapper[data-banner-style="rainbow"]::before {
+            opacity: 1;
+            background: conic-gradient(#ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0000);
+            animation: avatar-rotate-border 5s linear infinite;
+        }
+        /* Banner: Neon Glow */
+        @keyframes banner-neon {
+            0%, 100% { box-shadow: 0 0 10px 2px var(--banner-accent, var(--honey-yellow)), 0 0 25px 5px var(--banner-accent, var(--honey-yellow)); }
+            50% { box-shadow: 0 0 20px 6px var(--banner-accent, var(--honey-yellow)), 0 0 40px 12px var(--banner-accent, var(--honey-yellow)), 0 0 60px 18px rgba(255,195,11,0.15); }
+        }
+        .banner-border-wrapper[data-banner-style="neon"] {
+            animation: banner-neon 2s ease-in-out infinite;
+        }
+        /* Banner: Fire Frame */
+        @keyframes banner-fire {
+            0%, 100% { box-shadow: 0 -3px 12px 2px #ff4500, 0 -6px 25px 4px #ff6600, 0 -10px 40px 6px rgba(255,69,0,0.25); }
+            33% { box-shadow: 0 -4px 15px 3px #ff6600, 0 -8px 30px 6px #ff8800, 0 -12px 50px 8px rgba(255,102,0,0.3); }
+            66% { box-shadow: 0 -3px 13px 3px #ffaa00, 0 -7px 28px 5px #ff6600, 0 -11px 45px 7px rgba(255,136,0,0.28); }
+        }
+        .banner-border-wrapper[data-banner-style="fire"] {
+            animation: banner-fire 1.5s ease-in-out infinite;
+        }
+        /* Banner: Electric */
+        @keyframes banner-electric {
+            0%, 88%, 100% { box-shadow: 0 0 5px 1px #00d4ff, 0 0 15px 3px rgba(0,212,255,0.2); }
+            90% { box-shadow: 0 0 25px 8px #00ffff, 0 0 50px 15px rgba(0,255,255,0.4); }
+            93% { box-shadow: 0 0 5px 1px #00d4ff, 0 0 15px 3px rgba(0,212,255,0.2); }
+            95% { box-shadow: 0 0 20px 6px #44ffff, 0 0 40px 12px rgba(68,255,255,0.35); }
+        }
+        .banner-border-wrapper[data-banner-style="electric"] {
+            animation: banner-electric 2.5s ease-in-out infinite;
+        }
+        /* Banner: Double Border */
+        .banner-border-wrapper[data-banner-style="double"]::before {
+            opacity: 1;
+            background: transparent;
+            border: 3px solid var(--banner-accent, var(--honey-yellow));
+            inset: -8px;
+        }
+        .banner-border-wrapper[data-banner-style="double"]::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: calc(var(--site-radius, 15px) + 4px) calc(var(--site-radius, 15px) + 4px) 0 0;
+            border: 2px solid var(--banner-accent2, var(--hive-orange));
+            z-index: 0;
+            pointer-events: none;
+        }
+        /* Banner: Shadow Orbit */
+        @keyframes banner-orbit {
+            0% { box-shadow: 6px 0 15px -3px var(--banner-accent, var(--honey-yellow)), -6px 0 15px -3px transparent; }
+            25% { box-shadow: 0 6px 15px -3px var(--banner-accent2, var(--hive-orange)), 0 -6px 15px -3px transparent; }
+            50% { box-shadow: -6px 0 15px -3px var(--banner-accent, var(--honey-yellow)), 6px 0 15px -3px transparent; }
+            75% { box-shadow: 0 -6px 15px -3px var(--banner-accent2, var(--hive-orange)), 0 6px 15px -3px transparent; }
+            100% { box-shadow: 6px 0 15px -3px var(--banner-accent, var(--honey-yellow)), -6px 0 15px -3px transparent; }
+        }
+        .banner-border-wrapper[data-banner-style="orbit"] {
+            animation: banner-orbit 4s linear infinite;
+        }
+        /* Banner: None */
+        .banner-border-wrapper[data-banner-style="none"]::before {
+            opacity: 0;
+        }
+
         /* ===== Profile Mood/Status ===== */
         .profile-mood-status {
             display: inline-flex;
@@ -5348,7 +5538,7 @@
                 if (tab === 'flair') {
                     var inner = document.getElementById('flairContentInner');
                     if (inner) {
-                        inner.innerHTML = renderAvatarBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderMoodSettings();
+                        inner.innerHTML = renderAvatarBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderBannerBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderMoodSettings();
                     }
                 }
             }
@@ -9581,11 +9771,13 @@ function goToProfile(section) {
     document.getElementById('mainContent').innerHTML = `
         <div style="max-width:800px;margin:0 auto;">
             <!-- Banner (clickable to change, like X) -->
+            <div class="banner-border-wrapper" id="bannerBorderWrapper" data-banner-style="${getBannerBorderStyle()}">
             <div id="profileBannerArea" style="position:relative;height:200px;border-radius:var(--site-radius, 15px) var(--site-radius, 15px) 0 0;${bannerStyle}cursor:pointer;overflow:hidden;" onclick="changeBanner()">
                 <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.4)';this.querySelector('.cam-icon').style.opacity='1'" onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelector('.cam-icon').style.opacity='0'">
                     <div class="cam-icon" style="opacity:0;transition:opacity 0.2s;color:white;font-size:24px;"><i class="fas fa-camera"></i></div>
                 </div>
                 <input type="file" id="bannerUpload" accept="image/*" style="display:none;" onchange="handleBannerUpload(event)">
+            </div>
             </div>
 
             <!-- Profile Info Section -->
@@ -9695,6 +9887,7 @@ function goToProfile(section) {
     if (typeof loadTopFriends === 'function') loadTopFriends();
     if (typeof loadPinnedPost === 'function') loadPinnedPost();
     if (typeof applyAvatarBorderColors === 'function') applyAvatarBorderColors();
+    if (typeof applyBannerBorderColors === 'function') applyBannerBorderColors();
     updateActiveNavLink('profile');
     applyProfileCustomization();
 }
@@ -10098,7 +10291,14 @@ const AVATAR_BORDER_STYLES = [
     { id: 'rotating', name: 'Rotating Gradient', icon: 'fas fa-sync-alt', desc: 'Spinning gradient ring' },
     { id: 'pulse', name: 'Pulsing Glow', icon: 'fas fa-heartbeat', desc: 'Breathing glow effect' },
     { id: 'static', name: 'Gradient Ring', icon: 'fas fa-circle', desc: 'Solid gradient border' },
-    { id: 'rainbow', name: 'Rainbow Spin', icon: 'fas fa-rainbow', desc: 'Full spectrum rotation' }
+    { id: 'rainbow', name: 'Rainbow Spin', icon: 'fas fa-rainbow', desc: 'Full spectrum rotation' },
+    { id: 'neon', name: 'Neon Pulse', icon: 'fas fa-lightbulb', desc: 'Intense neon glow burst' },
+    { id: 'fire', name: 'Fire Ring', icon: 'fas fa-fire', desc: 'Blazing flames around avatar' },
+    { id: 'electric', name: 'Electric Bolt', icon: 'fas fa-bolt', desc: 'Lightning strike flashes' },
+    { id: 'double', name: 'Double Ring', icon: 'far fa-circle', desc: 'Two concentric borders' },
+    { id: 'dashed', name: 'Dashed Spin', icon: 'fas fa-spinner', desc: 'Rotating dashed circle' },
+    { id: 'orbit', name: 'Shadow Orbit', icon: 'fas fa-satellite', desc: 'Orbiting shadow glow' },
+    { id: 'hexagon', name: 'Hexagon Frame', icon: 'fas fa-hexagon-alt', desc: 'Bee-themed hex shape' }
 ];
 
 function getAvatarBorderStyle() {
@@ -10167,7 +10367,7 @@ function renderAvatarBorderSettings() {
             '</div>' +
         '</div>' +
 
-        '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;">' +
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;">' +
             AVATAR_BORDER_STYLES.map(function(s) {
                 var isActive = s.id === current;
                 return '<button class="border-style-btn" data-style="' + s.id + '" onclick="setAvatarBorder(\'' + s.id + '\', document.getElementById(\'borderAccent1\').value, document.getElementById(\'borderAccent2\').value)" ' +
@@ -10183,6 +10383,117 @@ function renderAvatarBorderSettings() {
             '<input type="color" id="borderAccent1" value="' + accent1 + '" onchange="setAvatarBorder(getAvatarBorderStyle(), this.value, document.getElementById(\'borderAccent2\').value)" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;">' +
             '<label style="font-size:13px;color:var(--text-secondary);white-space:nowrap;">Secondary</label>' +
             '<input type="color" id="borderAccent2" value="' + accent2 + '" onchange="setAvatarBorder(getAvatarBorderStyle(), document.getElementById(\'borderAccent1\').value, this.value)" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;">' +
+        '</div>' +
+    '</div>';
+}
+
+
+
+// =====================================================================
+// BANNER BORDER EFFECT SYSTEM
+// =====================================================================
+const BANNER_BORDER_STYLES = [
+    { id: 'none', name: 'None', icon: 'fas fa-ban', desc: 'No border effect' },
+    { id: 'rotating', name: 'Rotating Gradient', icon: 'fas fa-sync-alt', desc: 'Spinning gradient frame' },
+    { id: 'pulse', name: 'Pulsing Glow', icon: 'fas fa-heartbeat', desc: 'Breathing glow effect' },
+    { id: 'static', name: 'Gradient Frame', icon: 'fas fa-square', desc: 'Solid gradient border' },
+    { id: 'rainbow', name: 'Rainbow Frame', icon: 'fas fa-rainbow', desc: 'Full spectrum rotation' },
+    { id: 'neon', name: 'Neon Glow', icon: 'fas fa-lightbulb', desc: 'Intense neon glow burst' },
+    { id: 'fire', name: 'Fire Frame', icon: 'fas fa-fire', desc: 'Blazing flames on top' },
+    { id: 'electric', name: 'Electric Frame', icon: 'fas fa-bolt', desc: 'Lightning strike flashes' },
+    { id: 'double', name: 'Double Border', icon: 'far fa-square', desc: 'Two concentric borders' },
+    { id: 'orbit', name: 'Shadow Orbit', icon: 'fas fa-satellite', desc: 'Orbiting shadow glow' }
+];
+
+function getBannerBorderStyle() {
+    try {
+        var saved = localStorage.getItem('polleneer_banner_border');
+        if (saved) { var d = JSON.parse(saved); return d.style || 'none'; }
+    } catch(e) {}
+    return 'none';
+}
+
+function getBannerBorderColors() {
+    try {
+        var saved = localStorage.getItem('polleneer_banner_border');
+        if (saved) { var d = JSON.parse(saved); return { accent: d.accent || '', accent2: d.accent2 || '' }; }
+    } catch(e) {}
+    return { accent: '', accent2: '' };
+}
+
+function applyBannerBorderColors() {
+    var wrapper = document.getElementById('bannerBorderWrapper');
+    if (!wrapper) return;
+    var colors = getBannerBorderColors();
+    if (colors.accent) wrapper.style.setProperty('--banner-accent', colors.accent);
+    if (colors.accent2) wrapper.style.setProperty('--banner-accent2', colors.accent2);
+}
+
+function setBannerBorder(style, accent, accent2) {
+    var data = { style: style, accent: accent || '', accent2: accent2 || '' };
+    localStorage.setItem('polleneer_banner_border', JSON.stringify(data));
+    var wrapper = document.getElementById('bannerBorderWrapper');
+    if (wrapper) {
+        wrapper.setAttribute('data-banner-style', style);
+        if (accent) wrapper.style.setProperty('--banner-accent', accent);
+        if (accent2) wrapper.style.setProperty('--banner-accent2', accent2);
+    }
+    var preview = document.getElementById('bannerBorderPreview');
+    if (preview) {
+        preview.setAttribute('data-banner-style', style);
+        if (accent) preview.style.setProperty('--banner-accent', accent);
+        if (accent2) preview.style.setProperty('--banner-accent2', accent2);
+    }
+    updateBannerStyleButtons(style);
+}
+
+function updateBannerStyleButtons(activeStyle) {
+    document.querySelectorAll('.banner-style-btn').forEach(function(btn) {
+        var isActive = btn.getAttribute('data-style') === activeStyle;
+        btn.style.borderColor = isActive ? 'var(--honey-yellow)' : 'var(--border-color)';
+        btn.style.background = isActive ? 'var(--honey-yellow)11' : 'var(--bg-input)';
+    });
+}
+
+function renderBannerBorderSettings() {
+    var current = getBannerBorderStyle();
+    var colors = getBannerBorderColors();
+    var accent1 = colors.accent || '#FFC30B';
+    var accent2 = colors.accent2 || '#FF8C00';
+    var bannerBg = 'linear-gradient(135deg, var(--honey-yellow), var(--hive-orange))';
+    try {
+        var savedCustom = localStorage.getItem('polleneer_customization');
+        if (savedCustom) {
+            var bgConfig = JSON.parse(savedCustom).background;
+            if (bgConfig && bgConfig.css) bannerBg = bgConfig.css;
+        }
+    } catch(e) {}
+
+    return '<div style="padding:16px;">' +
+        '<h4 style="margin-bottom:14px;"><i class="fas fa-image"></i> Banner Border Effect</h4>' +
+
+        '<div style="display:flex;justify-content:center;margin-bottom:20px;">' +
+            '<div class="banner-border-wrapper" id="bannerBorderPreview" data-banner-style="' + current + '" style="--banner-accent:' + accent1 + ';--banner-accent2:' + accent2 + ';width:280px;">' +
+                '<div style="height:80px;border-radius:12px;background:' + bannerBg + ';"></div>' +
+            '</div>' +
+        '</div>' +
+
+        '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;">' +
+            BANNER_BORDER_STYLES.map(function(s) {
+                var isActive = s.id === current;
+                return '<button class="banner-style-btn" data-style="' + s.id + '" onclick="setBannerBorder(\'' + s.id + '\', document.getElementById(\'bannerAccent1\').value, document.getElementById(\'bannerAccent2\').value)" ' +
+                    'style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:2px solid ' + (isActive ? 'var(--honey-yellow)' : 'var(--border-color)') + ';background:' + (isActive ? 'var(--honey-yellow)11' : 'var(--bg-input)') + ';cursor:pointer;color:var(--text-primary);transition:all 0.2s;text-align:left;">' +
+                    '<i class="' + s.icon + '" style="color:var(--honey-yellow);width:20px;text-align:center;"></i>' +
+                    '<div><div style="font-weight:600;font-size:13px;">' + s.name + '</div><div style="font-size:11px;color:var(--text-secondary);">' + s.desc + '</div></div>' +
+                '</button>';
+            }).join('') +
+        '</div>' +
+
+        '<div style="display:flex;gap:12px;align-items:center;">' +
+            '<label style="font-size:13px;color:var(--text-secondary);white-space:nowrap;">Primary</label>' +
+            '<input type="color" id="bannerAccent1" value="' + accent1 + '" onchange="setBannerBorder(getBannerBorderStyle(), this.value, document.getElementById(\'bannerAccent2\').value)" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;">' +
+            '<label style="font-size:13px;color:var(--text-secondary);white-space:nowrap;">Secondary</label>' +
+            '<input type="color" id="bannerAccent2" value="' + accent2 + '" onchange="setBannerBorder(getBannerBorderStyle(), document.getElementById(\'bannerAccent1\').value, this.value)" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;">' +
         '</div>' +
     '</div>';
 }
