@@ -2257,28 +2257,38 @@
         }
 
 
-        /* ContentEditable placeholder */
-        .post-textarea[contenteditable]:empty:before {
-            content: attr(data-placeholder);
-            color: var(--text-secondary);
-            pointer-events: none;
+        /* Compact icon-only compose buttons */
+        .compose-icon-btn {
+            padding: 8px 10px !important;
+            min-width: unset !important;
+            gap: 0 !important;
+        }
+        .compose-icon-btn span {
+            display: none;
+        }
+        .compose-icon-btn i,
+        .compose-icon-btn > span[style] {
+            display: inline !important;
         }
 
-        /* Hashtag highlight in posts — yellow for Polleneer */
-        .hashtag-highlight {
+        /* Hashtag highlight in rendered posts — yellow */
+        .hashtag-link {
             color: var(--honey-yellow);
             cursor: pointer;
             text-decoration: none;
             font-weight: 500;
         }
-        .hashtag-highlight:hover {
+        .hashtag-link:hover {
             text-decoration: underline;
         }
 
-        /* Bold/Italic button styling in toolbar */
-        .action-btn i.fa-bold,
-        .action-btn i.fa-italic {
-            font-size: 14px;
+
+        /* ContentEditable placeholder */
+        .post-textarea[contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: var(--text-secondary);
+            pointer-events: none;
+            display: block;
         }
 
 </style>
@@ -2292,7 +2302,7 @@
     <!-- Authentication Screen -->
     <div id="authScreen" class="auth-container">
         <div class="auth-left">
-            <div class="bee-animation">ð</div>
+            <div class="bee-animation">🐝</div>
             <h1>Welcome to Polleneer</h1>
             <p>Where ideas take flight! Join our hive and connect with friends, share thoughts, and customize your space like never before.</p>
             <div style="margin-top: 40px; font-size: 14px; opacity: 0.8;">
@@ -2396,7 +2406,7 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="logo" onclick="goToHome()">
-                <div class="logo-icon">ð</div>
+                <div class="logo-icon">🐝</div>
                 <div class="logo-text">Polleneer</div>
             </div>
             
@@ -2443,7 +2453,7 @@
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=BeeKeeper" alt="Profile" class="user-avatar" id="sidebarUserAvatar">
                         <div class="user-details">
                             <h3 id="sidebarUserName">MichaelTheGreat</h3>
-                            <p><span class="bee-role" id="sidebarUserRole">Queen Bee</span> â¢ <span id="sidebarHoneyPoints">1,247</span>ð¯</p>
+                            <p><span class="bee-role" id="sidebarUserRole">Queen Bee</span> • <span id="sidebarHoneyPoints">1,247</span>🍯</p>
                         </div>
                     </div>
                     
@@ -2586,59 +2596,51 @@
             <div class="modal-body">
                 <div class="post-input" style="border: none; padding: 0;">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=BeeKeeper" alt="Profile" class="user-avatar-small" id="modalUserAvatar">
-                    <div class="post-textarea" id="postContent" contenteditable="true" data-placeholder="What's buzzing in your mind? Start pollinating ideas..." style="min-height: 150px; outline: none; white-space: pre-wrap; word-wrap: break-word; overflow-y: auto;"></div>
+                    <div class="post-textarea" id="postContent" contenteditable="true" data-placeholder="What's buzzing in your mind? Start pollinating ideas..." style="min-height: 150px; outline: none; white-space: pre-wrap; word-wrap: break-word; overflow-y: auto;" oninput="highlightHashtags(this)"></div>
                 </div>
 
                 <div style="margin: 20px 0;">
                     <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <div class="file-input-wrapper">
                             <input type="file" class="file-input" id="mediaUpload" accept="image/*,video/*" multiple onchange="handleMediaUpload(event)">
-                            <button class="action-btn" onclick="document.getElementById('mediaUpload').click()">
+                            <button class="action-btn compose-icon-btn" onclick="document.getElementById('mediaUpload').click()" title="Media">
                                 <i class="fas fa-image"></i>
-                                <span>Media</span>
                             </button>
                         </div>
 
-                        <button class="action-btn" onclick="showGifPicker()">
-                            <span style="font-weight:bold;font-size:12px;border:1.5px solid currentColor;border-radius:4px;padding:0 4px;line-height:1.4;">GIF</span>
-                            <span>GIF</span>
+                        <button class="action-btn compose-icon-btn" onclick="showGifPicker()" title="GIF">
+                            <span style="font-weight:bold;font-size:11px;border:1.5px solid currentColor;border-radius:3px;padding:0 3px;line-height:1.3;">GIF</span>
                         </button>
 
-                        <button class="action-btn" onclick="showStickerPicker()">
+                        <button class="action-btn compose-icon-btn" onclick="showStickerPicker()" title="Stickers">
                             <i class="fas fa-note-sticky"></i>
-                            <span>Stickers</span>
                         </button>
 
-                        <button class="action-btn" onclick="showEmojiPicker()">
+                        <button class="action-btn compose-icon-btn" onclick="showEmojiPicker()" title="Emoji">
                             <i class="fas fa-face-smile"></i>
-                            <span>Emoji</span>
                         </button>
 
-                        <button class="action-btn" onclick="showLinkModal()">
+                        <button class="action-btn compose-icon-btn" onclick="showLinkModal()" title="Link">
                             <i class="fas fa-link"></i>
-                            <span>Link</span>
                         </button>
 
-                        <button class="action-btn" onclick="createPoll()">
+                        <button class="action-btn compose-icon-btn" onclick="createPoll()" title="Poll">
                             <i class="fas fa-poll"></i>
-                            <span>Poll</span>
                         </button>
 
-                        <button class="action-btn" onclick="showLocationPicker()">
+                        <button class="action-btn compose-icon-btn" onclick="showLocationPicker()" title="Location">
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>Location</span>
                         </button>
 
-                        <button class="action-btn" onclick="showSchedulePost()">
+                        <button class="action-btn compose-icon-btn" onclick="showSchedulePost()" title="Schedule">
                             <i class="fas fa-clock"></i>
-                            <span>Schedule</span>
                         </button>
 
-                        <button class="action-btn" onclick="toggleBold()" title="Bold">
+                        <button class="action-btn compose-icon-btn" onclick="toggleBold()" title="Bold">
                             <i class="fas fa-bold"></i>
                         </button>
 
-                        <button class="action-btn" onclick="toggleItalic()" title="Italic">
+                        <button class="action-btn compose-icon-btn" onclick="toggleItalic()" title="Italic">
                             <i class="fas fa-italic"></i>
                         </button>
 
@@ -2750,7 +2752,7 @@
                     </div>
                 </div>
                 <div style="color: var(--text-secondary); font-size: 12px; text-align: center; margin-bottom: 20px;">
-                    Supported: JPG, PNG, GIF â¢ Max 5MB
+                    Supported: JPG, PNG, GIF • Max 5MB
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button class="action-btn" onclick="closeModal('avatarModal')">
@@ -2772,7 +2774,7 @@
                 <div style="text-align: center; padding: 20px 0;">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=BeeKeeper" alt="Profile" id="menuUserAvatar" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--honey-yellow); margin-bottom: 15px; cursor: pointer;" onclick="goToProfile()">
                     <h3 style="margin-bottom: 5px;" id="menuUserName">MichaelTheGreat</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: 20px;" id="menuUserRole">@michaelthegreat Â· Queen Bee</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;" id="menuUserRole">@michaelthegreat · Queen Bee</p>
                 </div>
                 
                 <div style="display: flex; justify-content: space-around; margin-bottom: 20px; text-align: center;">
@@ -3196,7 +3198,7 @@
             {
                 id: 1,
                 userId: 2,
-                content: "Just finished designing a new garden layout that incorporates both native plants and edible crops. The cross-pollination between biodiversity and food security is fascinating! ðð¸",
+                content: "Just finished designing a new garden layout that incorporates both native plants and edible crops. The cross-pollination between biodiversity and food security is fascinating! 🐝🌸",
                 tags: ['#Permaculture', '#UrbanFarming', '#BeeFriendly'],
                 media: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
                 likes: 127,
@@ -3210,7 +3212,7 @@
             {
                 id: 2,
                 userId: 3,
-                content: "Working on a new algorithm that mimics bee colony optimization for solving complex routing problems. Nature's solutions are often the most elegant! ðð»\n\nBuilding on @FloraCreative's garden design principles.",
+                content: "Working on a new algorithm that mimics bee colony optimization for solving complex routing problems. Nature's solutions are often the most elegant! 🐝💻\n\nBuilding on @FloraCreative's garden design principles.",
                 tags: ['#SwarmIntelligence', '#Algorithms', '#NatureInspired', '#CrossPollination'],
                 likes: 89,
                 comments: 24,
@@ -3223,7 +3225,7 @@
             {
                 id: 3,
                 userId: 1,
-                content: "Greetings, fellow pollinators! ð\n\nThe hive has reached 10,000 active members today! Watching ideas cross-pollinate across disciplines has been incredible.\n\nRemember: Every idea shared here creates ripples throughout our network. Keep pollinating, keep connecting, and let's build something beautiful together.",
+                content: "Greetings, fellow pollinators! 🐝\n\nThe hive has reached 10,000 active members today! Watching ideas cross-pollinate across disciplines has been incredible.\n\nRemember: Every idea shared here creates ripples throughout our network. Keep pollinating, keep connecting, and let's build something beautiful together.",
                 tags: ['#Polleneer', '#HiveGrowth', '#CrossPollination', '#BeeTheChange'],
                 media: 'https://images.unsplash.com/photo-1587923623987-c7e4083beb23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
                 likes: 521,
@@ -3249,7 +3251,7 @@
         const SAMPLE_COMMENTS = {
             1: [
                 { id: 1, userId: 3, text: 'This garden design is amazing! Could you share more details about the native plants?', createdAt: '1h ago' },
-                { id: 2, userId: 4, text: 'Love the integration of food production and biodiversity! ð', createdAt: '45m ago' },
+                { id: 2, userId: 4, text: 'Love the integration of food production and biodiversity! 🐝', createdAt: '45m ago' },
                 { id: 3, userId: 1, text: 'Great work! This is exactly what we need more of!', createdAt: '30m ago' }
             ],
             2: [
@@ -3257,9 +3259,9 @@
                 { id: 5, userId: 1, text: 'Nature-inspired algorithms are the future!', createdAt: '1h ago' }
             ],
             3: [
-                { id: 6, userId: 2, text: 'Congratulations on this milestone! ð', createdAt: '5h ago' },
+                { id: 6, userId: 2, text: 'Congratulations on this milestone! 🎉', createdAt: '5h ago' },
                 { id: 7, userId: 3, text: '10,000 members! That\'s incredible growth!', createdAt: '4h ago' },
-                { id: 8, userId: 4, text: 'Here\'s to the next 10,000! ð', createdAt: '3h ago' }
+                { id: 8, userId: 4, text: 'Here\'s to the next 10,000! 🐝', createdAt: '3h ago' }
             ]
         };
 
@@ -3645,7 +3647,7 @@
             
             trendingList.innerHTML = TRENDING_TOPICS.map(topic => `
                 <li class="trend-item" onclick="searchTag('${topic.tag}')">
-                    <div class="trend-category">${topic.category} Â· Trending</div>
+                    <div class="trend-category">${topic.category} · Trending</div>
                     <div class="trend-tag">${topic.tag}</div>
                     <div class="trend-stats">${topic.posts} posts</div>
                 </li>
@@ -3748,7 +3750,7 @@
                     currentUser = { ...ADMIN_CREDENTIALS };
                     isAdmin = true;
                     document.getElementById('adminPanelBtn').style.display = 'block';
-                    showToast('Welcome back, Admin! ð');
+                    showToast('Welcome back, Admin! 🐝');
                 } else {
                     showToast('Invalid password for admin account');
                     return;
@@ -3767,7 +3769,7 @@
             showApp();
             updateUIForUser();
             loadHomeFeed();
-            showToast(`Welcome back, ${currentUser.username}! ð`);
+            showToast(`Welcome back, ${currentUser.username}! 🐝`);
         }
 
         function handleRegister(e) {
@@ -3816,7 +3818,7 @@
             showApp();
             updateUIForUser();
             loadHomeFeed();
-            showToast(`Welcome to Polleneer, ${username}! ð You've earned 100 Honey Points!`);
+            showToast(`Welcome to Polleneer, ${username}! 🎉 You've earned 100 Honey Points!`);
             showLoginForm();
         }
 
@@ -3852,7 +3854,7 @@
                 localStorage.removeItem('polleneer_user');
                 closeModal('profileMenuModal');
                 showAuth();
-                showToast('You have been logged out. Come back soon! ð');
+                showToast('You have been logged out. Come back soon! 🐝');
             }
         }
 
@@ -3879,7 +3881,7 @@
             
             document.getElementById('sidebarUserName').textContent = currentUser.displayName;
             document.getElementById('menuUserName').textContent = currentUser.displayName;
-            document.getElementById('menuUserRole').textContent = `@${currentUser.username} Â· ${getRoleName(currentUser.role)}`;
+            document.getElementById('menuUserRole').textContent = `@${currentUser.username} · ${getRoleName(currentUser.role)}`;
             document.getElementById('sidebarUserRole').textContent = getRoleName(currentUser.role);
             document.getElementById('sidebarHoneyPoints').textContent = currentUser.honeyPoints.toLocaleString();
             document.getElementById('honeyPoints').textContent = currentUser.honeyPoints.toLocaleString();
@@ -3978,7 +3980,7 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
                         ${TRENDING_TOPICS.map(topic => `
                             <div class="trend-item" style="background: var(--bg-secondary); padding: 15px; border-radius: 10px; cursor: pointer;" onclick="searchTag('${topic.tag}')">
-                                <div class="trend-category">${topic.category} Â· Trending</div>
+                                <div class="trend-category">${topic.category} · Trending</div>
                                 <div class="trend-tag">${topic.tag}</div>
                                 <div class="trend-stats">${topic.posts} posts</div>
                             </div>
@@ -4205,7 +4207,7 @@
                                     ${user.displayName}
                                     <span class="user-role-badge">${getRoleName(user.role)}</span>
                                 </div>
-                                <div class="post-meta">@${user.username} Â· ${post.createdAt}</div>
+                                <div class="post-meta">@${user.username} · ${post.createdAt}</div>
                             </div>
                         </div>
                         
@@ -4326,8 +4328,8 @@
             return content
                 .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                .replace(/@(\w+)/g, '<a href="#" onclick="searchUser(\'$1\')" class="hashtag-highlight" style="color: var(--honey-yellow);">@$1</a>')
-                .replace(/#([\w\u00C0-\u024F]+)/g, '<a href="#" onclick="searchTag(\'#$1\')" class="hashtag-highlight">#$1</a>')
+                .replace(/@(\w+)/g, '<a href="#" onclick="searchUser(\'$1\')" class="hashtag-link" style="color: var(--honey-yellow);">@$1</a>')
+                .replace(/#([\w\u00C0-\u024F]+)/g, '<a href="#" onclick="searchTag(\'#$1\')" class="hashtag-link">#$1</a>')
                 .replace(/\n/g, '<br>');
         }
 
@@ -4364,7 +4366,7 @@
                 currentUser.honeyPoints += 5;
                 updateUIForUser();
                 localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-                showToast('+5 Honey Points for liking a post! ð¯');
+                showToast('+5 Honey Points for liking a post! 🍯');
             }
         }
 
@@ -4450,7 +4452,7 @@
             currentUser.honeyPoints += 10;
             updateUIForUser();
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-            showToast('+10 Honey Points for commenting! ð¯');
+            showToast('+10 Honey Points for commenting! 🍯');
         }
 
         function likeComment(postId, commentId) {
@@ -4494,7 +4496,7 @@
                 currentUser.honeyPoints += 15;
                 updateUIForUser();
                 localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-                showToast('+15 Honey Points for pollinating an idea! ð¯');
+                showToast('+15 Honey Points for pollinating an idea! 🍯');
             }
         }
 
@@ -4504,7 +4506,7 @@
             
             const shareUrl = `https://polleneer.com/post/${postId}`;
             navigator.clipboard.writeText(shareUrl).then(() => {
-                showToast('Post link copied to clipboard! ð');
+                showToast('Post link copied to clipboard! 📋');
             }).catch(() => {
                 prompt('Copy this link to share:', shareUrl);
             });
@@ -4527,7 +4529,7 @@
         // POST CREATION FUNCTIONS
         // ============================================
         function submitPost() {
-            const content = getPlainTextFromEditable('postContent').trim();
+            const content = getPlainText('postContent').trim();
             if (!content) {
                 showToast('Please write something before posting!');
                 return;
@@ -4537,7 +4539,7 @@
                 id: posts.length + 1,
                 userId: currentUser.id,
                 content: content,
-                tags: extractHashtags(getPlainTextFromEditable('postContent')),
+                tags: extractHashtags(getPlainText('postContent')),
                 media: document.getElementById('mediaPreview').querySelector('img')?.src || null,
                 likes: 0,
                 comments: 0,
@@ -4550,8 +4552,8 @@
             
             posts.unshift(newPost);
             
-            document.getElementById('postContent').textContent = '';
-            // postTags removed — hashtags extracted from content
+            clearEditable('postContent');
+            // postTags removed
             document.getElementById('mediaPreview').innerHTML = '';
             document.getElementById('postMediaContainer').classList.add('hidden');
             document.getElementById('postPollContainer').classList.add('hidden');
@@ -4566,7 +4568,7 @@
             updateUIForUser();
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
             
-            showToast('Post created successfully! +25 Honey Points ð¯');
+            showToast('Post created successfully! +25 Honey Points 🍯');
         }
 
         function createPoll() {
@@ -4660,11 +4662,10 @@
         }
 
         function joinCommunity(name) {
-            showToast(`Joined ${name} community! ð`);
+            showToast(`Joined ${name} community! 🎉`);
         }
 
         function searchTag(tag) {
-            // Show a feed of posts matching this hashtag
             currentPage = 'search';
             const cleanTag = tag.toLowerCase();
             const matchingPosts = posts.filter(p => {
@@ -4672,7 +4673,6 @@
                 const tagMatch = p.tags && p.tags.some(t => t.toLowerCase() === cleanTag);
                 return contentMatch || tagMatch;
             });
-
             const mainContent = document.getElementById('mainContent');
             mainContent.innerHTML = `
                 <div style="padding: 20px;">
@@ -4682,8 +4682,7 @@
                         <span style="color: var(--text-secondary); font-size: 14px;">${matchingPosts.length} post${matchingPosts.length !== 1 ? 's' : ''}</span>
                     </div>
                     <div class="feed" id="tagFeed"></div>
-                </div>
-            `;
+                </div>`;
             const feedEl = document.getElementById('tagFeed');
             if (matchingPosts.length === 0) {
                 feedEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);"><i class="fas fa-hashtag" style="font-size:48px;margin-bottom:15px;opacity:0.3;display:block;"></i><p>No posts found with this hashtag yet.</p></div>';
@@ -4817,14 +4816,14 @@ function showCreatePostModal() {
     if (!currentUser) { showToast('Please log in first!'); return; }
     const modalAvatar = document.getElementById('modalUserAvatar');
     if (modalAvatar) modalAvatar.src = currentUser.avatar;
-    document.getElementById('postContent').textContent = '';
+    clearEditable('postContent');
     const mediaPreview = document.getElementById('mediaPreview');
     if (mediaPreview) mediaPreview.style.display = 'none';
-    // Tags container removed — hashtags auto-extracted from content
+    // Tags removed
     const pollContainer = document.getElementById('postPollContainer');
     if (pollContainer) pollContainer.style.display = 'none';
     openModal('createPostModal');
-    const _pc = document.getElementById('postContent'); if (_pc) _pc.focus();
+    document.getElementById('postContent').focus();
 }
 
 // 2. showHoneyShop - was just an alert, now builds full shop UI
@@ -4855,7 +4854,7 @@ function showHoneyShop() {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                 <h3 style="color: var(--honey-yellow);"><i class="fas fa-store"></i> Honey Shop</h3>
                 <div style="background: linear-gradient(135deg, var(--honey-yellow), var(--hive-orange)); padding: 8px 20px; border-radius: 20px; font-weight: bold; color: #000;">
-                    ð¯ ${currentUser.honeyPoints.toLocaleString()} Honey Points
+                    🍯 ${currentUser.honeyPoints.toLocaleString()} Honey Points
                 </div>
             </div>
 
@@ -4873,7 +4872,7 @@ function showHoneyShop() {
                         <h4 style="margin-bottom: 5px; text-align: center;">${item.name}</h4>
                         <p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 15px;">${item.desc}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="color: var(--honey-yellow); font-weight: bold;">ð¯ ${item.cost}</span>
+                            <span style="color: var(--honey-yellow); font-weight: bold;">🍯 ${item.cost}</span>
                             <button onclick="buyShopItem(${item.id}, '${item.name}', ${item.cost})" 
                                 style="background: ${currentUser.honeyPoints >= item.cost ? 'var(--honey-yellow)' : 'var(--bg-input)'}; 
                                        color: ${currentUser.honeyPoints >= item.cost ? '#000' : 'var(--text-secondary)'}; 
@@ -4894,10 +4893,10 @@ function buyShopItem(id, name, cost) {
         showToast(`Not enough honey! You need ${cost - currentUser.honeyPoints} more points.`);
         return;
     }
-    if (confirm(`Buy "${name}" for ð¯ ${cost} Honey Points?`)) {
+    if (confirm(`Buy "${name}" for 🍯 ${cost} Honey Points?`)) {
         currentUser.honeyPoints -= cost;
         localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-        showToast(`ð Purchased "${name}"! -${cost} honey points`);
+        showToast(`🎉 Purchased "${name}"! -${cost} honey points`);
         showHoneyShop(); // Refresh
     }
 }
@@ -4933,7 +4932,7 @@ function showSettings() {
                         <button onclick="editSettingsField('email')" style="background: var(--honey-yellow); color: #000; border: none; padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Edit</button>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: var(--bg-input);">
-                        <div><strong>Password</strong><br><span style="color: var(--text-secondary); font-size: 13px;">â¢â¢â¢â¢â¢â¢â¢â¢</span></div>
+                        <div><strong>Password</strong><br><span style="color: var(--text-secondary); font-size: 13px;">••••••••</span></div>
                         <button onclick="editSettingsField('password')" style="background: var(--honey-yellow); color: #000; border: none; padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Change</button>
                     </div>
                 </div>
@@ -5013,12 +5012,12 @@ function showHelp() {
                 ${[
                     { q: 'What is Polleneer?', a: 'Polleneer is a bee-themed social platform where your interactions mimic pollination. Every post spreads ideas like pollen, every share cross-pollinates content, and together we build a thriving digital hive.' },
                     { q: 'What are Honey Points?', a: 'Honey Points are our reward currency. Earn them by posting (+25), commenting (+10), getting likes (+5), getting pollinations (+15), gaining followers (+20), and daily logins (+50). Spend them in the Honey Shop!' },
-                    { q: 'What are Bee Roles?', a: 'Every member has a role in the hive. You start as a Worker Bee and can evolve through activity: Worker â Creator â Pollinator â Scholar â Social Bee. Earn enough and become a Golden Bee or Legend Bee!' },
-                    { q: 'How does Pollination work?', a: 'Pollination is like retweeting â you spread someone\'s post to your followers, cross-pollinating ideas across the hive. The original creator earns +15 Honey Points!' },
+                    { q: 'What are Bee Roles?', a: 'Every member has a role in the hive. You start as a Worker Bee and can evolve through activity: Worker → Creator → Pollinator → Scholar → Social Bee. Earn enough and become a Golden Bee or Legend Bee!' },
+                    { q: 'How does Pollination work?', a: 'Pollination is like retweeting — you spread someone\'s post to your followers, cross-pollinating ideas across the hive. The original creator earns +15 Honey Points!' },
                     { q: 'What are Hives/Communities?', a: 'Hives are communities where bees with shared interests gather. Create or join hives to find your people and share focused content.' },
-                    { q: 'How do I customize my profile?', a: 'Click your profile menu â Customization. You can change colors, backgrounds, add music, and even write custom CSS. Some premium options are available in the Honey Shop.' },
+                    { q: 'How do I customize my profile?', a: 'Click your profile menu → Customization. You can change colors, backgrounds, add music, and even write custom CSS. Some premium options are available in the Honey Shop.' },
                     { q: 'What is the Golden Hive Algorithm?', a: 'Our algorithm learns what content resonates with you and serves posts that nourish your interests. Unlike other platforms, we optimize for depth of connection, not just engagement.' },
-                    { q: 'How do I become a Genesis Pollinator?', a: 'The first 1,000 members are forever etched as Genesis Pollinators â founding members of the hive. Your username will be in our Genesis Hall!' },
+                    { q: 'How do I become a Genesis Pollinator?', a: 'The first 1,000 members are forever etched as Genesis Pollinators — founding members of the hive. Your username will be in our Genesis Hall!' },
                 ].map((faq, i) => `
                     <div class="post-card" style="padding: 15px; margin-bottom: 10px; cursor: pointer;" onclick="toggleFAQ(${i})">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -5073,11 +5072,11 @@ function showProfileMenu() {
 
 // 6 & 7. OAuth handlers - show proper "coming soon" with context
 function handleGoogleLogin() {
-    showToast('ð Google Sign-In coming soon! Use email login for now.');
+    showToast('🐝 Google Sign-In coming soon! Use email login for now.');
 }
 
 function handleGithubLogin() {
-    showToast('ð GitHub Sign-In coming soon! Use email login for now.');
+    showToast('🐝 GitHub Sign-In coming soon! Use email login for now.');
 }
 
 // 8. handleForgotPassword - now shows a proper reset form
@@ -5085,7 +5084,7 @@ function handleForgotPassword(e) {
     if (e) e.preventDefault();
     const email = prompt('Enter your email address for password reset:');
     if (email && email.includes('@')) {
-        showToast('ð§ Password reset link sent! Check your email.');
+        showToast('📧 Password reset link sent! Check your email.');
     } else if (email) {
         showToast('Please enter a valid email address.');
     }
@@ -5115,11 +5114,11 @@ function searchUser(username) {
                         <img src="${user.avatar}" alt="${user.username}" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--honey-yellow);">
                         <div style="flex: 1;">
                             <strong>${user.displayName || user.username}</strong>
-                            <div style="color: var(--text-secondary); font-size: 13px;">@${user.username} Â· ${getRoleName(user.role)}</div>
+                            <div style="color: var(--text-secondary); font-size: 13px;">@${user.username} · ${getRoleName(user.role)}</div>
                             <div style="color: var(--text-secondary); font-size: 12px; margin-top: 3px;">${user.bio || ''}</div>
                         </div>
                         <div style="text-align: right;">
-                            <span style="color: var(--honey-yellow); font-size: 13px;">ð¯ ${user.honeyPoints}</span>
+                            <span style="color: var(--honey-yellow); font-size: 13px;">🍯 ${user.honeyPoints}</span>
                         </div>
                     </div>
                 `).join('')}
@@ -5143,7 +5142,7 @@ function searchTag(tag) {
                 <i class="fas fa-hashtag"></i> ${tag}
             </h3>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">${results.length} posts</p>
-            <div id="tagFeed">${results.length > 0 ? results.map(post => createPostHTML(post)).join('') : '<div class="post-card" style="padding: 30px; text-align: center; color: var(--text-secondary);">No posts found for this tag yet. Be the first to buzz about it! ð</div>'}</div>
+            <div id="tagFeed">${results.length > 0 ? results.map(post => createPostHTML(post)).join('') : '<div class="post-card" style="padding: 30px; text-align: center; color: var(--text-secondary);">No posts found for this tag yet. Be the first to buzz about it! 🐝</div>'}</div>
             <button onclick="goToHome()" style="margin-top: 15px; background: var(--bg-input); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 10px; cursor: pointer; color: var(--text-primary);">
                 <i class="fas fa-arrow-left"></i> Back to Feed
             </button>
@@ -5223,7 +5222,7 @@ function createCommunity() {
         return;
     }
 
-    const name = prompt('ð Name your new Hive:');
+    const name = prompt('🐝 Name your new Hive:');
     if (!name || !name.trim()) return;
 
     const description = prompt('Describe your Hive (what is it about?):');
@@ -5242,7 +5241,7 @@ function createCommunity() {
     currentUser.honeyPoints -= 200;
     localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
 
-    showToast(`ð "${name}" hive created! -200 Honey Points`);
+    showToast(`🎉 "${name}" hive created! -200 Honey Points`);
     goToCommunities();
 }
 
@@ -5264,7 +5263,7 @@ function joinCommunity(name) {
         localStorage.setItem('polleneer_joined_hives', JSON.stringify(joinedHives));
         currentUser.honeyPoints += 20;
         localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-        showToast(`ð Joined ${name}! +20 Honey Points`);
+        showToast(`🎉 Joined ${name}! +20 Honey Points`);
     }
 
     goToCommunities();
@@ -5296,7 +5295,7 @@ function manageFriends() {
                         <img src="${user.avatar}" alt="${user.username}" style="width: 50px; height: 50px; border-radius: 50%; cursor: pointer;" onclick="goToUserProfile(${user.id})">
                         <div style="flex: 1; cursor: pointer;" onclick="goToUserProfile(${user.id})">
                             <strong>${user.displayName || user.username}</strong>
-                            <div style="color: var(--text-secondary); font-size: 13px;">@${user.username} Â· ð¯ ${user.honeyPoints}</div>
+                            <div style="color: var(--text-secondary); font-size: 13px;">@${user.username} · 🍯 ${user.honeyPoints}</div>
                         </div>
                         <button onclick="toggleFollow(${user.id})" style="background: var(--honey-yellow); color: #000; border: none; padding: 6px 15px; border-radius: 15px; cursor: pointer; font-size: 12px;">
                             Following
@@ -5323,7 +5322,7 @@ function refreshSuggestions() {
     const shuffled = users.filter(u => u.id !== currentUser.id).sort(() => Math.random() - 0.5);
     const suggestedUsers = document.getElementById('suggestedUsers');
     if (!suggestedUsers) { 
-        showToast('Suggestions refreshed! ð'); 
+        showToast('Suggestions refreshed! 🔄'); 
         return; 
     }
 
@@ -5340,7 +5339,7 @@ function refreshSuggestions() {
         </div>
     `).join('');
 
-    showToast('Suggestions refreshed! ð');
+    showToast('Suggestions refreshed! 🔄');
 }
 
 // 16. likeComment - now properly toggles like on comments
@@ -5352,21 +5351,21 @@ function likeComment(commentId, postId) {
         if (isLiked) {
             likeBtn.style.color = 'var(--honey-yellow)';
             currentUser.honeyPoints += 1;
-            showToast('ð Liked comment!');
+            showToast('💛 Liked comment!');
         } else {
             likeBtn.style.color = '';
             currentUser.honeyPoints -= 1;
         }
         localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
     } else {
-        showToast('ð Liked comment!');
+        showToast('💛 Liked comment!');
     }
 }
 
 // 17. showAdminPanel - now works for all users but restricts non-admins
 function showAdminPanel() {
     if (!currentUser || (currentUser.role !== 'queen' && currentUser.role !== 'admin' && !isAdmin)) {
-        showToast('ð Admin access required. Only Queen/King Bees can access the admin panel.');
+        showToast('🔒 Admin access required. Only Queen/King Bees can access the admin panel.');
         return;
     }
     openModal('adminPanelModal');
@@ -5440,7 +5439,7 @@ function goToUserProfile(userId) {
                 <div style="display: flex; gap: 20px; margin-bottom: 20px; color: var(--text-secondary); font-size: 14px;">
                     <span><strong style="color: var(--text-primary);">${user.following}</strong> Following</span>
                     <span><strong style="color: var(--text-primary);">${user.followers}</strong> Followers</span>
-                    <span>ð¯ <strong style="color: var(--honey-yellow);">${user.honeyPoints.toLocaleString()}</strong></span>
+                    <span>🍯 <strong style="color: var(--honey-yellow);">${user.honeyPoints.toLocaleString()}</strong></span>
                 </div>
             </div>
 
@@ -5478,7 +5477,7 @@ function toggleFollowUser(userId) {
             btn.style.color = 'var(--text-primary)';
             btn.style.border = '1px solid var(--border-color)';
         }
-        showToast('ð Following! +5 Honey Points');
+        showToast('🐝 Following! +5 Honey Points');
     }
 
     localStorage.setItem('polleneer_following_' + currentUser.id, JSON.stringify(following));
@@ -5505,7 +5504,7 @@ function showNotifications() {
                         <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">${n.time}</div>
                     </div>
                 </div>
-            `).join('') : '<div class="post-card" style="padding: 30px; text-align: center; color: var(--text-secondary);">No notifications yet. Start buzzing! ð</div>'}
+            `).join('') : '<div class="post-card" style="padding: 30px; text-align: center; color: var(--text-secondary);">No notifications yet. Start buzzing! 🐝</div>'}
         </div>
     `;
 }
@@ -5532,7 +5531,7 @@ function showMessages() {
                     </div>
                     ${m.unread ? '<div style="width: 8px; height: 8px; border-radius: 50%; background: var(--honey-yellow);"></div>' : ''}
                 </div>
-            `).join('') : '<div class="post-card" style="padding: 30px; text-align: center; color: var(--text-secondary);">No messages yet. Connect with the hive! ð</div>'}
+            `).join('') : '<div class="post-card" style="padding: 30px; text-align: center; color: var(--text-secondary);">No messages yet. Connect with the hive! 🐝</div>'}
 
             <div style="text-align: center; margin-top: 20px;">
                 <button onclick="showToast('Full DM system coming in Phase 2!')" style="background: var(--honey-yellow); color: #000; border: none; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: bold;">
@@ -5598,39 +5597,56 @@ function showGifPicker() {
     document.getElementById('gifSearchInput').focus();
 }
 
-function getDefaultGifs() {
-    // Curated bee-themed and popular GIF URLs (using static URLs for demo)
-    const gifs = [
-        { url: 'https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif', alt: 'Bee flying' },
-        { url: 'https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif', alt: 'Celebration' },
-        { url: 'https://media.giphy.com/media/xUPGGDNsLvqsBOhuU0/giphy.gif', alt: 'Dancing' },
-        { url: 'https://media.giphy.com/media/l4pTfx2qLszoacZRS/giphy.gif', alt: 'Thumbs up' },
-        { url: 'https://media.giphy.com/media/3ohzdIuqJoo8QdKlnW/giphy.gif', alt: 'Laughing' },
-        { url: 'https://media.giphy.com/media/l0MYt5jPR6QX5APm0/giphy.gif', alt: 'Mind blown' },
-        { url: 'https://media.giphy.com/media/xT0xeJpnrWC3XWblEk/giphy.gif', alt: 'Fire' },
-        { url: 'https://media.giphy.com/media/l41YtZOb9EUABnuqA/giphy.gif', alt: 'Wow' },
-        { url: 'https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif', alt: 'Cat' },
-        { url: 'https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif', alt: 'Applause' },
-        { url: 'https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif', alt: 'Love' },
-        { url: 'https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif', alt: 'Party' },
-    ];
+const GIPHY_API_KEY = 'lKalAN02l9iiqHEfYNZLrMSTnYtKPsgw';
+let _gifSearchTimeout = null;
 
-    return gifs.map(g => `
-        <img src="${g.url}" alt="${g.alt}" 
-            style="width:100%;border-radius:10px;cursor:pointer;object-fit:cover;height:120px;" 
-            loading="lazy"
-            onclick="selectGif('${g.url}')"
-            onerror="this.style.display='none'">
-    `).join('');
+function getDefaultGifs() {
+    // Load trending GIFs from GIPHY
+    const results = document.getElementById('gifResults');
+    if (results) results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Loading trending GIFs...</div>';
+    fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=20&rating=g`)
+        .then(r => r.json())
+        .then(data => {
+            if (results) results.innerHTML = renderGiphyResults(data.data);
+        })
+        .catch(() => {
+            if (results) results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">Could not load GIFs</div>';
+        });
+    return '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
 }
 
 function searchGifs(query) {
     const results = document.getElementById('gifResults');
     if (!query.trim()) {
-        results.innerHTML = getDefaultGifs();
+        getDefaultGifs();
         return;
     }
-    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">Searching for "' + query + '"...<br><small>Full GIF API integration coming with backend (Phase 3)</small></div>' + getDefaultGifs();
+    clearTimeout(_gifSearchTimeout);
+    _gifSearchTimeout = setTimeout(() => {
+        results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+        fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=20&rating=g`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.data && data.data.length > 0) {
+                    results.innerHTML = renderGiphyResults(data.data);
+                } else {
+                    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">No GIFs found for "' + query + '"</div>';
+                }
+            })
+            .catch(() => {
+                results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">Search failed</div>';
+            });
+    }, 300);
+}
+
+function renderGiphyResults(gifs) {
+    return gifs.map(g => `
+        <img src="$${g.images.fixed_height.url}" alt="$${g.title}" 
+            style="width:100%;border-radius:10px;cursor:pointer;object-fit:cover;height:120px;" 
+            loading="lazy"
+            onclick="selectGif('$${g.images.original.url}')"
+            onerror="this.style.display='none'">
+    `).join('') + '<div style="grid-column:1/-1;text-align:center;padding:8px;"><img src="https://giphy.com/static/img/poweredby_giphy.png" alt="Powered by GIPHY" style="height:20px;opacity:0.6;"></div>';
 }
 
 function selectGif(url) {
@@ -5646,7 +5662,7 @@ function selectGif(url) {
     }
     const overlay = document.getElementById('gifPickerOverlay');
     if (overlay) overlay.remove();
-    showToast('GIF added! ð¬');
+    showToast('GIF added! 🎬');
 }
 
 function removeMedia() {
@@ -5665,43 +5681,111 @@ function showStickerPicker() {
     stickerModal.onclick = function(e) { if(e.target === stickerModal) stickerModal.remove(); };
 
     const beeStickers = [
-        { emoji: 'ð', name: 'Bee' }, { emoji: 'ð¯', name: 'Honey' }, { emoji: 'ð¸', name: 'Flower' },
-        { emoji: 'ð»', name: 'Sunflower' }, { emoji: 'ð', name: 'Bug' }, { emoji: 'ð¦', name: 'Butterfly' },
-        { emoji: 'ðº', name: 'Hibiscus' }, { emoji: 'ð·', name: 'Tulip' }, { emoji: 'ðª»', name: 'Lavender' },
-        { emoji: 'ð¼', name: 'Blossom' }, { emoji: 'ðµï¸', name: 'Rosette' }, { emoji: 'ð', name: 'Bouquet' },
-        { emoji: 'ðª´', name: 'Plant' }, { emoji: 'ð¿', name: 'Herb' }, { emoji: 'ð', name: 'Leaf' },
-        { emoji: 'ð¾', name: 'Rice' }, { emoji: 'ðª¹', name: 'Nest' }, { emoji: 'ð', name: 'Lady Bug' },
+        { emoji: '\u{1f41d}', name: 'Bee' }, { emoji: '\u{1f36f}', name: 'Honey' }, { emoji: '\u{1f338}', name: 'Flower' },
+        { emoji: '\u{1f33b}', name: 'Sunflower' }, { emoji: '\u{1f41b}', name: 'Bug' }, { emoji: '\u{1f98b}', name: 'Butterfly' },
+        { emoji: '\u{1f33a}', name: 'Hibiscus' }, { emoji: '\u{1f337}', name: 'Tulip' }, { emoji: '\u{1fabB}', name: 'Lavender' },
+        { emoji: '\u{1f33c}', name: 'Blossom' }, { emoji: '\u{1f3f5}\ufe0f', name: 'Rosette' }, { emoji: '\u{1f490}', name: 'Bouquet' },
+        { emoji: '\u{1fab4}', name: 'Plant' }, { emoji: '\u{1f33f}', name: 'Herb' }, { emoji: '\u{1f343}', name: 'Leaf' },
+        { emoji: '\u{1f33e}', name: 'Rice' }, { emoji: '\u{1fab9}', name: 'Nest' }, { emoji: '\u{1f41e}', name: 'Lady Bug' },
     ];
 
     const funStickers = [
-        { emoji: 'â­', name: 'Star' }, { emoji: 'â¨', name: 'Sparkles' }, { emoji: 'ð«', name: 'Dizzy' },
-        { emoji: 'ð¥', name: 'Fire' }, { emoji: 'ð', name: 'Yellow Heart' }, { emoji: 'ð§¡', name: 'Orange Heart' },
-        { emoji: 'ð', name: 'Crown' }, { emoji: 'ð', name: 'Trophy' }, { emoji: 'ð¯', name: 'Bullseye' },
-        { emoji: 'ðª', name: 'Strong' }, { emoji: 'ð', name: 'Rocket' }, { emoji: 'â¡', name: 'Lightning' },
-        { emoji: 'ð', name: 'Party' }, { emoji: 'ð', name: 'Confetti' }, { emoji: 'ð¥³', name: 'Celebrate' },
-        { emoji: 'ð', name: 'Cool' }, { emoji: 'ð¤©', name: 'Starstruck' }, { emoji: 'ð¯', name: '100' },
+        { emoji: '\u2b50', name: 'Star' }, { emoji: '\u2728', name: 'Sparkles' }, { emoji: '\u{1f4ab}', name: 'Dizzy' },
+        { emoji: '\u{1f525}', name: 'Fire' }, { emoji: '\u{1f49b}', name: 'Yellow Heart' }, { emoji: '\u{1f9e1}', name: 'Orange Heart' },
+        { emoji: '\u{1f451}', name: 'Crown' }, { emoji: '\u{1f3c6}', name: 'Trophy' }, { emoji: '\u{1f3af}', name: 'Bullseye' },
+        { emoji: '\u{1f4aa}', name: 'Strong' }, { emoji: '\u{1f680}', name: 'Rocket' }, { emoji: '\u26a1', name: 'Lightning' },
+        { emoji: '\u{1f389}', name: 'Party' }, { emoji: '\u{1f38a}', name: 'Confetti' }, { emoji: '\u{1f973}', name: 'Celebrate' },
+        { emoji: '\u{1f60e}', name: 'Cool' }, { emoji: '\u{1f929}', name: 'Starstruck' }, { emoji: '\u{1f4af}', name: '100' },
     ];
 
     stickerModal.innerHTML = `
-        <div style="background:var(--bg-card);border-radius:15px;width:90%;max-width:400px;max-height:70vh;overflow:hidden;">
+        <div style="background:var(--bg-card);border-radius:15px;width:90%;max-width:450px;max-height:75vh;overflow:hidden;display:flex;flex-direction:column;">
             <div style="padding:15px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">
                 <h3 style="color:var(--honey-yellow);"><i class="fas fa-note-sticky"></i> Stickers</h3>
                 <button onclick="document.getElementById('stickerPickerOverlay').remove()" style="background:none;border:none;color:var(--text-primary);font-size:1.5em;cursor:pointer;">&times;</button>
             </div>
-            <div style="padding:15px;overflow-y:auto;max-height:55vh;">
-                <h4 style="margin-bottom:10px;color:var(--honey-yellow);font-size:13px;">ð BEE HIVE</h4>
+            <div style="display:flex;border-bottom:1px solid var(--border-color);">
+                <button onclick="showStickerTab('emoji')" id="stickerTabEmoji" style="flex:1;padding:10px;background:var(--honey-yellow);color:#000;border:none;cursor:pointer;font-weight:bold;font-size:13px;">Emoji</button>
+                <button onclick="showStickerTab('giphy')" id="stickerTabGiphy" style="flex:1;padding:10px;background:transparent;color:var(--text-secondary);border:none;cursor:pointer;font-weight:bold;font-size:13px;">GIPHY Stickers</button>
+            </div>
+            <div id="stickerContent" style="padding:15px;overflow-y:auto;max-height:55vh;">
+                <h4 style="margin-bottom:10px;color:var(--honey-yellow);font-size:13px;">\u{1f41d} BEE HIVE</h4>
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:20px;">
-                    ${beeStickers.map(s => `<button onclick="insertSticker('${s.emoji}')" title="${s.name}" style="font-size:28px;padding:8px;background:var(--bg-input);border:1px solid transparent;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--honey-yellow)';this.style.transform='scale(1.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='scale(1)'">${s.emoji}</button>`).join('')}
+                    ${beeStickers.map(s => '<button onclick="insertSticker(\'' + s.emoji + '\')" title="' + s.name + '" style="font-size:28px;padding:8px;background:var(--bg-input);border:1px solid transparent;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--honey-yellow)\';this.style.transform=\'scale(1.2)\'" onmouseout="this.style.borderColor=\'transparent\';this.style.transform=\'scale(1)\'">' + s.emoji + '</button>').join('')}
                 </div>
-                <h4 style="margin-bottom:10px;color:var(--honey-yellow);font-size:13px;">â­ POPULAR</h4>
+                <h4 style="margin-bottom:10px;color:var(--honey-yellow);font-size:13px;">\u2b50 POPULAR</h4>
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;">
-                    ${funStickers.map(s => `<button onclick="insertSticker('${s.emoji}')" title="${s.name}" style="font-size:28px;padding:8px;background:var(--bg-input);border:1px solid transparent;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--honey-yellow)';this.style.transform='scale(1.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='scale(1)'">${s.emoji}</button>`).join('')}
+                    ${funStickers.map(s => '<button onclick="insertSticker(\'' + s.emoji + '\')" title="' + s.name + '" style="font-size:28px;padding:8px;background:var(--bg-input);border:1px solid transparent;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor=\'var(--honey-yellow)\';this.style.transform=\'scale(1.2)\'" onmouseout="this.style.borderColor=\'transparent\';this.style.transform=\'scale(1)\'">' + s.emoji + '</button>').join('')}
                 </div>
             </div>
         </div>
     `;
 
     document.body.appendChild(stickerModal);
+}
+
+function showStickerTab(tab) {
+    const emojiBtn = document.getElementById('stickerTabEmoji');
+    const giphyBtn = document.getElementById('stickerTabGiphy');
+    const contentDiv = document.getElementById('stickerContent');
+
+    if (tab === 'emoji') {
+        emojiBtn.style.background = 'var(--honey-yellow)';
+        emojiBtn.style.color = '#000';
+        giphyBtn.style.background = 'transparent';
+        giphyBtn.style.color = 'var(--text-secondary)';
+        // Re-render emoji tab (trigger the modal rebuild)
+        document.getElementById('stickerPickerOverlay').remove();
+        showStickerPicker();
+    } else {
+        emojiBtn.style.background = 'transparent';
+        emojiBtn.style.color = 'var(--text-secondary)';
+        giphyBtn.style.background = 'var(--honey-yellow)';
+        giphyBtn.style.color = '#000';
+        contentDiv.innerHTML = '<div style="padding:10px;margin-bottom:10px;"><input type="text" id="stickerSearchInput" placeholder="Search GIPHY stickers..." oninput="searchGiphyStickers(this.value)" style="width:100%;padding:10px 15px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;"></div><div id="giphyStickerResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>';
+        // Load trending stickers
+        loadGiphyStickers('');
+        const input = document.getElementById('stickerSearchInput');
+        if (input) input.focus();
+    }
+}
+
+let _stickerSearchTimeout = null;
+function searchGiphyStickers(query) {
+    clearTimeout(_stickerSearchTimeout);
+    _stickerSearchTimeout = setTimeout(() => loadGiphyStickers(query), 300);
+}
+
+function loadGiphyStickers(query) {
+    const results = document.getElementById('giphyStickerResults');
+    if (!results) return;
+    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Loading stickers...</div>';
+
+    const endpoint = query.trim() 
+        ? 'https://api.giphy.com/v1/stickers/search?api_key=' + GIPHY_API_KEY + '&q=' + encodeURIComponent(query) + '&limit=18&rating=g'
+        : 'https://api.giphy.com/v1/stickers/trending?api_key=' + GIPHY_API_KEY + '&limit=18&rating=g';
+
+    fetch(endpoint)
+        .then(r => r.json())
+        .then(data => {
+            if (data.data && data.data.length > 0) {
+                results.innerHTML = data.data.map(s => 
+                    '<img src="' + s.images.fixed_height.url + '" alt="' + (s.title || 'sticker') + '" style="width:100%;border-radius:10px;cursor:pointer;height:100px;object-fit:cover;" loading="lazy" onclick="selectGiphySticker(\'' + s.images.original.url + '\')" onerror="this.style.display=\'none\'">'
+                ).join('') + '<div style="grid-column:1/-1;text-align:center;padding:8px;"><img src="https://giphy.com/static/img/poweredby_giphy.png" alt="Powered by GIPHY" style="height:18px;opacity:0.6;"></div>';
+            } else {
+                results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">No stickers found</div>';
+            }
+        })
+        .catch(() => {
+            results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-secondary);">Could not load stickers</div>';
+        });
+}
+
+function selectGiphySticker(url) {
+    // Insert as media (image) into the post, like a GIF
+    selectGif(url);
+    const overlay = document.getElementById('stickerPickerOverlay');
+    if (overlay) overlay.remove();
 }
 
 function insertSticker(emoji) {
@@ -5730,11 +5814,11 @@ function showEmojiPicker() {
     emojiModal.onclick = function(e) { if(e.target === emojiModal) emojiModal.remove(); };
 
     const categories = {
-        'Smileys': ['ð','ð','ð','ð','ð','ð','ð¤£','ð','ð','ð¥°','ð','ð¤©','ð','ð','ð','ð','ð','ð','ð¤ª','ð','ð¤','ð¤','ð¤­','ð¤«','ð¤','ð«¡','ð¤','ð¤¨','ð','ð','ð¶','ð«¥','ð','ð','ð','ð¬','ð®âð¨','ð¤¥','ð','ð','ðª','ð¤¤','ð´','ð·','ð¤','ð¤','ð¤¢','ð¤®','ð¥µ','ð¥¶','ð¥´','ðµ','ð¤¯','ð¤ ','ð¥³','ð¥¸','ð','ð¤','ð§'],
-        'Gestures': ['ð','ð¤','ðï¸','â','ð','ð«±','ð«²','ð','ð¤','ð¤','âï¸','ð¤','ð«°','ð¤','ð¤','ð¤','ð','ð','ð','ð','ð','âï¸','ð«µ','ð','ð','â','ð','ð¤','ð¤','ð','ð','ð«¶','ð','ð¤²','ð¤','ð','ðª','ð¦¾'],
-        'Hearts': ['â¤ï¸','ð§¡','ð','ð','ð','ð','ð¤','ð¤','ð¤','ð','â¤ï¸âð¥','â¤ï¸âð©¹','â£ï¸','ð','ð','ð','ð','ð','ð','ð','ð'],
-        'Nature': ['ð','ð¦','ð','ð','ð','ðª²','ðª³','ð·ï¸','ð¦','ð¸','ð','ð·','ð¹','ð¥','ðº','ð»','ð¼','ð±','ðª´','ð¿','âï¸','ð','ð¾','ð','ð','ð','ð','ð','âï¸','â­','ð','â¨','â¡','ð¥','ð'],
-        'Objects': ['ðµ','ð¶','ð¤','ð§','ð¸','ð¹','ðº','ð¸','ð±','ð»','â¨ï¸','ð®','ð¹ï¸','ð','ð¥','ð¯','ðª','ð¨','ð­','ð¬','ð','ð','ð°','ð','ð','ð¢','ð¡','ð','â°','ð','ð','ð°','â','ðº','ð¥'],
+        'Smileys': ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🥰','😍','🤩','😘','😗','😚','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🫡','🤐','🤨','😐','😑','😶','🫥','😏','😒','🙄','😬','😮‍💨','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐'],
+        'Gestures': ['👋','🤚','🖐️','✋','🖖','🫱','🫲','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏','🙌','🫶','👐','🤲','🤝','🙏','💪','🦾'],
+        'Hearts': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟'],
+        'Nature': ['🐝','🦋','🐛','🐞','🐜','🪲','🪳','🕷️','🦗','🌸','💐','🌷','🌹','🥀','🌺','🌻','🌼','🌱','🪴','🌿','☘️','🍀','🌾','🍃','🍂','🍁','🌍','🌈','☀️','⭐','🌙','✨','⚡','🔥','🌊'],
+        'Objects': ['🎵','🎶','🎤','🎧','🎸','🎹','🎺','📸','📱','💻','⌨️','🎮','🕹️','🏆','🥇','🎯','🎪','🎨','🎭','🎬','📚','📝','💰','💎','🔔','📢','💡','🚀','⏰','🎁','🎂','🍰','☕','🍺','🥂'],
     };
 
     emojiModal.innerHTML = `
@@ -5770,7 +5854,7 @@ function insertEmoji(emoji) {
 
 // Location tagging
 function showLocationPicker() {
-    const location = prompt('ð Add your location:');
+    const location = prompt('📍 Add your location:');
     if (location && location.trim()) {
         const locationTag = document.createElement('div');
         locationTag.id = 'postLocation';
@@ -5781,7 +5865,7 @@ function showLocationPicker() {
         if (textarea && textarea.parentElement) {
             textarea.parentElement.appendChild(locationTag);
         }
-        showToast('ð Location added!');
+        showToast('📍 Location added!');
     }
 }
 
@@ -5823,7 +5907,7 @@ function confirmSchedule() {
     const mins = Math.floor((diffMs % 3600000) / 60000);
 
     document.getElementById('schedulePostOverlay').remove();
-    showToast(`â° Post scheduled for ${scheduled.toLocaleString()} (in ${hours}h ${mins}m)`);
+    showToast(`⏰ Post scheduled for ${scheduled.toLocaleString()} (in ${hours}h ${mins}m)`);
 }
 
 
@@ -5838,10 +5922,10 @@ function showNotifications() {
             { id: 1, type: 'like', text: 'FloraCreative liked your post', user: 'FloraCreative', time: '5m ago', read: false, postId: 1 },
             { id: 2, type: 'pollinate', text: 'TechWorker pollinated your idea', user: 'TechWorker', time: '12m ago', read: false, postId: 2 },
             { id: 3, type: 'follow', text: 'ScienceBee started following you', user: 'ScienceBee', time: '1h ago', read: true },
-            { id: 4, type: 'trending', text: 'Your post is trending! ð¥', time: '2h ago', read: true, postId: 1 },
+            { id: 4, type: 'trending', text: 'Your post is trending! 🔥', time: '2h ago', read: true, postId: 1 },
             { id: 5, type: 'mention', text: 'ArtistBee mentioned you in a comment', user: 'ArtistBee', time: '3h ago', read: true, postId: 3 },
             { id: 6, type: 'like', text: 'GardenFairy and 3 others liked your post', user: 'GardenFairy', time: '5h ago', read: true, postId: 2 },
-            { id: 7, type: 'honey', text: 'You earned 200 Honey Points this week! ð¯', time: '1d ago', read: true },
+            { id: 7, type: 'honey', text: 'You earned 200 Honey Points this week! 🍯', time: '1d ago', read: true },
             { id: 8, type: 'system', text: 'Welcome to Polleneer! Complete your profile for +100 points', time: '2d ago', read: true },
         ];
     }
@@ -5932,7 +6016,7 @@ function viewThread(postId) {
                 ${post.media ? `<img src="${post.media}" style="width:100%;border-radius:12px;margin-bottom:15px;max-height:400px;object-fit:cover;">` : ''}
 
                 <div style="color:var(--text-secondary);font-size:13px;padding:12px 0;border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);">
-                    ${post.createdAt} Â· <span style="color:var(--text-primary);font-weight:bold;">${(post.views || 0).toLocaleString()}</span> Views
+                    ${post.createdAt} · <span style="color:var(--text-primary);font-weight:bold;">${(post.views || 0).toLocaleString()}</span> Views
                 </div>
 
                 <div style="display:flex;gap:20px;padding:12px 0;border-bottom:1px solid var(--border-color);font-size:14px;">
@@ -5976,7 +6060,7 @@ function viewThread(postId) {
                             <div style="flex:1;">
                                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
                                     <strong style="font-size:14px;cursor:pointer;" onclick="goToUserProfile(${c.userId})">${commenter.displayName || commenter.username}</strong>
-                                    <span style="color:var(--text-secondary);font-size:13px;">@${commenter.username} Â· ${c.createdAt}</span>
+                                    <span style="color:var(--text-secondary);font-size:13px;">@${commenter.username} · ${c.createdAt}</span>
                                 </div>
                                 <div style="line-height:1.5;margin-bottom:8px;">${c.text}</div>
                                 <div style="display:flex;gap:20px;">
@@ -5989,7 +6073,7 @@ function viewThread(postId) {
                     `;
                 }).join('')}
 
-                ${postComments.length === 0 ? '<div class="post-card" style="padding:30px;margin-top:2px;text-align:center;color:var(--text-secondary);">No replies yet. Be the first to buzz! ð</div>' : ''}
+                ${postComments.length === 0 ? '<div class="post-card" style="padding:30px;margin-top:2px;text-align:center;color:var(--text-secondary);">No replies yet. Be the first to buzz! 🐝</div>' : ''}
             </div>
         </div>
     `;
@@ -6011,7 +6095,7 @@ function submitThreadReply(postId) {
     currentUser.honeyPoints += 10;
     localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
 
-    showToast('Reply posted! +10 Honey Points ð¯');
+    showToast('Reply posted! +10 Honey Points 🍯');
     viewThread(postId);
 }
 
@@ -6044,7 +6128,7 @@ function quotePollinate(postId) {
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                         <img src="${user.avatar}" style="width:20px;height:20px;border-radius:50%;">
                         <strong style="font-size:13px;">${user.displayName || user.username}</strong>
-                        <span style="color:var(--text-secondary);font-size:12px;">@${user.username} Â· ${post.createdAt}</span>
+                        <span style="color:var(--text-secondary);font-size:12px;">@${user.username} · ${post.createdAt}</span>
                     </div>
                     <div style="font-size:13px;color:var(--text-secondary);line-height:1.4;">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</div>
                 </div>
@@ -6084,7 +6168,7 @@ function submitQuotePollination(postId) {
     localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
 
     document.getElementById('quotePollinateOverlay').remove();
-    showToast('ð Quote pollinated! +15 Honey Points');
+    showToast('🐝 Quote pollinated! +15 Honey Points');
 
     if (currentPage === 'home') goToHome();
 }
@@ -6132,7 +6216,7 @@ function showAnalytics() {
                         <div style="margin-bottom:12px;cursor:pointer;" onclick="viewThread(${p.id})">
                             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
                                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;">${p.content.substring(0, 50)}...</span>
-                                <span style="color:var(--text-secondary);">${p.likes} â¤ï¸</span>
+                                <span style="color:var(--text-secondary);">${p.likes} ❤️</span>
                             </div>
                             <div style="background:var(--bg-input);border-radius:5px;height:8px;overflow:hidden;">
                                 <div style="background:linear-gradient(90deg,var(--honey-yellow),var(--hive-orange));height:100%;width:${barWidth}%;border-radius:5px;transition:width 0.5s;"></div>
@@ -6269,7 +6353,7 @@ function createNewList() {
         isPrivate: false
     });
     localStorage.setItem('polleneer_lists_' + currentUser.id, JSON.stringify(savedLists));
-    showToast(`List "${name}" created! ð`);
+    showToast(`List "${name}" created! 📋`);
     showLists();
 }
 
@@ -6287,7 +6371,7 @@ function viewList(listId) {
                 <button onclick="showLists()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-size:1.2em;"><i class="fas fa-arrow-left"></i></button>
                 <div>
                     <h3>${list.name}</h3>
-                    <span style="font-size:13px;color:var(--text-secondary);">${list.members.length} members Â· ${memberPosts.length} posts</span>
+                    <span style="font-size:13px;color:var(--text-secondary);">${list.members.length} members · ${memberPosts.length} posts</span>
                 </div>
             </div>
 
@@ -6327,7 +6411,7 @@ function addMemberToList(listId) {
     if (list.members.includes(user.id)) { showToast('User already in list'); return; }
     list.members.push(user.id);
     localStorage.setItem('polleneer_lists_' + currentUser.id, JSON.stringify(savedLists));
-    showToast(`Added @${user.username} to "${list.name}" ð`);
+    showToast(`Added @${user.username} to "${list.name}" 🐝`);
     viewList(listId);
 }
 
@@ -6337,10 +6421,10 @@ function showMessages() {
 
     // Richer message data
     const conversations = [
-        { id: 1, user: 'FloraCreative', userId: 2, avatar: users.find(u=>u.id===2)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Flora', lastMessage: 'Hey! Loved your garden post! The cross-pollination idea is brilliant ð¸', time: '10m ago', unread: 2 },
+        { id: 1, user: 'FloraCreative', userId: 2, avatar: users.find(u=>u.id===2)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Flora', lastMessage: 'Hey! Loved your garden post! The cross-pollination idea is brilliant 🌸', time: '10m ago', unread: 2 },
         { id: 2, user: 'TechWorker', userId: 3, avatar: users.find(u=>u.id===3)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Tech', lastMessage: 'Can we collaborate on that algorithm? I have some ideas for the swarm optimization', time: '1h ago', unread: 1 },
         { id: 3, user: 'ScienceBee', userId: 4, avatar: users.find(u=>u.id===4)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Science', lastMessage: 'The bee colony simulation results are fascinating!', time: '3h ago', unread: 0 },
-        { id: 4, user: 'ArtistBee', userId: 5, avatar: users.find(u=>u.id===5)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Artist', lastMessage: 'I designed a new hexagonal logo concept for Polleneer ð¨', time: '1d ago', unread: 0 },
+        { id: 4, user: 'ArtistBee', userId: 5, avatar: users.find(u=>u.id===5)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Artist', lastMessage: 'I designed a new hexagonal logo concept for Polleneer 🎨', time: '1d ago', unread: 0 },
     ];
 
     document.getElementById('mainContent').innerHTML = `
@@ -6381,10 +6465,10 @@ function showMessages() {
 
 function openConversation(convId, userName, userAvatar, userId) {
     const sampleMessages = [
-        { from: 'them', text: 'Hey! I saw your latest post about cross-pollination. Amazing concept! ð', time: '10:30 AM' },
+        { from: 'them', text: 'Hey! I saw your latest post about cross-pollination. Amazing concept! 🐝', time: '10:30 AM' },
         { from: 'me', text: 'Thanks! I\'ve been thinking about how bee behavior can inspire social platform design.', time: '10:32 AM' },
         { from: 'them', text: 'That\'s exactly what makes Polleneer special. The pollination metaphor is so natural.', time: '10:35 AM' },
-        { from: 'me', text: 'Right? Every interaction should feel like a flower visit ð¸', time: '10:37 AM' },
+        { from: 'me', text: 'Right? Every interaction should feel like a flower visit 🌸', time: '10:37 AM' },
         { from: 'them', text: 'Would love to collaborate on some ideas! Maybe we can create a hive together?', time: '10:40 AM' },
     ];
 
@@ -6396,7 +6480,7 @@ function openConversation(convId, userName, userAvatar, userId) {
                 <img src="${userAvatar}" style="width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="goToUserProfile(${userId})">
                 <div style="cursor:pointer;" onclick="goToUserProfile(${userId})">
                     <strong>${userName}</strong>
-                    <div style="font-size:12px;color:var(--text-secondary);">@${userName.toLowerCase().replace(/\s/g,'')} Â· Online</div>
+                    <div style="font-size:12px;color:var(--text-secondary);">@${userName.toLowerCase().replace(/\s/g,'')} · Online</div>
                 </div>
             </div>
 
@@ -6452,7 +6536,7 @@ function sendDM(userName) {
 
     // Simulate reply after 2s
     setTimeout(() => {
-        const replies = ['That sounds great! ð', 'Absolutely! Let\'s make it happen.', 'Love that idea! ð¯', 'I\'m in! When should we start?', 'Amazing, let me think about it! â¨'];
+        const replies = ['That sounds great! 🐝', 'Absolutely! Let\'s make it happen.', 'Love that idea! 🍯', 'I\'m in! When should we start?', 'Amazing, let me think about it! ✨'];
         const reply = replies[Math.floor(Math.random() * replies.length)];
         const replyHTML = `
             <div style="display:flex;justify-content:flex-start;">
@@ -6488,7 +6572,6 @@ function showCreatePostModal() {
     if (mediaPreview) { mediaPreview.style.display = 'none'; mediaPreview.innerHTML = ''; }
     const mediaContainer = document.getElementById('postMediaContainer');
     if (mediaContainer) mediaContainer.classList.add('hidden');
-    // Tags auto-extracted from content — no separate container
     const pollContainer = document.getElementById('postPollContainer');
     if (pollContainer) pollContainer.classList.add('hidden');
     const oldLocation = document.getElementById('postLocation');
@@ -6544,7 +6627,7 @@ function loadTrendingTopics() {
 
     trendingList.innerHTML = TRENDING_TOPICS.map(topic => `
         <li class="trend-item" onclick="searchTag('${topic.tag}')" style="cursor:pointer;padding:12px;border-radius:10px;transition:background 0.2s;" onmouseover="this.style.background='var(--bg-input)'" onmouseout="this.style.background=''">
-            <div class="trend-category" style="font-size:12px;color:var(--text-secondary);">${topic.category} Â· Trending</div>
+            <div class="trend-category" style="font-size:12px;color:var(--text-secondary);">${topic.category} · Trending</div>
             <div class="trend-tag" style="font-weight:bold;margin:3px 0;">${topic.tag}</div>
             <div class="trend-stats" style="font-size:12px;color:var(--text-secondary);">${topic.posts} posts</div>
         </li>
@@ -6587,7 +6670,7 @@ function goToCommunities() {
                             </div>
                             <button onclick="joinCommunity('${c.name}')" 
                                 style="background:${isJoined ? 'transparent' : c.color};color:${isJoined ? 'var(--text-primary)' : 'white'};border:${isJoined ? '1px solid var(--border-color)' : 'none'};padding:8px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;white-space:nowrap;">
-                                ${isJoined ? 'Joined â' : 'Join'}
+                                ${isJoined ? 'Joined ✓' : 'Join'}
                             </button>
                         </div>
                     `;
@@ -6666,13 +6749,10 @@ function insertEmoji(emoji) {
     const targetId = window._emojiTarget || 'postContent';
     const el = document.getElementById(targetId);
     if (!el) return;
-
     if (el.contentEditable === 'true') {
-        // ContentEditable (modal postContent)
         el.focus();
         document.execCommand('insertText', false, emoji);
     } else {
-        // Textarea (inline compose)
         const start = el.selectionStart;
         const end = el.selectionEnd;
         el.value = el.value.substring(0, start) + emoji + el.value.substring(end);
@@ -6765,7 +6845,7 @@ function submitInlinePost() {
     updateUIForUser();
     localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
 
-    showToast('Buzz posted! +25 Honey Points ð¯');
+    showToast('Buzz posted! +25 Honey Points 🍯');
 }
 
 // Also override selectGif to support inline target
@@ -6801,7 +6881,7 @@ function selectGif(url) {
     }
     const overlay = document.getElementById('gifPickerOverlay');
     if (overlay) overlay.remove();
-    showToast('GIF added! ð¬');
+    showToast('GIF added! 🎬');
 }
 
 
@@ -6815,7 +6895,7 @@ function selectGif(url) {
     if (typeof ADMIN_CREDENTIALS !== 'undefined') {
         if (!ADMIN_CREDENTIALS.id) ADMIN_CREDENTIALS.id = 999;
         if (!ADMIN_CREDENTIALS.displayName) ADMIN_CREDENTIALS.displayName = ADMIN_CREDENTIALS.username || 'Admin';
-        if (!ADMIN_CREDENTIALS.bio) ADMIN_CREDENTIALS.bio = 'Bee Keeper of Polleneer. Building the future of social media. ð';
+        if (!ADMIN_CREDENTIALS.bio) ADMIN_CREDENTIALS.bio = 'Bee Keeper of Polleneer. Building the future of social media. 🐝';
         if (!ADMIN_CREDENTIALS.joined) ADMIN_CREDENTIALS.joined = '2024-01-01';
         if (!ADMIN_CREDENTIALS.followers) ADMIN_CREDENTIALS.followers = 1200;
         if (!ADMIN_CREDENTIALS.following) ADMIN_CREDENTIALS.following = 247;
@@ -6825,7 +6905,7 @@ function selectGif(url) {
     // Also fix currentUser if already loaded from localStorage and missing fields
     if (typeof currentUser !== 'undefined' && currentUser) {
         if (!currentUser.displayName) currentUser.displayName = currentUser.username || 'User';
-        if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! ð';
+        if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! 🐝';
         if (!currentUser.joined) currentUser.joined = new Date().toISOString().split('T')[0];
         if (!currentUser.followers) currentUser.followers = 0;
         if (!currentUser.following) currentUser.following = 0;
@@ -6841,7 +6921,7 @@ function handleLogin(e) {
     // After login, ensure currentUser has all required fields
     if (currentUser) {
         if (!currentUser.displayName) currentUser.displayName = currentUser.username || 'User';
-        if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! ð';
+        if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! 🐝';
         if (!currentUser.joined) currentUser.joined = new Date().toISOString().split('T')[0];
         if (!currentUser.followers) currentUser.followers = 0;
         if (!currentUser.following) currentUser.following = 0;
@@ -6931,7 +7011,7 @@ function goToProfile(section) {
                 <div style="display:flex;gap:20px;margin-top:14px;font-size:14px;">
                     <span style="cursor:pointer;" onclick="showFollowing()"><strong>${user.following || 0}</strong> <span style="color:var(--text-secondary);">Following</span></span>
                     <span style="cursor:pointer;" onclick="showFollowers()"><strong>${user.followers || 0}</strong> <span style="color:var(--text-secondary);">Followers</span></span>
-                    <span style="cursor:pointer;" onclick="showHoneyShop()"><strong style="color:var(--honey-yellow);">${(user.honeyPoints || 0).toLocaleString()}</strong> <span style="color:var(--text-secondary);">Honey Points ð¯</span></span>
+                    <span style="cursor:pointer;" onclick="showHoneyShop()"><strong style="color:var(--honey-yellow);">${(user.honeyPoints || 0).toLocaleString()}</strong> <span style="color:var(--text-secondary);">Honey Points 🍯</span></span>
                 </div>
             </div>
 
@@ -7021,7 +7101,7 @@ function handleBannerUpload(event) {
             localStorage.setItem('polleneer_banner_' + currentUser.id, e.target.result);
             localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
         }
-        showToast('Banner updated! ð¸');
+        showToast('Banner updated! 📸');
     };
     reader.readAsDataURL(file);
 }
@@ -7100,12 +7180,12 @@ function saveProfileEdits() {
 
     // Refresh profile
     goToProfile(selectedProfileTab || 'posts');
-    showToast('Profile updated! â¨');
+    showToast('Profile updated! ✨');
 }
 
 
 // ============================================
-// HASHTAG AUTO-DETECTION & BOLD/ITALIC
+// HASHTAG HIGHLIGHTING, BOLD/ITALIC, HELPERS
 // ============================================
 
 function extractHashtags(text) {
@@ -7113,54 +7193,134 @@ function extractHashtags(text) {
     return matches ? [...new Set(matches)] : [];
 }
 
-function getPlainTextFromEditable(elementId) {
+function getPlainText(elementId) {
     const el = document.getElementById(elementId);
     if (!el) return '';
-    // Get text with line breaks preserved
-    let text = '';
-    el.childNodes.forEach(node => {
-        if (node.nodeType === 3) { // text node
-            text += node.textContent;
-        } else if (node.tagName === 'BR') {
-            text += '\n';
-        } else if (node.tagName === 'DIV' || node.tagName === 'P') {
-            if (text && !text.endsWith('\n')) text += '\n';
-            text += node.textContent;
-        } else if (node.tagName === 'B' || node.tagName === 'STRONG') {
-            text += '**' + node.textContent + '**';
-        } else if (node.tagName === 'I' || node.tagName === 'EM') {
-            text += '*' + node.textContent + '*';
-        } else {
-            text += node.textContent;
+    if (el.contentEditable === 'true') {
+        // Extract text preserving line breaks and bold/italic markers
+        let text = '';
+        function walk(node) {
+            if (node.nodeType === 3) {
+                text += node.textContent;
+            } else if (node.nodeName === 'BR') {
+                text += '\n';
+            } else if (node.nodeName === 'DIV' || node.nodeName === 'P') {
+                if (text && !text.endsWith('\n')) text += '\n';
+                for (const child of node.childNodes) walk(child);
+            } else if (node.nodeName === 'B' || node.nodeName === 'STRONG') {
+                text += '**';
+                for (const child of node.childNodes) walk(child);
+                text += '**';
+            } else if (node.nodeName === 'I' || node.nodeName === 'EM') {
+                text += '*';
+                for (const child of node.childNodes) walk(child);
+                text += '*';
+            } else {
+                for (const child of node.childNodes) walk(child);
+            }
         }
-    });
-    return text;
+        for (const child of el.childNodes) walk(child);
+        return text;
+    }
+    return el.value || el.textContent || '';
+}
+
+function clearEditable(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    if (el.contentEditable === 'true') {
+        el.innerHTML = '';
+    } else {
+        el.value = '';
+    }
 }
 
 function toggleBold() {
     document.execCommand('bold', false, null);
-    // Re-focus the active editable element
-    const postContent = document.getElementById('postContent');
-    if (postContent) postContent.focus();
+    const pc = document.getElementById('postContent');
+    if (pc) pc.focus();
 }
 
 function toggleItalic() {
     document.execCommand('italic', false, null);
-    const postContent = document.getElementById('postContent');
-    if (postContent) postContent.focus();
+    const pc = document.getElementById('postContent');
+    if (pc) pc.focus();
 }
 
-// Format post content with yellow hashtags and clickable @mentions
-const _originalFormatPostContent = typeof formatPostContent === 'function' ? formatPostContent : null;
+// Live hashtag highlighting in contentEditable
+function highlightHashtags(el) {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
 
+    // Save cursor position
+    const range = sel.getRangeAt(0);
+    const preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(el);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    const caretOffset = preCaretRange.toString().length;
 
+    // Get plain text
+    const text = el.innerText || el.textContent;
 
-// Keyboard shortcuts for Bold/Italic in contentEditable
+    // Build highlighted HTML
+    const html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/#([\w\u00C0-\u024F]+)/g, '<span style="color: var(--honey-yellow); font-weight: 500;">#$1</span>')
+        .replace(/\n/g, '<br>');
+
+    // Only update if hashtags present and content actually changed
+    if (text.includes('#') && el.innerHTML !== html) {
+        el.innerHTML = html;
+
+        // Restore cursor position
+        restoreCaret(el, caretOffset);
+    }
+}
+
+function restoreCaret(el, offset) {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    let currentOffset = 0;
+    let found = false;
+
+    function walkNodes(node) {
+        if (found) return;
+        if (node.nodeType === 3) {
+            const len = node.textContent.length;
+            if (currentOffset + len >= offset) {
+                range.setStart(node, offset - currentOffset);
+                range.collapse(true);
+                found = true;
+                return;
+            }
+            currentOffset += len;
+        } else {
+            for (const child of node.childNodes) {
+                walkNodes(child);
+                if (found) return;
+            }
+        }
+    }
+
+    walkNodes(el);
+    if (found) {
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else {
+        // Fallback: put cursor at end
+        range.selectNodeContents(el);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+}
+
+// Keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     const activeEl = document.activeElement;
-    const isEditable = activeEl && (activeEl.contentEditable === 'true' || activeEl.tagName === 'TEXTAREA');
-    if (!isEditable) return;
-
+    if (!activeEl || (activeEl.contentEditable !== 'true' && activeEl.tagName !== 'TEXTAREA')) return;
     if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
         e.preventDefault();
         document.execCommand('bold', false, null);
@@ -7171,11 +7331,11 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Handle paste in contentEditable — strip formatting, keep plain text
+// Paste handler — strip formatting
 document.addEventListener('DOMContentLoaded', function() {
-    const postContent = document.getElementById('postContent');
-    if (postContent) {
-        postContent.addEventListener('paste', function(e) {
+    const pc = document.getElementById('postContent');
+    if (pc) {
+        pc.addEventListener('paste', function(e) {
             e.preventDefault();
             const text = (e.clipboardData || window.clipboardData).getData('text/plain');
             document.execCommand('insertText', false, text);
