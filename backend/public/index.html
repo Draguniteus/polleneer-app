@@ -3044,6 +3044,146 @@
             display: block;
         }
 
+
+        /* ===== Animated Avatar Border System ===== */
+        @keyframes avatar-rotate-border {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes avatar-pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px 3px var(--avatar-accent, var(--honey-yellow)), 0 0 30px 6px rgba(255,195,11,0.2); }
+            50% { box-shadow: 0 0 25px 8px var(--avatar-accent, var(--honey-yellow)), 0 0 50px 15px rgba(255,195,11,0.3); }
+        }
+        @keyframes avatar-rainbow-rotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        .avatar-border-container {
+            position: relative;
+            display: inline-block;
+        }
+        .avatar-border-container::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        /* Style: Rotating Gradient */
+        .avatar-border-container[data-border-style="rotating"]::before {
+            opacity: 1;
+            background: conic-gradient(
+                var(--avatar-accent, var(--honey-yellow)),
+                var(--avatar-accent2, var(--hive-orange)),
+                var(--avatar-accent, var(--honey-yellow)),
+                var(--avatar-accent2, var(--hive-orange)),
+                var(--avatar-accent, var(--honey-yellow))
+            );
+            animation: avatar-rotate-border 3s linear infinite;
+        }
+        /* Style: Pulsing Glow */
+        .avatar-border-container[data-border-style="pulse"] #profileAvatar {
+            animation: avatar-pulse-glow 2s ease-in-out infinite;
+        }
+        /* Style: Static Ring */
+        .avatar-border-container[data-border-style="static"]::before {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--avatar-accent, var(--honey-yellow)), var(--avatar-accent2, var(--hive-orange)));
+        }
+        /* Style: Rainbow */
+        .avatar-border-container[data-border-style="rainbow"]::before {
+            opacity: 1;
+            background: conic-gradient(#ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0000);
+            animation: avatar-rotate-border 4s linear infinite;
+        }
+        /* Style: None */
+        .avatar-border-container[data-border-style="none"]::before {
+            opacity: 0;
+        }
+        .avatar-border-container img {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== Profile Mood/Status ===== */
+        .profile-mood-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            max-width: 300px;
+        }
+        .profile-mood-status:hover {
+            border-color: var(--honey-yellow);
+            color: var(--text-primary);
+        }
+        .profile-mood-status .mood-emoji {
+            font-size: 16px;
+        }
+        .profile-mood-status .mood-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .mood-editor-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mood-editor-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            width: 380px;
+            max-width: 90vw;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ===== Pinned Post ===== */
+        .pinned-post-container {
+            position: relative;
+            border: 1px solid var(--honey-yellow);
+            border-radius: var(--site-radius, 15px);
+            overflow: hidden;
+        }
+        .pinned-post-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--honey-yellow), var(--hive-orange));
+        }
+        .pinned-post-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-card);
+        }
+        .pinned-post-label i {
+            color: var(--honey-yellow);
+        }
+
 </style>
 </head>
 <body>
@@ -9432,9 +9572,11 @@ function goToProfile(section) {
                 <!-- Avatar (overlapping banner) -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                     <div style="margin-top:-65px;position:relative;">
-                        <img src="${user.avatar}" alt="Profile" id="profileAvatar" 
-                            style="width:130px;height:130px;border-radius:50%;border:4px solid var(--bg-card);object-fit:cover;cursor:pointer;background:var(--bg-card);" 
-                            onclick="changeAvatar()">
+                        <div class="avatar-border-container" id="avatarBorderContainer" data-border-style="${getAvatarBorderStyle()}">
+                            <img src="${user.avatar}" alt="Profile" id="profileAvatar" 
+                                style="width:130px;height:130px;border-radius:50%;border:4px solid var(--bg-card);object-fit:cover;cursor:pointer;background:var(--bg-card);" 
+                                onclick="changeAvatar()">
+                        </div>
                     </div>
 
                     <!-- Action Buttons (proper X-style) -->
@@ -9463,6 +9605,11 @@ function goToProfile(section) {
 
                 <!-- Bio -->
                 <div style="margin-top:12px;font-size:15px;line-height:1.6;max-width:600px;">${user.bio || '<span style="color:var(--text-secondary);font-style:italic;">Add a bio to tell the hive about yourself</span>'}</div>
+
+                <!-- Mood/Status -->
+                <div class="profile-mood-status" id="profileMoodStatus" onclick="openMoodEditor()" title="Click to set your mood">
+                    ${getMoodStatusHTML()}
+                </div>
 
                 <!-- Joined date + location -->
                 <div style="display:flex;gap:16px;margin-top:12px;color:var(--text-secondary);font-size:14px;">
@@ -9517,6 +9664,7 @@ function goToProfile(section) {
                 `).join('')}
             </div>
 
+            <div id="pinnedPostArea"></div>
             <div id="profileFeed" style="min-height:200px;"></div>
         </div>
     `;
@@ -9524,6 +9672,8 @@ function goToProfile(section) {
     if (typeof applyProfileCustomization === 'function') applyProfileCustomization();
     if (typeof loadProfileFeed === 'function') loadProfileFeed(section);
     if (typeof loadTopFriends === 'function') loadTopFriends();
+    if (typeof loadPinnedPost === 'function') loadPinnedPost();
+    if (typeof applyAvatarBorderColors === 'function') applyAvatarBorderColors();
     updateActiveNavLink('profile');
     applyProfileCustomization();
 }
@@ -9915,6 +10065,376 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+
+
+
+// =====================================================================
+// FEATURE 1: ANIMATED AVATAR BORDER SYSTEM
+// =====================================================================
+const AVATAR_BORDER_STYLES = [
+    { id: 'none', name: 'None', icon: 'fas fa-ban', desc: 'No border effect' },
+    { id: 'rotating', name: 'Rotating Gradient', icon: 'fas fa-sync-alt', desc: 'Spinning gradient ring' },
+    { id: 'pulse', name: 'Pulsing Glow', icon: 'fas fa-heartbeat', desc: 'Breathing glow effect' },
+    { id: 'static', name: 'Gradient Ring', icon: 'fas fa-circle', desc: 'Solid gradient border' },
+    { id: 'rainbow', name: 'Rainbow Spin', icon: 'fas fa-rainbow', desc: 'Full spectrum rotation' }
+];
+
+function getAvatarBorderStyle() {
+    try {
+        var saved = localStorage.getItem('polleneer_avatar_border');
+        if (saved) { var d = JSON.parse(saved); return d.style || 'none'; }
+    } catch(e) {}
+    return 'none';
+}
+
+function getAvatarBorderColors() {
+    try {
+        var saved = localStorage.getItem('polleneer_avatar_border');
+        if (saved) { var d = JSON.parse(saved); return { accent: d.accent || '', accent2: d.accent2 || '' }; }
+    } catch(e) {}
+    return { accent: '', accent2: '' };
+}
+
+function applyAvatarBorderColors() {
+    var container = document.getElementById('avatarBorderContainer');
+    if (!container) return;
+    var colors = getAvatarBorderColors();
+    if (colors.accent) container.style.setProperty('--avatar-accent', colors.accent);
+    if (colors.accent2) container.style.setProperty('--avatar-accent2', colors.accent2);
+}
+
+function setAvatarBorder(style, accent, accent2) {
+    var data = { style: style, accent: accent || '', accent2: accent2 || '' };
+    localStorage.setItem('polleneer_avatar_border', JSON.stringify(data));
+    var container = document.getElementById('avatarBorderContainer');
+    if (container) {
+        container.setAttribute('data-border-style', style);
+        if (accent) container.style.setProperty('--avatar-accent', accent);
+        if (accent2) container.style.setProperty('--avatar-accent2', accent2);
+    }
+    // Update preview in settings if open
+    var preview = document.getElementById('avatarBorderPreview');
+    if (preview) {
+        preview.setAttribute('data-border-style', style);
+        if (accent) preview.style.setProperty('--avatar-accent', accent);
+        if (accent2) preview.style.setProperty('--avatar-accent2', accent2);
+    }
+    updateBorderStyleButtons(style);
+}
+
+function updateBorderStyleButtons(activeStyle) {
+    document.querySelectorAll('.border-style-btn').forEach(function(btn) {
+        var isActive = btn.getAttribute('data-style') === activeStyle;
+        btn.style.borderColor = isActive ? 'var(--honey-yellow)' : 'var(--border-color)';
+        btn.style.background = isActive ? 'var(--honey-yellow)11' : 'var(--bg-input)';
+    });
+}
+
+function renderAvatarBorderSettings() {
+    var current = getAvatarBorderStyle();
+    var colors = getAvatarBorderColors();
+    var accent1 = colors.accent || '#FFC30B';
+    var accent2 = colors.accent2 || '#FF8C00';
+
+    return '<div style="padding:16px;">' +
+        '<h4 style="margin-bottom:14px;"><i class="fas fa-circle-notch"></i> Avatar Border Effect</h4>' +
+
+        '<div style="display:flex;justify-content:center;margin-bottom:20px;">' +
+            '<div class="avatar-border-container" id="avatarBorderPreview" data-border-style="' + current + '" style="--avatar-accent:' + accent1 + ';--avatar-accent2:' + accent2 + ';">' +
+                '<img src="' + (currentUser ? currentUser.avatar : '') + '" style="width:100px;height:100px;border-radius:50%;border:4px solid var(--bg-card);object-fit:cover;background:var(--bg-card);">' +
+            '</div>' +
+        '</div>' +
+
+        '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;">' +
+            AVATAR_BORDER_STYLES.map(function(s) {
+                var isActive = s.id === current;
+                return '<button class="border-style-btn" data-style="' + s.id + '" onclick="setAvatarBorder(\'' + s.id + '\', document.getElementById(\'borderAccent1\').value, document.getElementById(\'borderAccent2\').value)" ' +
+                    'style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:2px solid ' + (isActive ? 'var(--honey-yellow)' : 'var(--border-color)') + ';background:' + (isActive ? 'var(--honey-yellow)11' : 'var(--bg-input)') + ';cursor:pointer;color:var(--text-primary);transition:all 0.2s;text-align:left;">' +
+                    '<i class="' + s.icon + '" style="color:var(--honey-yellow);width:20px;text-align:center;"></i>' +
+                    '<div><div style="font-weight:600;font-size:13px;">' + s.name + '</div><div style="font-size:11px;color:var(--text-secondary);">' + s.desc + '</div></div>' +
+                '</button>';
+            }).join('') +
+        '</div>' +
+
+        '<div style="display:flex;gap:12px;align-items:center;">' +
+            '<label style="font-size:13px;color:var(--text-secondary);white-space:nowrap;">Primary</label>' +
+            '<input type="color" id="borderAccent1" value="' + accent1 + '" onchange="setAvatarBorder(getAvatarBorderStyle(), this.value, document.getElementById(\'borderAccent2\').value)" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;">' +
+            '<label style="font-size:13px;color:var(--text-secondary);white-space:nowrap;">Secondary</label>' +
+            '<input type="color" id="borderAccent2" value="' + accent2 + '" onchange="setAvatarBorder(getAvatarBorderStyle(), document.getElementById(\'borderAccent1\').value, this.value)" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;">' +
+        '</div>' +
+    '</div>';
+}
+
+// =====================================================================
+// FEATURE 2: PROFILE MOOD / STATUS
+// =====================================================================
+const MOOD_PRESETS = [
+    { emoji: '\u{1F41D}', label: 'Busy bee' },
+    { emoji: '\u{1F33B}', label: 'Feeling sunny' },
+    { emoji: '\u{1F3B5}', label: 'Vibing' },
+    { emoji: '\u{1F4AA}', label: 'Grinding' },
+    { emoji: '\u{2615}', label: 'Coffee time' },
+    { emoji: '\u{1F680}', label: 'Building' },
+    { emoji: '\u{1F31F}', label: 'Feeling blessed' },
+    { emoji: '\u{1F634}', label: 'ZzZ' },
+    { emoji: '\u{1F525}', label: 'On fire' },
+    { emoji: '\u{1F389}', label: 'Celebrating' },
+    { emoji: '\u{1F4AD}', label: 'Thinking deep' },
+    { emoji: '\u{1F33F}', label: 'Touching grass' }
+];
+
+function getMoodStatus() {
+    try {
+        var saved = localStorage.getItem('polleneer_mood');
+        if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return null;
+}
+
+function getMoodStatusHTML() {
+    var mood = getMoodStatus();
+    if (mood && mood.emoji && mood.text) {
+        return '<span class="mood-emoji">' + mood.emoji + '</span><span class="mood-text">' + escapeHtml(mood.text) + '</span>';
+    }
+    return '<i class="far fa-smile" style="opacity:0.5;"></i><span class="mood-text" style="font-style:italic;">Set your mood...</span>';
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function openMoodEditor() {
+    var current = getMoodStatus();
+    var currentEmoji = current ? current.emoji : '';
+    var currentText = current ? current.text : '';
+
+    var overlay = document.createElement('div');
+    overlay.className = 'mood-editor-overlay';
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+    overlay.innerHTML = '<div class="mood-editor-card">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+            '<h3 style="margin:0;"><i class="fas fa-smile-beam" style="color:var(--honey-yellow);"></i> Set Your Mood</h3>' +
+            '<button onclick="this.closest(\'.mood-editor-overlay\').remove()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;"><i class="fas fa-times"></i></button>' +
+        '</div>' +
+
+        '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
+            '<input type="text" id="moodEmojiInput" value="' + currentEmoji + '" placeholder="\u{1F41D}" maxlength="4" style="width:50px;text-align:center;font-size:24px;padding:8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);">' +
+            '<input type="text" id="moodTextInput" value="' + escapeHtml(currentText) + '" placeholder="What are you up to?" maxlength="60" style="flex:1;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-size:14px;">' +
+        '</div>' +
+
+        '<div style="margin-bottom:16px;">' +
+            '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">Quick picks:</div>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+                MOOD_PRESETS.map(function(p) {
+                    return '<button onclick="document.getElementById(\'moodEmojiInput\').value=\'' + p.emoji + '\';document.getElementById(\'moodTextInput\').value=\'' + p.label + '\';" ' +
+                        'style="padding:6px 10px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);cursor:pointer;color:var(--text-primary);font-size:12px;transition:all 0.2s;display:flex;align-items:center;gap:4px;" ' +
+                        'onmouseover="this.style.borderColor=\'var(--honey-yellow)\'" onmouseout="this.style.borderColor=\'var(--border-color)\'">' +
+                        '<span>' + p.emoji + '</span> ' + p.label +
+                    '</button>';
+                }).join('') +
+            '</div>' +
+        '</div>' +
+
+        '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+            '<button onclick="clearMood();this.closest(\'.mood-editor-overlay\').remove();" style="padding:8px 16px;border-radius:20px;border:1px solid var(--border-color);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">Clear</button>' +
+            '<button onclick="saveMood();this.closest(\'.mood-editor-overlay\').remove();" style="padding:8px 20px;border-radius:20px;border:none;background:var(--honey-yellow);color:#000;cursor:pointer;font-weight:600;font-size:13px;">Save</button>' +
+        '</div>' +
+    '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('moodTextInput').focus();
+}
+
+function saveMood() {
+    var emoji = document.getElementById('moodEmojiInput').value.trim();
+    var text = document.getElementById('moodTextInput').value.trim();
+    if (!text) { clearMood(); return; }
+    var data = { emoji: emoji || '\u{1F41D}', text: text, updatedAt: Date.now() };
+    localStorage.setItem('polleneer_mood', JSON.stringify(data));
+    updateMoodDisplay();
+    showToast('Mood updated! ' + data.emoji);
+}
+
+function clearMood() {
+    localStorage.removeItem('polleneer_mood');
+    updateMoodDisplay();
+    showToast('Mood cleared');
+}
+
+function updateMoodDisplay() {
+    var el = document.getElementById('profileMoodStatus');
+    if (el) el.innerHTML = getMoodStatusHTML();
+}
+
+function renderMoodSettings() {
+    var current = getMoodStatus();
+    var currentEmoji = current ? current.emoji : '';
+    var currentText = current ? current.text : '';
+
+    return '<div style="padding:16px;">' +
+        '<h4 style="margin-bottom:14px;"><i class="fas fa-smile-beam"></i> Profile Mood / Status</h4>' +
+        '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Shows under your bio. Let people know what you\'re up to.</p>' +
+
+        '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
+            '<input type="text" id="settingsMoodEmoji" value="' + currentEmoji + '" placeholder="\u{1F41D}" maxlength="4" style="width:50px;text-align:center;font-size:24px;padding:8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);">' +
+            '<input type="text" id="settingsMoodText" value="' + escapeHtml(currentText) + '" placeholder="What are you up to?" maxlength="60" style="flex:1;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-size:14px;">' +
+        '</div>' +
+
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">' +
+            MOOD_PRESETS.map(function(p) {
+                return '<button onclick="document.getElementById(\'settingsMoodEmoji\').value=\'' + p.emoji + '\';document.getElementById(\'settingsMoodText\').value=\'' + p.label + '\';" ' +
+                    'style="padding:5px 10px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-input);cursor:pointer;color:var(--text-primary);font-size:12px;transition:all 0.2s;" ' +
+                    'onmouseover="this.style.borderColor=\'var(--honey-yellow)\'" onmouseout="this.style.borderColor=\'var(--border-color)\'">' +
+                    p.emoji + ' ' + p.label +
+                '</button>';
+            }).join('') +
+        '</div>' +
+
+        '<div style="display:flex;gap:8px;">' +
+            '<button onclick="var e=document.getElementById(\'settingsMoodEmoji\').value.trim();var t=document.getElementById(\'settingsMoodText\').value.trim();if(t){saveMoodFromSettings(e,t)}else{clearMood()}" style="padding:8px 20px;border-radius:20px;border:none;background:var(--honey-yellow);color:#000;cursor:pointer;font-weight:600;font-size:13px;">Save Mood</button>' +
+            '<button onclick="clearMood()" style="padding:8px 16px;border-radius:20px;border:1px solid var(--border-color);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">Clear</button>' +
+        '</div>' +
+    '</div>';
+}
+
+function saveMoodFromSettings(emoji, text) {
+    var data = { emoji: emoji || '\u{1F41D}', text: text, updatedAt: Date.now() };
+    localStorage.setItem('polleneer_mood', JSON.stringify(data));
+    updateMoodDisplay();
+    showToast('Mood updated! ' + data.emoji);
+}
+
+// =====================================================================
+// FEATURE 3: PINNED POST
+// =====================================================================
+function getPinnedPostId() {
+    try {
+        var saved = localStorage.getItem('polleneer_pinned_post');
+        if (saved) return parseInt(saved);
+    } catch(e) {}
+    return null;
+}
+
+function setPinnedPost(postId) {
+    localStorage.setItem('polleneer_pinned_post', postId.toString());
+    loadPinnedPost();
+    showToast('Post pinned to your profile! \u{1F4CC}');
+}
+
+function unpinPost() {
+    localStorage.removeItem('polleneer_pinned_post');
+    loadPinnedPost();
+    showToast('Post unpinned');
+}
+
+function loadPinnedPost() {
+    var area = document.getElementById('pinnedPostArea');
+    if (!area) return;
+
+    var pinnedId = getPinnedPostId();
+    if (!pinnedId) { area.innerHTML = ''; return; }
+
+    var post = posts.find(function(p) { return p.id === pinnedId; });
+    if (!post || post.userId !== (currentUser ? currentUser.id : -1)) {
+        area.innerHTML = '';
+        return;
+    }
+
+    var postHTML = createPostHTML(post);
+    area.innerHTML = '<div class="pinned-post-container" style="margin-top:10px;">' +
+        '<div class="pinned-post-label"><i class="fas fa-thumbtack"></i> Pinned Post</div>' +
+        postHTML +
+    '</div>';
+}
+
+// Add "Pin to profile" option to post menu
+var _origCreatePostHTML_pin = createPostHTML;
+function createPostHTML(post) {
+    var html = _origCreatePostHTML_pin(post);
+
+    // Only add pin option for current user's posts
+    if (currentUser && post.userId === currentUser.id) {
+        var isPinned = getPinnedPostId() === post.id;
+        var pinBtn = isPinned ?
+            '<button style="width:100%;padding:10px 16px;border:none;background:transparent;color:var(--text-primary);cursor:pointer;text-align:left;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'transparent\'" onclick="unpinPost()"><i class="fas fa-thumbtack" style="color:var(--honey-yellow);width:24px;"></i> Unpin from profile</button>' :
+            '<button style="width:100%;padding:10px 16px;border:none;background:transparent;color:var(--text-primary);cursor:pointer;text-align:left;font-size:14px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'transparent\'" onclick="setPinnedPost(' + post.id + ')"><i class="fas fa-thumbtack" style="width:24px;"></i> Pin to your profile</button>';
+
+        // Insert pin button into the post's dropdown menu
+        // The post menu has a pattern of button elements
+        var menuInsertPoint = html.lastIndexOf('</button>');
+        if (menuInsertPoint > 0) {
+            // Find the delete button area and insert before it
+            var deleteIdx = html.indexOf('Delete', html.indexOf('post-' + post.id));
+            if (deleteIdx > 0) {
+                var btnStart = html.lastIndexOf('<button', deleteIdx);
+                if (btnStart > 0) {
+                    html = html.substring(0, btnStart) + pinBtn + html.substring(btnStart);
+                }
+            }
+        }
+    }
+    return html;
+}
+
+// =====================================================================
+// ADD NEW TAB TO CUSTOMIZE MODAL: "Flair" 
+// (contains Avatar Border + Mood settings)
+// =====================================================================
+var _origSwitchCustomizationTab = switchCustomizationTab;
+function switchCustomizationTab(tab) {
+    if (tab === 'flair') {
+        // Handle the Flair tab ourselves
+        document.querySelectorAll('.customization-tab').forEach(function(t) {
+            t.classList.remove('active');
+            if (t.textContent.trim() === 'Flair') t.classList.add('active');
+        });
+        document.querySelectorAll('.customization-content').forEach(function(c) {
+            c.style.display = 'none';
+        });
+
+        var flairContent = document.getElementById('flairContent');
+        if (!flairContent) {
+            flairContent = document.createElement('div');
+            flairContent.id = 'flairContent';
+            flairContent.className = 'customization-content';
+            var existingContent = document.querySelector('.customization-content');
+            if (existingContent) existingContent.parentNode.appendChild(flairContent);
+        }
+        flairContent.style.display = 'block';
+        flairContent.innerHTML = renderAvatarBorderSettings() + '<div style="border-top:1px solid var(--border-color);"></div>' + renderMoodSettings();
+        return;
+    }
+    _origSwitchCustomizationTab(tab);
+    var flairContent = document.getElementById('flairContent');
+    if (flairContent) flairContent.style.display = 'none';
+}
+
+// Inject the Flair tab button into the customize modal
+(function() {
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) {
+                    var tabBar = node.querySelector ? node.querySelector('.customization-tabs') : null;
+                    if (!tabBar) {
+                        if (node.classList && node.classList.contains('customization-tabs')) tabBar = node;
+                    }
+                    if (tabBar && !tabBar.querySelector('[data-tab-flair]')) {
+                        var flairBtn = document.createElement('button');
+                        flairBtn.className = 'customization-tab';
+                        flairBtn.setAttribute('data-tab-flair', 'true');
+                        flairBtn.onclick = function() { switchCustomizationTab('flair'); };
+                        flairBtn.innerHTML = '<i class="fas fa-magic" style="margin-right:4px;"></i>Flair';
+                        tabBar.appendChild(flairBtn);
+                    }
+                }
+            });
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
 
 
 </script>
