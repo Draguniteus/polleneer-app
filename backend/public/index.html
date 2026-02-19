@@ -2596,7 +2596,7 @@
             <div class="modal-body">
                 <div class="post-input" style="border: none; padding: 0;">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=BeeKeeper" alt="Profile" class="user-avatar-small" id="modalUserAvatar">
-                    <div class="post-textarea" id="postContent" contenteditable="true" data-placeholder="What's buzzing in your mind? Start pollinating ideas..." style="min-height: 150px; outline: none; white-space: pre-wrap; word-wrap: break-word; overflow-y: auto;" oninput="highlightHashtags(this)"></div>
+                    <div class="post-textarea" id="postContent" contenteditable="true" data-placeholder="What's buzzing in your mind? Start pollinating ideas..." style="min-height: 150px; outline: none; white-space: pre-wrap; word-wrap: break-word; overflow-y: auto;" oninput="debouncedHighlightHashtags(this)"></div>
                 </div>
 
                 <div style="margin: 20px 0;">
@@ -3944,7 +3944,7 @@
                 <div class="inline-compose">
                     <div class="compose-top">
                         <img src="${currentUser.avatar}" alt="Profile" style="width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="goToProfile()">
-                        <div class="compose-textarea" id="inlinePostContent" contenteditable="true" data-placeholder="What's buzzing in your mind?" oninput="handleInlineCompose(this); highlightHashtags(this)" onfocus="expandInlineCompose()" style="outline:none;"></div>
+                        <div class="compose-textarea" id="inlinePostContent" contenteditable="true" data-placeholder="What's buzzing in your mind?" oninput="handleInlineCompose(this); debouncedHighlightHashtags(this)" onfocus="expandInlineCompose()" style="outline:none;"></div>
                     </div>
                     <div class="media-preview-inline" id="inlineMediaPreview"></div>
                     <div class="compose-actions hidden" id="inlineComposeActions">
@@ -7537,6 +7537,16 @@ function clearEditable(elementId) {
 
 // Track the last known selection inside a compose area
 let _lastComposeRange = null;
+let _hashtagDebounceTimer = null;
+
+// Debounced hashtag highlighter — waits 600ms after typing stops
+// This prevents hashtag DOM manipulation from breaking execCommand toggle state
+function debouncedHighlightHashtags(el) {
+    clearTimeout(_hashtagDebounceTimer);
+    _hashtagDebounceTimer = setTimeout(() => {
+        highlightHashtags(el);
+    }, 600);
+}
 
 document.addEventListener('selectionchange', function() {
     const sel = window.getSelection();
@@ -7548,7 +7558,28 @@ document.addEventListener('selectionchange', function() {
     if (node && node.closest && (node.closest('#postContent') || node.closest('#inlinePostContent'))) {
         _lastComposeRange = range.cloneRange();
     }
+    // Update bold/italic button active states
+    updateFormatButtonStates();
 });
+
+function updateFormatButtonStates() {
+    try {
+        const isBold = document.queryCommandState('bold');
+        const isItalic = document.queryCommandState('italic');
+        // Update all bold buttons
+        document.querySelectorAll('[onclick="toggleBold()"]').forEach(btn => {
+            btn.style.background = isBold ? 'var(--honey-yellow)' : '';
+            btn.style.color = isBold ? '#000' : '';
+            btn.style.borderRadius = isBold ? '6px' : '';
+        });
+        // Update all italic buttons
+        document.querySelectorAll('[onclick="toggleItalic()"]').forEach(btn => {
+            btn.style.background = isItalic ? 'var(--honey-yellow)' : '';
+            btn.style.color = isItalic ? '#000' : '';
+            btn.style.borderRadius = isItalic ? '6px' : '';
+        });
+    } catch(e) {}
+}
 
 function toggleBold() {
     const active = getActiveCompose();
@@ -7561,6 +7592,7 @@ function toggleBold() {
         sel.addRange(_lastComposeRange);
     }
     document.execCommand('bold', false, null);
+    updateFormatButtonStates();
 }
 
 function toggleItalic() {
@@ -7574,6 +7606,7 @@ function toggleItalic() {
         sel.addRange(_lastComposeRange);
     }
     document.execCommand('italic', false, null);
+    updateFormatButtonStates();
 }
 
 function getActiveCompose() {
