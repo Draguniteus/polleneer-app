@@ -2692,60 +2692,276 @@
             font-weight: 600;
         }
 
-        /* Admin Panel */
-        .admin-panel {
-            background: var(--bg-card);
-            border-radius: var(--site-radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 3px solid var(--flower-pink);
+        /* Admin Panel - Full Dashboard */
+        .admin-modal-fullscreen .modal-content {
+            max-width: 95vw;
+            width: 1200px;
+            height: 85vh;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
         }
-
-        .admin-panel h3 {
+        .admin-modal-fullscreen .modal-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+        }
+        .admin-sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 12px 0;
+            overflow-y: auto;
+        }
+        .admin-sidebar-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            text-align: left;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .admin-sidebar-btn:hover {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+        .admin-sidebar-btn.active {
+            background: var(--bg-input);
+            color: var(--flower-pink);
+            border-left-color: var(--flower-pink);
+            font-weight: 600;
+        }
+        .admin-sidebar-btn i {
+            width: 20px;
+            text-align: center;
+            font-size: 15px;
+        }
+        .admin-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
+        .admin-section h3 {
             color: var(--flower-pink);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 20px;
         }
-
-        .admin-controls {
+        .admin-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .admin-stat-card {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+        .admin-stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .admin-stat-card .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .admin-stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .admin-stat-card .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .admin-stat-card .stat-change {
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        .admin-stat-card .stat-change.positive { color: #4CAF50; }
+        .admin-stat-card .stat-change.negative { color: #FF4444; }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .admin-table th {
+            text-align: left;
+            padding: 12px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        .admin-table tr:hover td {
+            background: var(--bg-input);
+        }
+        .admin-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .admin-badge.queen { background: rgba(255,195,11,0.2); color: #FFC30B; }
+        .admin-badge.worker { background: rgba(100,200,100,0.2); color: #4CAF50; }
+        .admin-badge.drone { background: rgba(100,150,255,0.2); color: #64B5F6; }
+        .admin-badge.banned { background: rgba(255,68,68,0.2); color: #FF4444; }
+        .admin-badge.active { background: rgba(76,175,80,0.2); color: #4CAF50; }
+        .admin-badge.suspended { background: rgba(255,152,0,0.2); color: #FF9800; }
+        .admin-action-btn {
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .admin-action-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--flower-pink);
+        }
+        .admin-action-btn.danger {
+            border-color: rgba(255,68,68,0.5);
+            color: #FF4444;
+        }
+        .admin-action-btn.danger:hover {
+            background: rgba(255,68,68,0.1);
+        }
+        .admin-action-btn.success {
+            border-color: rgba(76,175,80,0.5);
+            color: #4CAF50;
+        }
+        .admin-search {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 16px;
+        }
+        .admin-search:focus {
+            outline: none;
+            border-color: var(--flower-pink);
+        }
+        .admin-search-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .admin-search-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .admin-controls-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
-
-        .admin-control {
+        .admin-control-group {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
         }
-
-        .admin-control label {
-            font-size: 14px;
+        .admin-control-group label {
+            font-size: 13px;
             color: var(--text-secondary);
+            font-weight: 600;
         }
-
-        .admin-select {
-            padding: 8px 12px;
+        .admin-select, .admin-input {
+            padding: 9px 12px;
             background: var(--bg-input);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-primary);
             font-family: inherit;
+            font-size: 14px;
         }
-
-        .admin-select:focus {
+        .admin-select:focus, .admin-input:focus {
             outline: none;
             border-color: var(--flower-pink);
         }
-
-        .admin-buttons {
+        .admin-toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            border-radius: 10px;
+            background: var(--bg-input);
+            margin-bottom: 10px;
+        }
+        .admin-toggle-row strong {
+            font-size: 14px;
+        }
+        .admin-toggle-row span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .admin-card {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+        .admin-card h4 {
+            margin-bottom: 12px;
+            color: var(--flower-pink);
+        }
+        .admin-btn-row {
             display: flex;
             gap: 10px;
+            margin-top: 16px;
         }
-
         .admin-btn {
             padding: 10px 20px;
             border-radius: 8px;
@@ -2754,22 +2970,100 @@
             cursor: pointer;
             transition: all 0.3s;
             font-family: inherit;
+            font-size: 14px;
         }
-
-        .admin-btn.save {
+        .admin-btn.primary {
             background: var(--flower-pink);
             color: white;
         }
-
-        .admin-btn.reset {
+        .admin-btn.secondary {
             background: var(--bg-input);
             color: var(--text-primary);
             border: 1px solid var(--border-color);
         }
-
         .admin-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        .admin-chart-placeholder {
+            height: 200px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        .admin-chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 120px;
+            padding: 0 20px;
+        }
+        .admin-chart-bar {
+            width: 30px;
+            background: linear-gradient(to top, var(--flower-pink), rgba(255,105,180,0.3));
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s;
+        }
+        .admin-report-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #FF9800;
+        }
+        .admin-report-card.resolved {
+            border-left-color: #4CAF50;
+            opacity: 0.7;
+        }
+        .admin-log-entry {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+        .admin-log-entry .log-time {
+            color: var(--text-secondary);
+            white-space: nowrap;
+            font-size: 12px;
+        }
+        .admin-announcement-card {
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+        @media (max-width: 768px) {
+            .admin-modal-fullscreen .modal-content {
+                width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            .admin-sidebar {
+                width: 60px;
+                min-width: 60px;
+            }
+            .admin-sidebar-btn span {
+                display: none;
+            }
+            .admin-sidebar-btn {
+                justify-content: center;
+                padding: 12px;
+            }
+            .admin-stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         /* Responsive Design */
@@ -4373,89 +4667,329 @@
     </div>
 
     <!-- Admin Panel Modal -->
-    <div class="modal" id="adminPanelModal">
+    <div class="modal admin-modal-fullscreen" id="adminPanelModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-crown"></i> Admin Panel</h3>
+                <h3><i class="fas fa-crown" style="color: var(--flower-pink);"></i> Admin Panel</h3>
                 <button class="modal-close" onclick="closeModal('adminPanelModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="admin-panel">
-                    <h3><i class="fas fa-cog"></i> Site Configuration</h3>
-                    
-                    <div class="admin-controls">
-                        <div class="admin-control">
-                            <label>Site Theme</label>
-                            <select class="admin-select" id="adminSiteTheme">
-                                <option value="dark">Dark</option>
-                                <option value="light">Light</option>
-                                <option value="auto">Auto</option>
-                            </select>
-                        </div>
-                        
-                        <div class="admin-control">
-                            <label>Site Style</label>
-                            <select class="admin-select" id="adminSiteStyle">
-                                <option value="default">Default</option>
-                                <option value="rounded">Rounded</option>
-                                <option value="sharp">Sharp</option>
-                                <option value="honeycomb">Honeycomb</option>
-                            </select>
-                        </div>
-                        
-                        <div class="admin-control">
-                            <label>Primary Color</label>
-                            <input type="color" class="admin-select" id="adminPrimaryColor" value="#FFC30B">
-                        </div>
-                        
-                        <div class="admin-control">
-                            <label>Background Color</label>
-                            <input type="color" class="admin-select" id="adminBgColor" value="#0F0F0F">
-                        </div>
-                        
-                        <div class="admin-control">
-                            <label>Font Family</label>
-                            <select class="admin-select" id="adminFontFamily">
-                                <option value="Inter">Inter</option>
-                                <option value="Poppins">Poppins</option>
-                                <option value="Arial">Arial</option>
-                                <option value="Georgia">Georgia</option>
-                            </select>
-                        </div>
-                        
-                        <div class="admin-control">
-                            <label>Border Radius</label>
-                            <select class="admin-select" id="adminBorderRadius">
-                                <option value="5">Small (5px)</option>
-                                <option value="15" selected>Medium (15px)</option>
-                                <option value="25">Large (25px)</option>
-                                <option value="50">Extra Large (50px)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="admin-buttons">
-                        <button class="admin-btn reset" onclick="resetAdminSettings()">
-                            Reset to Default
-                        </button>
-                        <button class="admin-btn save" onclick="saveAdminSettings()">
-                            <i class="fas fa-save"></i>
-                            Save Settings
-                        </button>
-                    </div>
+                <div class="admin-sidebar">
+                    <button class="admin-sidebar-btn active" onclick="switchAdminTab('dashboard')"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></button>
+                    <button class="admin-sidebar-btn" onclick="switchAdminTab('users')"><i class="fas fa-users"></i> <span>Users</span></button>
+                    <button class="admin-sidebar-btn" onclick="switchAdminTab('moderation')"><i class="fas fa-shield-alt"></i> <span>Moderation</span></button>
+                    <button class="admin-sidebar-btn" onclick="switchAdminTab('config')"><i class="fas fa-cog"></i> <span>Site Config</span></button>
+                    <button class="admin-sidebar-btn" onclick="switchAdminTab('announcements')"><i class="fas fa-bullhorn"></i> <span>Announcements</span></button>
+                    <button class="admin-sidebar-btn" onclick="switchAdminTab('analytics')"><i class="fas fa-chart-line"></i> <span>Analytics</span></button>
+                    <button class="admin-sidebar-btn" onclick="switchAdminTab('roles')"><i class="fas fa-user-shield"></i> <span>Roles</span></button>
+                    <button class="admin-sidebar-btn" onclick="switchAdminTab('auditlog')"><i class="fas fa-clipboard-list"></i> <span>Audit Log</span></button>
                 </div>
-                
-                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 105, 180, 0.1); border-radius: 10px; border: 1px solid var(--flower-pink);">
-                    <h4 style="color: var(--flower-pink); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Admin Information</h4>
-                    <p style="font-size: 14px; color: var(--text-secondary);">
-                        <strong>Username:</strong> admin<br>
-                        <strong>Password:</strong> polleneer2024<br>
-                        <strong>Permissions:</strong> Full site customization, user management, content moderation
-                    </p>
-                    <button class="action-btn" onclick="copyAdminCredentials()" style="margin-top: 10px; width: 100%;">
-                        <i class="fas fa-copy"></i>
-                        Copy Credentials
-                    </button>
+                <div class="admin-main" id="adminMainContent">
+                    <!-- Dashboard -->
+                    <div class="admin-section active" id="adminDashboard">
+                        <h3><i class="fas fa-tachometer-alt"></i> Dashboard</h3>
+                        <div class="admin-stat-grid" id="adminStatGrid"></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-chart-bar"></i> Posts This Week</h4>
+                                <div class="admin-chart-bars" id="adminWeeklyChart"></div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 20px 0; font-size: 11px; color: var(--text-secondary);">
+                                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                                </div>
+                            </div>
+                            <div class="admin-card">
+                                <h4><i class="fas fa-fire"></i> Recent Activity</h4>
+                                <div id="adminRecentActivity" style="max-height: 200px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Management -->
+                    <div class="admin-section" id="adminUsers">
+                        <h3><i class="fas fa-users"></i> User Management</h3>
+                        <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
+                            <div class="admin-search-wrapper" style="flex: 1; margin-bottom: 0;">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="admin-search" id="adminUserSearch" placeholder="Search users by name, email, or role..." oninput="filterAdminUsers()" style="margin-bottom: 0;">
+                            </div>
+                            <select class="admin-select" id="adminUserRoleFilter" onchange="filterAdminUsers()" style="width: 150px;">
+                                <option value="">All Roles</option>
+                                <option value="queen">Queen Bee</option>
+                                <option value="worker">Worker Bee</option>
+                                <option value="drone">Drone</option>
+                            </select>
+                            <select class="admin-select" id="adminUserStatusFilter" onchange="filterAdminUsers()" style="width: 150px;">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="banned">Banned</option>
+                            </select>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table class="admin-table" id="adminUserTable">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Joined</th>
+                                        <th>Posts</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUserTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Content Moderation -->
+                    <div class="admin-section" id="adminModeration">
+                        <h3><i class="fas fa-shield-alt"></i> Content Moderation</h3>
+                        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                            <button class="admin-action-btn" onclick="switchModerationTab('reports')" id="modTabReports" style="font-weight: 600; border-color: var(--flower-pink); color: var(--flower-pink);">
+                                <i class="fas fa-flag"></i> Reports <span class="admin-badge" style="margin-left: 6px; background: rgba(255,68,68,0.2); color: #FF4444;" id="reportCount">0</span>
+                            </button>
+                            <button class="admin-action-btn" onclick="switchModerationTab('flagged')"><i class="fas fa-exclamation-triangle"></i> Flagged Content</button>
+                            <button class="admin-action-btn" onclick="switchModerationTab('mutedwords')"><i class="fas fa-volume-mute"></i> Muted Words</button>
+                        </div>
+                        <div id="moderationReports"></div>
+                        <div id="moderationFlagged" style="display: none;"></div>
+                        <div id="moderationMutedWords" style="display: none;"></div>
+                    </div>
+
+                    <!-- Site Configuration -->
+                    <div class="admin-section" id="adminConfig">
+                        <h3><i class="fas fa-cog"></i> Site Configuration</h3>
+
+                        <div class="admin-card">
+                            <h4><i class="fas fa-palette"></i> Theme & Appearance</h4>
+                            <div class="admin-controls-row">
+                                <div class="admin-control-group">
+                                    <label>Default Site Theme</label>
+                                    <select class="admin-select" id="adminDefaultTheme">
+                                        <option value="dark">Night Hive (Dark)</option>
+                                        <option value="light">Sunlit Meadow (Light)</option>
+                                        <option value="spring">Blossom Fields</option>
+                                        <option value="summer">Honey Coast</option>
+                                        <option value="autumn">Amber Harvest</option>
+                                        <option value="winter">Frost Colony</option>
+                                        <option value="rose">Rose Garden</option>
+                                        <option value="crimson">Crimson Flame</option>
+                                        <option value="emerald">Emerald Grove</option>
+                                        <option value="golden">Golden Crown</option>
+                                        <option value="violet">Violet Throne</option>
+                                        <option value="steel">Steel Fortress</option>
+                                        <option value="ember">Ember Blaze</option>
+                                        <option value="cedar">Cedar Lodge</option>
+                                        <option value="sapphire">Sapphire Depths</option>
+                                        <option value="rainbow">Prismatic Hive</option>
+                                    </select>
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Site Style</label>
+                                    <select class="admin-select" id="adminSiteStyleNew">
+                                        <option value="default">Default</option>
+                                        <option value="rounded">Rounded</option>
+                                        <option value="sharp">Sharp</option>
+                                        <option value="honeycomb">Honeycomb</option>
+                                    </select>
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Border Radius</label>
+                                    <select class="admin-select" id="adminBorderRadiusNew">
+                                        <option value="5">Small (5px)</option>
+                                        <option value="15" selected>Medium (15px)</option>
+                                        <option value="25">Large (25px)</option>
+                                        <option value="50">Extra Large (50px)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="admin-controls-row">
+                                <div class="admin-control-group">
+                                    <label>Primary Accent Color</label>
+                                    <input type="color" class="admin-select" id="adminAccentColor" value="#FF69B4" style="height: 38px;">
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Background Override</label>
+                                    <input type="color" class="admin-select" id="adminBgOverride" value="#0F0F0F" style="height: 38px;">
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Font Family</label>
+                                    <select class="admin-select" id="adminFontFamilyNew">
+                                        <option value="Inter">Inter</option>
+                                        <option value="Poppins">Poppins</option>
+                                        <option value="Arial">Arial</option>
+                                        <option value="Georgia">Georgia</option>
+                                        <option value="Roboto">Roboto</option>
+                                        <option value="'Fira Code', monospace">Fira Code</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-card">
+                            <h4><i class="fas fa-toggle-on"></i> Feature Toggles</h4>
+                            <div id="adminFeatureToggles"></div>
+                        </div>
+
+                        <div class="admin-card">
+                            <h4><i class="fas fa-sliders-h"></i> Content Settings</h4>
+                            <div class="admin-controls-row">
+                                <div class="admin-control-group">
+                                    <label>Max Post Length</label>
+                                    <input type="number" class="admin-input" id="adminMaxPostLength" value="500" min="100" max="5000">
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Max Upload Size (MB)</label>
+                                    <input type="number" class="admin-input" id="adminMaxUpload" value="10" min="1" max="100">
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Posts Per Page</label>
+                                    <input type="number" class="admin-input" id="adminPostsPerPage" value="20" min="5" max="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-btn-row">
+                            <button class="admin-btn secondary" onclick="resetAdminConfig()"><i class="fas fa-undo"></i> Reset to Defaults</button>
+                            <button class="admin-btn primary" onclick="saveAdminConfig()"><i class="fas fa-save"></i> Save Configuration</button>
+                        </div>
+                    </div>
+
+                    <!-- Announcements -->
+                    <div class="admin-section" id="adminAnnouncements">
+                        <h3><i class="fas fa-bullhorn"></i> Announcements</h3>
+                        <div class="admin-card">
+                            <h4>Create Announcement</h4>
+                            <div class="admin-control-group" style="margin-bottom: 12px;">
+                                <label>Title</label>
+                                <input type="text" class="admin-input" id="announcementTitle" placeholder="Announcement title..." style="width: 100%;">
+                            </div>
+                            <div class="admin-control-group" style="margin-bottom: 12px;">
+                                <label>Message</label>
+                                <textarea class="admin-input" id="announcementMessage" placeholder="Write your announcement..." rows="4" style="width: 100%; resize: vertical;"></textarea>
+                            </div>
+                            <div class="admin-controls-row" style="margin-bottom: 12px;">
+                                <div class="admin-control-group">
+                                    <label>Type</label>
+                                    <select class="admin-select" id="announcementType">
+                                        <option value="info">Info</option>
+                                        <option value="warning">Warning</option>
+                                        <option value="success">Success</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Display</label>
+                                    <select class="admin-select" id="announcementDisplay">
+                                        <option value="banner">Top Banner</option>
+                                        <option value="modal">Modal Popup</option>
+                                        <option value="feed">Feed Post</option>
+                                    </select>
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Duration</label>
+                                    <select class="admin-select" id="announcementDuration">
+                                        <option value="1h">1 Hour</option>
+                                        <option value="24h">24 Hours</option>
+                                        <option value="7d">7 Days</option>
+                                        <option value="permanent">Permanent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="admin-btn primary" onclick="publishAnnouncement()"><i class="fas fa-paper-plane"></i> Publish Announcement</button>
+                        </div>
+                        <h4 style="margin: 20px 0 12px; color: var(--text-primary);">Active Announcements</h4>
+                        <div id="adminAnnouncementsList"></div>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div class="admin-section" id="adminAnalytics">
+                        <h3><i class="fas fa-chart-line"></i> Analytics</h3>
+                        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                            <select class="admin-select" id="analyticsTimeRange" onchange="refreshAnalytics()">
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                                <option value="90d">Last 90 Days</option>
+                                <option value="all">All Time</option>
+                            </select>
+                        </div>
+                        <div class="admin-stat-grid" id="analyticsStatGrid"></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-users"></i> User Growth</h4>
+                                <div class="admin-chart-bars" id="analyticsUserGrowth"></div>
+                                <div style="display: flex; justify-content: space-around; padding: 8px 20px 0; font-size: 11px; color: var(--text-secondary);" id="analyticsUserLabels"></div>
+                            </div>
+                            <div class="admin-card">
+                                <h4><i class="fas fa-heart"></i> Engagement Rate</h4>
+                                <div class="admin-chart-bars" id="analyticsEngagement"></div>
+                                <div style="display: flex; justify-content: space-around; padding: 8px 20px 0; font-size: 11px; color: var(--text-secondary);" id="analyticsEngLabels"></div>
+                            </div>
+                        </div>
+                        <div class="admin-card" style="margin-top: 16px;">
+                            <h4><i class="fas fa-trophy"></i> Top Posts</h4>
+                            <div id="analyticsTopPosts"></div>
+                        </div>
+                    </div>
+
+                    <!-- Roles & Permissions -->
+                    <div class="admin-section" id="adminRoles">
+                        <h3><i class="fas fa-user-shield"></i> Roles & Permissions</h3>
+                        <div id="adminRolesList"></div>
+                        <div class="admin-card" style="margin-top: 20px;">
+                            <h4><i class="fas fa-plus"></i> Create Custom Role</h4>
+                            <div class="admin-controls-row">
+                                <div class="admin-control-group">
+                                    <label>Role Name</label>
+                                    <input type="text" class="admin-input" id="newRoleName" placeholder="e.g. Moderator Bee">
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Color</label>
+                                    <input type="color" class="admin-input" id="newRoleColor" value="#FF69B4" style="height: 38px;">
+                                </div>
+                                <div class="admin-control-group">
+                                    <label>Icon</label>
+                                    <select class="admin-select" id="newRoleIcon">
+                                        <option value="crown">Crown</option>
+                                        <option value="shield-alt">Shield</option>
+                                        <option value="star">Star</option>
+                                        <option value="gem">Gem</option>
+                                        <option value="bolt">Bolt</option>
+                                        <option value="hammer">Hammer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <h5 style="margin: 12px 0 8px; color: var(--text-secondary); font-size: 13px;">Permissions</h5>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;" id="newRolePermissions">
+                            </div>
+                            <button class="admin-btn primary" onclick="createCustomRole()"><i class="fas fa-plus"></i> Create Role</button>
+                        </div>
+                    </div>
+
+                    <!-- Audit Log -->
+                    <div class="admin-section" id="adminAuditlog">
+                        <h3><i class="fas fa-clipboard-list"></i> Audit Log</h3>
+                        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                            <select class="admin-select" id="auditActionFilter" onchange="filterAuditLog()">
+                                <option value="">All Actions</option>
+                                <option value="user_ban">User Bans</option>
+                                <option value="user_role">Role Changes</option>
+                                <option value="content_remove">Content Removal</option>
+                                <option value="config_change">Config Changes</option>
+                                <option value="announcement">Announcements</option>
+                            </select>
+                            <select class="admin-select" id="auditTimeFilter" onchange="filterAuditLog()">
+                                <option value="24h">Last 24 Hours</option>
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                                <option value="all">All Time</option>
+                            </select>
+                        </div>
+                        <div class="admin-card" style="padding: 0; overflow: hidden;">
+                            <div id="adminAuditLogEntries" style="max-height: 500px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -8118,11 +8652,619 @@ function likeComment(commentId, postId) {
 // 17. showAdminPanel - now works for all users but restricts non-admins
 function showAdminPanel() {
     if (!currentUser || (currentUser.role !== 'queen' && currentUser.role !== 'admin' && !isAdmin)) {
-        showToast('🔒 Admin access required. Only Queen/King Bees can access the admin panel.');
+        showToast('\ud83d\udd12 Admin access required. Only Queen/King Bees can access the admin panel.');
         return;
     }
+    initAdminPanel();
     openModal('adminPanelModal');
 }
+
+// ==================== ADMIN PANEL FUNCTIONS ====================
+
+// ---- Admin Tab Navigation ----
+function switchAdminTab(tab) {
+    document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.admin-sidebar-btn').forEach(function(b) { b.classList.remove('active'); });
+    var section = document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1));
+    if (section) section.classList.add('active');
+    var btns = document.querySelectorAll('.admin-sidebar-btn');
+    btns.forEach(function(b) { if (b.textContent.trim().toLowerCase().replace(/\s+/g,'').indexOf(tab) > -1 || b.getAttribute('onclick').indexOf("'" + tab + "'") > -1) b.classList.add('active'); });
+
+    // Initialize tab data
+    if (tab === 'dashboard') initAdminDashboard();
+    else if (tab === 'users') initAdminUsers();
+    else if (tab === 'moderation') initAdminModeration();
+    else if (tab === 'config') initAdminConfig();
+    else if (tab === 'announcements') initAdminAnnouncements();
+    else if (tab === 'analytics') initAdminAnalytics();
+    else if (tab === 'roles') initAdminRoles();
+    else if (tab === 'auditlog') initAdminAuditLog();
+}
+
+// ---- Mock Data Store ----
+var adminData = {
+    reports: [],
+    announcements: [],
+    auditLog: [],
+    customRoles: [],
+    siteConfig: {},
+    mutedWords: []
+};
+
+function loadAdminData() {
+    try {
+        var saved = JSON.parse(localStorage.getItem('polleneer_admin_data') || '{}');
+        if (saved.reports) adminData.reports = saved.reports;
+        if (saved.announcements) adminData.announcements = saved.announcements;
+        if (saved.auditLog) adminData.auditLog = saved.auditLog;
+        if (saved.customRoles) adminData.customRoles = saved.customRoles;
+        if (saved.siteConfig) adminData.siteConfig = saved.siteConfig;
+        if (saved.mutedWords) adminData.mutedWords = saved.mutedWords;
+    } catch(e) {}
+    // Seed some default reports if empty
+    if (adminData.reports.length === 0) {
+        adminData.reports = [
+            { id: 1, type: 'spam', reporter: 'honeybee42', target: 'spammer99', content: 'Suspicious link posted in community feed', status: 'pending', date: new Date(Date.now() - 3600000).toISOString() },
+            { id: 2, type: 'harassment', reporter: 'blossom_queen', target: 'angry_wasp', content: 'Offensive comments on multiple posts', status: 'pending', date: new Date(Date.now() - 7200000).toISOString() },
+            { id: 3, type: 'inappropriate', reporter: 'garden_lover', target: 'edgy_poster', content: 'Inappropriate image in profile picture', status: 'resolved', date: new Date(Date.now() - 86400000).toISOString() }
+        ];
+    }
+    if (adminData.auditLog.length === 0) {
+        adminData.auditLog = [
+            { action: 'config_change', admin: 'admin', detail: 'Changed default theme to Night Hive', time: new Date(Date.now() - 1800000).toISOString() },
+            { action: 'user_role', admin: 'admin', detail: 'Promoted honeybee42 to Worker Bee', time: new Date(Date.now() - 3600000).toISOString() },
+            { action: 'content_remove', admin: 'admin', detail: 'Removed spam post by spammer99', time: new Date(Date.now() - 7200000).toISOString() },
+            { action: 'announcement', admin: 'admin', detail: 'Published: Welcome to Polleneer Beta!', time: new Date(Date.now() - 86400000).toISOString() },
+            { action: 'user_ban', admin: 'admin', detail: 'Banned toxic_user for repeated violations', time: new Date(Date.now() - 172800000).toISOString() }
+        ];
+    }
+    if (adminData.announcements.length === 0) {
+        adminData.announcements = [
+            { id: 1, title: 'Welcome to Polleneer Beta!', message: 'We are excited to launch our beta. Report any bugs to the admin team.', type: 'info', display: 'banner', active: true, date: new Date(Date.now() - 86400000).toISOString() }
+        ];
+    }
+}
+
+function saveAdminData() {
+    localStorage.setItem('polleneer_admin_data', JSON.stringify(adminData));
+}
+
+function addAuditEntry(action, detail) {
+    adminData.auditLog.unshift({ action: action, admin: currentUser ? currentUser.username : 'admin', detail: detail, time: new Date().toISOString() });
+    saveAdminData();
+}
+
+// ---- DASHBOARD ----
+function initAdminDashboard() {
+    var totalUsers = (typeof users !== 'undefined' && users.length) ? users.length : 12;
+    var totalPosts = (typeof posts !== 'undefined' && posts.length) ? posts.length : 47;
+    var pendingReports = adminData.reports.filter(function(r) { return r.status === 'pending'; }).length;
+    var activeAnnouncements = adminData.announcements.filter(function(a) { return a.active; }).length;
+
+    document.getElementById('adminStatGrid').innerHTML =
+        '<div class="admin-stat-card"><div class="stat-icon" style="background: rgba(100,181,246,0.2); color: #64B5F6;"><i class="fas fa-users"></i></div><div class="stat-value">' + totalUsers + '</div><div class="stat-label">Total Users</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> +3 this week</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-icon" style="background: rgba(255,195,11,0.2); color: #FFC30B;"><i class="fas fa-pen"></i></div><div class="stat-value">' + totalPosts + '</div><div class="stat-label">Total Posts</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> +12 today</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-icon" style="background: rgba(76,175,80,0.2); color: #4CAF50;"><i class="fas fa-signal"></i></div><div class="stat-value">' + Math.floor(totalUsers * 0.6) + '</div><div class="stat-label">Active Now</div><div class="stat-change positive"><i class="fas fa-circle" style="font-size:8px;"></i> Online</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-icon" style="background: rgba(255,152,0,0.2); color: #FF9800;"><i class="fas fa-flag"></i></div><div class="stat-value">' + pendingReports + '</div><div class="stat-label">Pending Reports</div><div class="stat-change ' + (pendingReports > 0 ? 'negative' : 'positive') + '">' + (pendingReports > 0 ? '<i class="fas fa-exclamation-circle"></i> Needs review' : '<i class="fas fa-check"></i> All clear') + '</div></div>';
+
+    // Weekly chart
+    var bars = [15, 22, 18, 30, 25, 35, 28];
+    var max = Math.max.apply(null, bars);
+    document.getElementById('adminWeeklyChart').innerHTML = bars.map(function(v) {
+        return '<div class="admin-chart-bar" style="height: ' + (v / max * 100) + '%; position: relative;" title="' + v + ' posts"><span style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-secondary);">' + v + '</span></div>';
+    }).join('');
+
+    // Recent activity
+    var activities = [
+        { icon: 'fa-user-plus', color: '#64B5F6', text: '<strong>pollen_seeker</strong> joined the hive', time: '2 min ago' },
+        { icon: 'fa-pen', color: '#FFC30B', text: '<strong>honeybee42</strong> created a new post', time: '5 min ago' },
+        { icon: 'fa-heart', color: '#FF69B4', text: '<strong>blossom_queen</strong> liked 3 posts', time: '12 min ago' },
+        { icon: 'fa-comment', color: '#4CAF50', text: '<strong>garden_lover</strong> commented on a post', time: '18 min ago' },
+        { icon: 'fa-flag', color: '#FF9800', text: 'New report filed by <strong>honeybee42</strong>', time: '1 hr ago' },
+        { icon: 'fa-crown', color: '#FFC30B', text: '<strong>admin</strong> updated site configuration', time: '2 hrs ago' }
+    ];
+    document.getElementById('adminRecentActivity').innerHTML = activities.map(function(a) {
+        return '<div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-color); font-size: 13px;">' +
+            '<i class="fas ' + a.icon + '" style="color: ' + a.color + '; width: 20px; text-align: center;"></i>' +
+            '<span style="flex: 1;">' + a.text + '</span>' +
+            '<span style="color: var(--text-secondary); font-size: 11px; white-space: nowrap;">' + a.time + '</span></div>';
+    }).join('');
+}
+
+// ---- USER MANAGEMENT ----
+function initAdminUsers() {
+    var usersList = (typeof users !== 'undefined' && users.length) ? users : [
+        { id: 1, username: 'honeybee42', email: 'honeybee42@polleneer.com', displayName: 'Honey Bee', role: 'worker', status: 'active', joined: '2026-01-15', avatar: '', posts: 23, followers: 156 },
+        { id: 2, username: 'blossom_queen', email: 'blossom@polleneer.com', displayName: 'Blossom Queen', role: 'queen', status: 'active', joined: '2026-01-10', avatar: '', posts: 45, followers: 892 },
+        { id: 3, username: 'garden_lover', email: 'garden@polleneer.com', displayName: 'Garden Lover', role: 'worker', status: 'active', joined: '2026-02-01', avatar: '', posts: 12, followers: 67 },
+        { id: 4, username: 'spammer99', email: 'spam@mail.com', displayName: 'Spammer', role: 'drone', status: 'suspended', joined: '2026-02-10', avatar: '', posts: 3, followers: 0 },
+        { id: 5, username: 'pollen_seeker', email: 'pollen@polleneer.com', displayName: 'Pollen Seeker', role: 'worker', status: 'active', joined: '2026-02-18', avatar: '', posts: 5, followers: 23 },
+        { id: 6, username: 'angry_wasp', email: 'wasp@mail.com', displayName: 'Angry Wasp', role: 'drone', status: 'banned', joined: '2026-02-05', avatar: '', posts: 8, followers: 2 },
+        { id: 7, username: 'nectar_lord', email: 'nectar@polleneer.com', displayName: 'Nectar Lord', role: 'queen', status: 'active', joined: '2026-01-20', avatar: '', posts: 67, followers: 1204 },
+        { id: 8, username: 'buzz_creator', email: 'buzz@polleneer.com', displayName: 'Buzz Creator', role: 'worker', status: 'active', joined: '2026-02-14', avatar: '', posts: 15, followers: 89 }
+    ];
+    window._adminUsersList = usersList;
+    renderAdminUsers(usersList);
+}
+
+function renderAdminUsers(list) {
+    var tbody = document.getElementById('adminUserTableBody');
+    tbody.innerHTML = list.map(function(u) {
+        var roleClass = (u.role === 'queen' || u.role === 'admin') ? 'queen' : (u.role === 'worker' ? 'worker' : 'drone');
+        var statusClass = u.status === 'active' ? 'active' : (u.status === 'banned' ? 'banned' : 'suspended');
+        var avatar = u.avatar || ('https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username);
+        return '<tr>' +
+            '<td><div style="display: flex; align-items: center; gap: 10px;"><img src="' + avatar + '" style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-secondary);"><div><strong>' + (u.displayName || u.username) + '</strong><br><span style="color: var(--text-secondary); font-size: 12px;">@' + u.username + '</span></div></div></td>' +
+            '<td><span class="admin-badge ' + roleClass + '">' + (u.role || 'drone') + '</span></td>' +
+            '<td><span class="admin-badge ' + statusClass + '">' + (u.status || 'active') + '</span></td>' +
+            '<td style="font-size: 13px; color: var(--text-secondary);">' + (u.joined || 'N/A') + '</td>' +
+            '<td>' + (u.posts || 0) + '</td>' +
+            '<td><div style="display: flex; gap: 6px;">' +
+                '<button class="admin-action-btn" onclick="adminEditUser(\'' + u.username + '\')" title="Edit"><i class="fas fa-edit"></i></button>' +
+                '<button class="admin-action-btn" onclick="adminChangeRole(\'' + u.username + '\')" title="Change Role"><i class="fas fa-crown"></i></button>' +
+                (u.status !== 'banned' ? '<button class="admin-action-btn danger" onclick="adminBanUser(\'' + u.username + '\')" title="Ban"><i class="fas fa-ban"></i></button>' : '<button class="admin-action-btn success" onclick="adminUnbanUser(\'' + u.username + '\')" title="Unban"><i class="fas fa-check"></i></button>') +
+            '</div></td>' +
+        '</tr>';
+    }).join('');
+}
+
+function filterAdminUsers() {
+    var search = (document.getElementById('adminUserSearch').value || '').toLowerCase();
+    var role = document.getElementById('adminUserRoleFilter').value;
+    var status = document.getElementById('adminUserStatusFilter').value;
+    var list = (window._adminUsersList || []).filter(function(u) {
+        if (search && u.username.toLowerCase().indexOf(search) === -1 && (u.displayName || '').toLowerCase().indexOf(search) === -1 && (u.email || '').toLowerCase().indexOf(search) === -1) return false;
+        if (role && u.role !== role) return false;
+        if (status && u.status !== status) return false;
+        return true;
+    });
+    renderAdminUsers(list);
+}
+
+function adminEditUser(username) {
+    showToast('Edit user: @' + username + ' — Full editor coming with backend integration.');
+    addAuditEntry('user_role', 'Opened editor for @' + username);
+}
+
+function adminChangeRole(username) {
+    var roles = ['queen', 'worker', 'drone'];
+    var user = (window._adminUsersList || []).find(function(u) { return u.username === username; });
+    if (!user) return;
+    var currentIdx = roles.indexOf(user.role || 'drone');
+    var nextRole = roles[(currentIdx + 1) % roles.length];
+    if (confirm('Change @' + username + ' role to ' + nextRole.toUpperCase() + '?')) {
+        user.role = nextRole;
+        renderAdminUsers(window._adminUsersList);
+        showToast('Role updated: @' + username + ' is now ' + nextRole);
+        addAuditEntry('user_role', 'Changed @' + username + ' role to ' + nextRole);
+    }
+}
+
+function adminBanUser(username) {
+    if (confirm('Ban @' + username + '? They will lose access to Polleneer.')) {
+        var user = (window._adminUsersList || []).find(function(u) { return u.username === username; });
+        if (user) { user.status = 'banned'; renderAdminUsers(window._adminUsersList); }
+        showToast('Banned: @' + username);
+        addAuditEntry('user_ban', 'Banned @' + username);
+    }
+}
+
+function adminUnbanUser(username) {
+    if (confirm('Unban @' + username + '?')) {
+        var user = (window._adminUsersList || []).find(function(u) { return u.username === username; });
+        if (user) { user.status = 'active'; renderAdminUsers(window._adminUsersList); }
+        showToast('Unbanned: @' + username);
+        addAuditEntry('user_ban', 'Unbanned @' + username);
+    }
+}
+
+// ---- CONTENT MODERATION ----
+function initAdminModeration() {
+    switchModerationTab('reports');
+}
+
+function switchModerationTab(tab) {
+    document.getElementById('moderationReports').style.display = tab === 'reports' ? 'block' : 'none';
+    document.getElementById('moderationFlagged').style.display = tab === 'flagged' ? 'block' : 'none';
+    document.getElementById('moderationMutedWords').style.display = tab === 'mutedwords' ? 'block' : 'none';
+
+    var btns = document.querySelectorAll('#adminModeration > div:first-of-type .admin-action-btn');
+    btns.forEach(function(b) { b.style.fontWeight = ''; b.style.borderColor = 'var(--border-color)'; b.style.color = 'var(--text-primary)'; });
+    var activeBtn = document.getElementById('modTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+    if (activeBtn) { activeBtn.style.fontWeight = '600'; activeBtn.style.borderColor = 'var(--flower-pink)'; activeBtn.style.color = 'var(--flower-pink)'; }
+
+    if (tab === 'reports') renderReports();
+    else if (tab === 'flagged') renderFlagged();
+    else if (tab === 'mutedwords') renderAdminMutedWords();
+}
+
+function renderReports() {
+    var pending = adminData.reports.filter(function(r) { return r.status === 'pending'; });
+    var resolved = adminData.reports.filter(function(r) { return r.status === 'resolved'; });
+    document.getElementById('reportCount').textContent = pending.length;
+
+    var html = '';
+    if (pending.length === 0) {
+        html += '<div style="text-align: center; padding: 40px; color: var(--text-secondary);"><i class="fas fa-check-circle" style="font-size: 40px; color: #4CAF50; margin-bottom: 12px; display: block;"></i>No pending reports — the hive is peaceful!</div>';
+    } else {
+        html += '<h4 style="margin-bottom: 12px; color: #FF9800;">Pending (' + pending.length + ')</h4>';
+        pending.forEach(function(r) {
+            html += '<div class="admin-report-card">' +
+                '<div style="flex: 1;"><div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;"><span class="admin-badge" style="background: rgba(255,152,0,0.2); color: #FF9800;">' + r.type + '</span><span style="font-size: 12px; color: var(--text-secondary);">Reported by @' + r.reporter + '</span></div>' +
+                '<p style="font-size: 14px; margin-bottom: 6px;">' + r.content + '</p>' +
+                '<span style="font-size: 12px; color: var(--text-secondary);">Target: @' + r.target + ' · ' + new Date(r.date).toLocaleDateString() + '</span></div>' +
+                '<div style="display: flex; gap: 6px; flex-shrink: 0;">' +
+                    '<button class="admin-action-btn success" onclick="resolveReport(' + r.id + ')"><i class="fas fa-check"></i> Resolve</button>' +
+                    '<button class="admin-action-btn danger" onclick="removeAndResolve(' + r.id + ')"><i class="fas fa-trash"></i> Remove Content</button>' +
+                '</div></div>';
+        });
+    }
+    if (resolved.length > 0) {
+        html += '<h4 style="margin: 20px 0 12px; color: #4CAF50;">Resolved (' + resolved.length + ')</h4>';
+        resolved.forEach(function(r) {
+            html += '<div class="admin-report-card resolved"><div><span class="admin-badge" style="background: rgba(76,175,80,0.2); color: #4CAF50;">resolved</span> <span style="font-size: 12px; color: var(--text-secondary);">' + r.type + ' — @' + r.target + '</span><br><span style="font-size: 13px; color: var(--text-secondary);">' + r.content + '</span></div></div>';
+        });
+    }
+    document.getElementById('moderationReports').innerHTML = html;
+}
+
+function resolveReport(id) {
+    var r = adminData.reports.find(function(r) { return r.id === id; });
+    if (r) { r.status = 'resolved'; saveAdminData(); renderReports(); showToast('Report resolved'); addAuditEntry('content_remove', 'Resolved report #' + id); }
+}
+
+function removeAndResolve(id) {
+    var r = adminData.reports.find(function(r) { return r.id === id; });
+    if (r && confirm('Remove content from @' + r.target + ' and resolve report?')) {
+        r.status = 'resolved';
+        saveAdminData(); renderReports();
+        showToast('Content removed and report resolved');
+        addAuditEntry('content_remove', 'Removed content from @' + r.target + ' (report #' + id + ')');
+    }
+}
+
+function renderFlagged() {
+    document.getElementById('moderationFlagged').innerHTML =
+        '<div style="text-align: center; padding: 40px; color: var(--text-secondary);"><i class="fas fa-robot" style="font-size: 40px; margin-bottom: 12px; display: block;"></i>' +
+        '<h4 style="margin-bottom: 8px;">Auto-Moderation</h4>' +
+        '<p style="font-size: 14px;">AI-powered content filtering will automatically flag suspicious content when backend integration is complete.</p>' +
+        '<div style="margin-top: 20px; text-align: left;">' +
+            '<div class="admin-toggle-row"><div><strong>Spam Detection</strong><span>Automatically detect and hide spam posts</span></div><input type="checkbox" checked style="width: 20px; height: 20px; accent-color: var(--honey-yellow);"></div>' +
+            '<div class="admin-toggle-row"><div><strong>NSFW Filter</strong><span>Blur potentially sensitive images</span></div><input type="checkbox" checked style="width: 20px; height: 20px; accent-color: var(--honey-yellow);"></div>' +
+            '<div class="admin-toggle-row"><div><strong>Link Scanner</strong><span>Check posted links against known malware databases</span></div><input type="checkbox" checked style="width: 20px; height: 20px; accent-color: var(--honey-yellow);"></div>' +
+            '<div class="admin-toggle-row"><div><strong>Toxicity Detection</strong><span>Flag comments with high toxicity scores</span></div><input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);"></div>' +
+        '</div></div>';
+}
+
+function renderAdminMutedWords() {
+    var words = adminData.mutedWords || [];
+    var html = '<div style="display: flex; gap: 8px; margin-bottom: 16px;">' +
+        '<input type="text" class="admin-input" id="adminMutedWordInput" placeholder="Add a word or phrase to mute site-wide..." style="flex: 1;">' +
+        '<button class="admin-btn primary" onclick="addAdminMutedWord()" style="white-space: nowrap;">Add Word</button></div>';
+    if (words.length === 0) {
+        html += '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No muted words configured. Posts containing muted words will be hidden from all feeds.</p>';
+    } else {
+        html += '<div style="display: flex; flex-wrap: wrap; gap: 8px;">';
+        words.forEach(function(w) {
+            html += '<div style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: var(--bg-input); border: 1px solid var(--border-color); font-size: 13px;">' +
+                '<span>' + w + '</span>' +
+                '<button onclick="removeAdminMutedWord(\'' + w.replace(/'/g, "\\'") + '\')" style="background: none; border: none; color: #FF4444; cursor: pointer; font-size: 14px; padding: 0;"><i class="fas fa-times"></i></button></div>';
+        });
+        html += '</div>';
+    }
+    document.getElementById('moderationMutedWords').innerHTML = html;
+}
+
+function addAdminMutedWord() {
+    var input = document.getElementById('adminMutedWordInput');
+    var word = (input.value || '').trim();
+    if (!word) return;
+    if (adminData.mutedWords.indexOf(word) === -1) adminData.mutedWords.push(word);
+    saveAdminData();
+    input.value = '';
+    renderAdminMutedWords();
+    showToast('Muted word added: ' + word);
+    addAuditEntry('config_change', 'Added muted word: ' + word);
+}
+
+function removeAdminMutedWord(word) {
+    adminData.mutedWords = adminData.mutedWords.filter(function(w) { return w !== word; });
+    saveAdminData();
+    renderAdminMutedWords();
+    showToast('Muted word removed');
+}
+
+// ---- SITE CONFIGURATION ----
+function initAdminConfig() {
+    var features = [
+        { key: 'dms', label: 'Direct Messages', desc: 'Allow users to send private messages', default: true },
+        { key: 'communities', label: 'Communities', desc: 'Enable community groups and discussions', default: true },
+        { key: 'gifs', label: 'GIF Picker', desc: 'Allow GIF search and sharing in posts', default: true },
+        { key: 'stickers', label: 'Sticker Picker', desc: 'Enable sticker sharing in posts', default: true },
+        { key: 'profileSongs', label: 'Profile Songs', desc: 'Allow users to set a profile song', default: true },
+        { key: 'customThemes', label: 'Custom Themes', desc: 'Allow users to customize their theme', default: true },
+        { key: 'avatarBorders', label: 'Avatar Border Effects', desc: 'Enable animated avatar borders', default: true },
+        { key: 'bannerBorders', label: 'Banner Border Effects', desc: 'Enable animated banner borders', default: true },
+        { key: 'scheduling', label: 'Post Scheduling', desc: 'Allow users to schedule posts for later', default: true },
+        { key: 'analytics', label: 'User Analytics', desc: 'Show analytics dashboard to users', default: true },
+        { key: 'registration', label: 'Open Registration', desc: 'Allow new users to register', default: true },
+        { key: 'maintenance', label: 'Maintenance Mode', desc: 'Show maintenance page to non-admin users', default: false }
+    ];
+
+    var html = '';
+    features.forEach(function(f) {
+        var enabled = adminData.siteConfig.hasOwnProperty(f.key) ? adminData.siteConfig[f.key] : f.default;
+        html += '<div class="admin-toggle-row">' +
+            '<div><strong>' + f.label + '</strong><span>' + f.desc + '</span></div>' +
+            '<input type="checkbox" ' + (enabled ? 'checked' : '') + ' onchange="toggleAdminFeature(\'' + f.key + '\', this.checked)" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">' +
+        '</div>';
+    });
+    document.getElementById('adminFeatureToggles').innerHTML = html;
+
+    // Load saved config values
+    if (adminData.siteConfig.defaultTheme) document.getElementById('adminDefaultTheme').value = adminData.siteConfig.defaultTheme;
+    if (adminData.siteConfig.maxPostLength) document.getElementById('adminMaxPostLength').value = adminData.siteConfig.maxPostLength;
+    if (adminData.siteConfig.maxUpload) document.getElementById('adminMaxUpload').value = adminData.siteConfig.maxUpload;
+}
+
+function toggleAdminFeature(key, enabled) {
+    adminData.siteConfig[key] = enabled;
+    saveAdminData();
+    showToast((enabled ? 'Enabled' : 'Disabled') + ': ' + key);
+    addAuditEntry('config_change', (enabled ? 'Enabled' : 'Disabled') + ' feature: ' + key);
+}
+
+function saveAdminConfig() {
+    adminData.siteConfig.defaultTheme = document.getElementById('adminDefaultTheme').value;
+    adminData.siteConfig.siteStyle = document.getElementById('adminSiteStyleNew').value;
+    adminData.siteConfig.borderRadius = document.getElementById('adminBorderRadiusNew').value;
+    adminData.siteConfig.accentColor = document.getElementById('adminAccentColor').value;
+    adminData.siteConfig.bgOverride = document.getElementById('adminBgOverride').value;
+    adminData.siteConfig.fontFamily = document.getElementById('adminFontFamilyNew').value;
+    adminData.siteConfig.maxPostLength = document.getElementById('adminMaxPostLength').value;
+    adminData.siteConfig.maxUpload = document.getElementById('adminMaxUpload').value;
+    adminData.siteConfig.postsPerPage = document.getElementById('adminPostsPerPage').value;
+    saveAdminData();
+    showToast('Site configuration saved!');
+    addAuditEntry('config_change', 'Saved site configuration');
+}
+
+function resetAdminConfig() {
+    if (confirm('Reset all site configuration to defaults?')) {
+        adminData.siteConfig = {};
+        saveAdminData();
+        initAdminConfig();
+        showToast('Configuration reset to defaults');
+        addAuditEntry('config_change', 'Reset site configuration to defaults');
+    }
+}
+
+// ---- ANNOUNCEMENTS ----
+function initAdminAnnouncements() {
+    renderAnnouncements();
+}
+
+function publishAnnouncement() {
+    var title = document.getElementById('announcementTitle').value.trim();
+    var message = document.getElementById('announcementMessage').value.trim();
+    var type = document.getElementById('announcementType').value;
+    var display = document.getElementById('announcementDisplay').value;
+    var duration = document.getElementById('announcementDuration').value;
+
+    if (!title || !message) { showToast('Please fill in title and message'); return; }
+
+    adminData.announcements.unshift({
+        id: Date.now(),
+        title: title,
+        message: message,
+        type: type,
+        display: display,
+        duration: duration,
+        active: true,
+        date: new Date().toISOString()
+    });
+    saveAdminData();
+
+    document.getElementById('announcementTitle').value = '';
+    document.getElementById('announcementMessage').value = '';
+
+    renderAnnouncements();
+    showToast('Announcement published!');
+    addAuditEntry('announcement', 'Published: ' + title);
+
+    if (display === 'banner') showAnnouncementBanner(title, message, type);
+}
+
+function renderAnnouncements() {
+    var html = '';
+    if (adminData.announcements.length === 0) {
+        html = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No announcements yet.</p>';
+    } else {
+        adminData.announcements.forEach(function(a) {
+            var typeColors = { info: '#64B5F6', warning: '#FF9800', success: '#4CAF50', urgent: '#FF4444' };
+            html += '<div class="admin-announcement-card" style="border-left: 3px solid ' + (typeColors[a.type] || '#64B5F6') + '; ' + (!a.active ? 'opacity: 0.5;' : '') + '">' +
+                '<div style="display: flex; justify-content: space-between; align-items: flex-start;">' +
+                    '<div><strong>' + a.title + '</strong>' +
+                        '<span class="admin-badge" style="margin-left: 8px; background: rgba(' + (a.type === 'urgent' ? '255,68,68' : a.type === 'warning' ? '255,152,0' : a.type === 'success' ? '76,175,80' : '100,181,246') + ',0.2); color: ' + (typeColors[a.type] || '#64B5F6') + ';">' + a.type + '</span>' +
+                        (a.active ? '<span class="admin-badge active" style="margin-left: 4px;">live</span>' : '<span class="admin-badge suspended" style="margin-left: 4px;">ended</span>') +
+                    '<p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">' + a.message + '</p>' +
+                    '<span style="font-size: 11px; color: var(--text-secondary);">' + new Date(a.date).toLocaleString() + ' · ' + a.display + '</span></div>' +
+                    '<div style="display: flex; gap: 6px;">' +
+                        (a.active ? '<button class="admin-action-btn" onclick="toggleAnnouncement(' + a.id + ')"><i class="fas fa-pause"></i></button>' : '<button class="admin-action-btn success" onclick="toggleAnnouncement(' + a.id + ')"><i class="fas fa-play"></i></button>') +
+                        '<button class="admin-action-btn danger" onclick="deleteAnnouncement(' + a.id + ')"><i class="fas fa-trash"></i></button>' +
+                    '</div>' +
+                '</div></div>';
+        });
+    }
+    document.getElementById('adminAnnouncementsList').innerHTML = html;
+}
+
+function toggleAnnouncement(id) {
+    var a = adminData.announcements.find(function(a) { return a.id === id; });
+    if (a) { a.active = !a.active; saveAdminData(); renderAnnouncements(); showToast(a.active ? 'Announcement reactivated' : 'Announcement paused'); }
+}
+
+function deleteAnnouncement(id) {
+    if (confirm('Delete this announcement permanently?')) {
+        adminData.announcements = adminData.announcements.filter(function(a) { return a.id !== id; });
+        saveAdminData();
+        renderAnnouncements();
+        showToast('Announcement deleted');
+    }
+}
+
+function showAnnouncementBanner(title, message, type) {
+    var colors = { info: '#1565C0', warning: '#E65100', success: '#2E7D32', urgent: '#C62828' };
+    var banner = document.createElement('div');
+    banner.id = 'announcementBanner';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;padding:12px 20px;background:' + (colors[type] || '#1565C0') + ';color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,0.3);';
+    banner.innerHTML = '<i class="fas fa-bullhorn"></i> <strong>' + title + '</strong> — ' + message + ' <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;margin-left:12px;">Dismiss</button>';
+    var existing = document.getElementById('announcementBanner');
+    if (existing) existing.remove();
+    document.body.prepend(banner);
+}
+
+// ---- ANALYTICS ----
+function initAdminAnalytics() {
+    refreshAnalytics();
+}
+
+function refreshAnalytics() {
+    var totalUsers = (typeof users !== 'undefined' && users.length) ? users.length : 12;
+    var totalPosts = (typeof posts !== 'undefined' && posts.length) ? posts.length : 47;
+
+    document.getElementById('analyticsStatGrid').innerHTML =
+        '<div class="admin-stat-card"><div class="stat-value">' + totalUsers + '</div><div class="stat-label">Total Users</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-value">' + totalPosts + '</div><div class="stat-label">Total Posts</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-value">' + Math.floor(totalPosts * 3.2) + '</div><div class="stat-label">Total Likes</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-value">' + Math.floor(totalPosts * 1.8) + '</div><div class="stat-label">Total Comments</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-value">' + Math.floor(totalUsers * 0.7 * 100) / 100 + '</div><div class="stat-label">Avg Posts/User</div></div>' +
+        '<div class="admin-stat-card"><div class="stat-value">' + Math.floor(Math.random() * 20 + 60) + '%</div><div class="stat-label">Retention Rate</div></div>';
+
+    // User growth chart
+    var growth = [3, 5, 8, 6, 10, 7, totalUsers];
+    var maxG = Math.max.apply(null, growth);
+    document.getElementById('analyticsUserGrowth').innerHTML = growth.map(function(v) {
+        return '<div class="admin-chart-bar" style="height: ' + (v / maxG * 100) + '%;"><span style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-secondary);">' + v + '</span></div>';
+    }).join('');
+    document.getElementById('analyticsUserLabels').innerHTML = ['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6','Week 7'].map(function(l) { return '<span>' + l + '</span>'; }).join('');
+
+    // Engagement chart
+    var eng = [65, 72, 58, 80, 75, 85, 78];
+    var maxE = Math.max.apply(null, eng);
+    document.getElementById('analyticsEngagement').innerHTML = eng.map(function(v) {
+        return '<div class="admin-chart-bar" style="height: ' + (v / maxE * 100) + '%; background: linear-gradient(to top, #4CAF50, rgba(76,175,80,0.3));"><span style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-secondary);">' + v + '%</span></div>';
+    }).join('');
+    document.getElementById('analyticsEngLabels').innerHTML = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(function(l) { return '<span>' + l + '</span>'; }).join('');
+
+    // Top posts
+    document.getElementById('analyticsTopPosts').innerHTML = 
+        '<div style="display:grid;gap:10px;">' +
+        [{ user: 'blossom_queen', content: 'Just discovered the most amazing honey farm!', likes: 45, comments: 12 },
+         { user: 'nectar_lord', content: 'My journey to becoming a beekeeper...', likes: 38, comments: 23 },
+         { user: 'honeybee42', content: 'Check out this sunflower field!', likes: 31, comments: 8 }
+        ].map(function(p, i) {
+            return '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-input);border-radius:10px;">' +
+                '<span style="font-size:20px;font-weight:700;color:var(--flower-pink);width:30px;">#' + (i+1) + '</span>' +
+                '<div style="flex:1;"><strong>@' + p.user + '</strong><br><span style="font-size:13px;color:var(--text-secondary);">' + p.content + '</span></div>' +
+                '<div style="text-align:right;font-size:12px;color:var(--text-secondary);"><div><i class="fas fa-heart" style="color:#FF69B4;"></i> ' + p.likes + '</div><div><i class="fas fa-comment"></i> ' + p.comments + '</div></div></div>';
+        }).join('') + '</div>';
+}
+
+// ---- ROLES & PERMISSIONS ----
+function initAdminRoles() {
+    var defaultRoles = [
+        { name: 'Queen Bee', icon: 'crown', color: '#FFC30B', permissions: ['all'], description: 'Full admin access. Platform royalty.', count: 2 },
+        { name: 'Worker Bee', icon: 'hard-hat', color: '#4CAF50', permissions: ['post', 'comment', 'like', 'dm', 'community'], description: 'Standard user with all basic features.', count: 8 },
+        { name: 'Drone', icon: 'user', color: '#64B5F6', permissions: ['post', 'comment', 'like'], description: 'New or restricted user with limited features.', count: 3 }
+    ];
+
+    var allRoles = defaultRoles.concat(adminData.customRoles || []);
+
+    var html = '';
+    allRoles.forEach(function(role) {
+        html += '<div class="admin-card" style="border-left: 3px solid ' + role.color + ';">' +
+            '<div style="display: flex; justify-content: space-between; align-items: flex-start;">' +
+                '<div><h4 style="color: ' + role.color + '; margin-bottom: 4px;"><i class="fas fa-' + role.icon + '"></i> ' + role.name + '</h4>' +
+                '<p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">' + role.description + '</p>' +
+                '<div style="display: flex; flex-wrap: wrap; gap: 4px;">' +
+                    role.permissions.map(function(p) { return '<span style="padding: 2px 8px; border-radius: 4px; background: var(--bg-secondary); font-size: 11px; color: var(--text-secondary); border: 1px solid var(--border-color);">' + p + '</span>'; }).join('') +
+                '</div></div>' +
+                '<div style="text-align: right;"><span style="font-size: 24px; font-weight: 700; color: ' + role.color + ';">' + (role.count || 0) + '</span><br><span style="font-size: 11px; color: var(--text-secondary);">members</span></div>' +
+            '</div></div>';
+    });
+    document.getElementById('adminRolesList').innerHTML = html;
+
+    // Permission checkboxes
+    var perms = ['post', 'comment', 'like', 'dm', 'community', 'moderate', 'analytics', 'admin'];
+    document.getElementById('newRolePermissions').innerHTML = perms.map(function(p) {
+        return '<label style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg-input); cursor: pointer; font-size: 13px;"><input type="checkbox" value="' + p + '" ' + (p === 'post' || p === 'comment' || p === 'like' ? 'checked' : '') + ' style="accent-color: var(--honey-yellow);"> ' + p.charAt(0).toUpperCase() + p.slice(1) + '</label>';
+    }).join('');
+}
+
+function createCustomRole() {
+    var name = document.getElementById('newRoleName').value.trim();
+    var color = document.getElementById('newRoleColor').value;
+    var icon = document.getElementById('newRoleIcon').value;
+    if (!name) { showToast('Please enter a role name'); return; }
+
+    var perms = [];
+    document.querySelectorAll('#newRolePermissions input:checked').forEach(function(cb) { perms.push(cb.value); });
+
+    adminData.customRoles.push({ name: name, icon: icon, color: color, permissions: perms, description: 'Custom role', count: 0 });
+    saveAdminData();
+    document.getElementById('newRoleName').value = '';
+    initAdminRoles();
+    showToast('Role created: ' + name);
+    addAuditEntry('user_role', 'Created custom role: ' + name);
+}
+
+// ---- AUDIT LOG ----
+function initAdminAuditLog() {
+    filterAuditLog();
+}
+
+function filterAuditLog() {
+    var actionFilter = document.getElementById('auditActionFilter').value;
+    var timeFilter = document.getElementById('auditTimeFilter').value;
+    var now = Date.now();
+    var cutoff = 0;
+    if (timeFilter === '24h') cutoff = now - 86400000;
+    else if (timeFilter === '7d') cutoff = now - 604800000;
+    else if (timeFilter === '30d') cutoff = now - 2592000000;
+
+    var entries = adminData.auditLog.filter(function(e) {
+        if (actionFilter && e.action !== actionFilter) return false;
+        if (cutoff && new Date(e.time).getTime() < cutoff) return false;
+        return true;
+    });
+
+    var iconMap = { user_ban: 'fa-ban', user_role: 'fa-crown', content_remove: 'fa-trash', config_change: 'fa-cog', announcement: 'fa-bullhorn' };
+    var colorMap = { user_ban: '#FF4444', user_role: '#FFC30B', content_remove: '#FF9800', config_change: '#64B5F6', announcement: '#4CAF50' };
+
+    if (entries.length === 0) {
+        document.getElementById('adminAuditLogEntries').innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No audit log entries found for this filter.</div>';
+        return;
+    }
+
+    document.getElementById('adminAuditLogEntries').innerHTML = entries.map(function(e) {
+        var icon = iconMap[e.action] || 'fa-info-circle';
+        var color = colorMap[e.action] || 'var(--text-secondary)';
+        var time = new Date(e.time);
+        var timeStr = time.toLocaleDateString() + ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return '<div class="admin-log-entry">' +
+            '<i class="fas ' + icon + '" style="color: ' + color + '; margin-top: 2px; width: 20px; text-align: center;"></i>' +
+            '<div style="flex: 1;"><strong>@' + (e.admin || 'admin') + '</strong> ' + e.detail + '</div>' +
+            '<span class="log-time">' + timeStr + '</span></div>';
+    }).join('');
+}
+
+// ---- ADMIN PANEL INIT ----
+function initAdminPanel() {
+    loadAdminData();
+    initAdminDashboard();
+}
+
 
 // 18. showCustomization - now properly opens with modal management
 function showCustomization() {
