@@ -3975,6 +3975,951 @@
             color: var(--honey-yellow);
         }
 
+
+
+/* =============================================
+   DIRECT MESSAGES SYSTEM - CSS
+   ============================================= */
+
+/* DM Container Layout */
+.dm-container {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
+}
+
+/* Conversation List */
+.dm-list-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.dm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.dm-header h3 {
+    color: var(--honey-yellow);
+    margin: 0;
+    font-size: 1.3em;
+}
+
+.dm-new-btn {
+    background: var(--honey-yellow);
+    color: #000;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+.dm-new-btn:hover { opacity: 0.85; transform: scale(1.03); }
+
+/* DM Tabs */
+.dm-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+.dm-tab {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+.dm-tab.active {
+    color: var(--honey-yellow);
+}
+.dm-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 20%;
+    right: 20%;
+    height: 3px;
+    background: var(--honey-yellow);
+    border-radius: 3px 3px 0 0;
+}
+.dm-tab .tab-badge {
+    background: var(--honey-yellow);
+    color: #000;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 5px;
+}
+
+/* DM Search */
+.dm-search {
+    position: relative;
+    margin-bottom: 12px;
+}
+.dm-search input {
+    width: 100%;
+    padding: 10px 15px 10px 38px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.dm-search input:focus { border-color: var(--honey-yellow); }
+.dm-search i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* Conversation Card */
+.dm-conv-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 0;
+    position: relative;
+}
+.dm-conv-card:hover { background: var(--bg-input); }
+.dm-conv-card.unread { border-left: 3px solid var(--honey-yellow); }
+.dm-conv-card.pinned { background: rgba(255,195,11,0.04); }
+
+.dm-conv-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+.dm-conv-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.dm-conv-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+}
+.dm-conv-status.online { background: #39FF14; box-shadow: 0 0 6px #39FF14; }
+.dm-conv-status.away { background: #FF9800; }
+.dm-conv-status.offline { background: #666; }
+
+.dm-conv-body {
+    flex: 1;
+    min-width: 0;
+}
+.dm-conv-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
+}
+.dm-conv-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.dm-conv-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+.dm-conv-preview {
+    color: var(--text-secondary);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dm-conv-card.unread .dm-conv-preview {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+.dm-conv-unread-badge {
+    background: var(--honey-yellow);
+    color: #000;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.dm-conv-icons {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    margin-right: 4px;
+}
+.dm-conv-pin {
+    color: var(--honey-yellow);
+    font-size: 11px;
+}
+.dm-conv-mute {
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+/* Context Menu */
+.dm-context-menu {
+    position: fixed;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 6px 0;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: none;
+}
+.dm-context-menu.show { display: block; }
+.dm-context-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: background 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+.dm-context-item:hover { background: var(--bg-input); }
+.dm-context-item i { width: 16px; text-align: center; color: var(--text-secondary); }
+.dm-context-item.danger { color: #FF4444; }
+.dm-context-item.danger i { color: #FF4444; }
+
+/* Empty State */
+.dm-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+.dm-empty i {
+    font-size: 48px;
+    color: var(--honey-yellow);
+    opacity: 0.4;
+    margin-bottom: 16px;
+}
+.dm-empty h4 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+.dm-empty p { font-size: 14px; }
+
+/* =============================================
+   CHAT VIEW
+   ============================================= */
+.dm-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.dm-back-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 4px;
+    transition: color 0.2s;
+}
+.dm-back-btn:hover { color: var(--honey-yellow); }
+
+.dm-chat-user-info {
+    flex: 1;
+    cursor: pointer;
+}
+.dm-chat-user-info strong {
+    font-size: 15px;
+}
+.dm-chat-user-status {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.dm-chat-user-status .online-dot {
+    width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+}
+.dm-chat-user-status .online-dot.online { background: #39FF14; box-shadow: 0 0 4px #39FF14; }
+.dm-chat-user-status .online-dot.away { background: #FF9800; }
+.dm-chat-user-status .online-dot.offline { background: #666; }
+
+.dm-chat-header-actions {
+    display: flex;
+    gap: 4px;
+}
+.dm-chat-header-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 6px 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+.dm-chat-header-btn:hover {
+    color: var(--honey-yellow);
+    background: var(--bg-input);
+}
+
+/* Messages Area */
+.dm-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+/* Date Separator */
+.dm-date-sep {
+    text-align: center;
+    margin: 16px 0;
+    position: relative;
+}
+.dm-date-sep span {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 2px 12px;
+    position: relative;
+    z-index: 1;
+}
+.dm-date-sep::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+/* Message Bubble */
+.dm-msg-row {
+    display: flex;
+    max-width: 75%;
+    position: relative;
+}
+.dm-msg-row.sent {
+    align-self: flex-end;
+}
+.dm-msg-row.received {
+    align-self: flex-start;
+}
+.dm-msg-row.grouped { margin-top: -6px; }
+
+.dm-msg-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    line-height: 1.45;
+    position: relative;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+.dm-msg-row.sent .dm-msg-bubble {
+    background: var(--honey-yellow);
+    color: #000;
+    border-bottom-right-radius: 6px;
+}
+.dm-msg-row.sent.grouped .dm-msg-bubble {
+    border-top-right-radius: 6px;
+}
+.dm-msg-row.received .dm-msg-bubble {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-bottom-left-radius: 6px;
+}
+.dm-msg-row.received.grouped .dm-msg-bubble {
+    border-top-left-radius: 6px;
+}
+
+/* Reply quote */
+.dm-msg-reply-quote {
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    border-left: 3px solid var(--honey-yellow);
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+.dm-msg-row.sent .dm-msg-reply-quote { background: rgba(0,0,0,0.1); }
+.dm-msg-row.received .dm-msg-reply-quote { background: rgba(255,255,255,0.05); }
+
+/* Message image */
+.dm-msg-image {
+    max-width: 260px;
+    max-height: 300px;
+    border-radius: 12px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    display: block;
+}
+
+/* Message meta (time + checks) */
+.dm-msg-meta {
+    font-size: 11px;
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: flex-end;
+    opacity: 0.6;
+}
+.dm-msg-row.sent .dm-msg-meta { color: #000; }
+.dm-msg-row.received .dm-msg-meta { color: var(--text-secondary); }
+
+/* Read receipts */
+.dm-check { font-size: 12px; }
+.dm-check.sent { color: rgba(0,0,0,0.5); }
+.dm-check.delivered { color: rgba(0,0,0,0.5); }
+.dm-check.read { color: #2196F3; }
+
+/* Message hover actions */
+.dm-msg-actions {
+    position: absolute;
+    top: -8px;
+    display: none;
+    gap: 2px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2px 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.dm-msg-row.sent .dm-msg-actions { right: 0; }
+.dm-msg-row.received .dm-msg-actions { left: 0; }
+.dm-msg-row:hover .dm-msg-actions { display: flex; }
+
+.dm-msg-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 6px;
+    border-radius: 50%;
+    transition: all 0.15s;
+}
+.dm-msg-action-btn:hover {
+    color: var(--honey-yellow);
+    background: var(--bg-input);
+}
+
+/* Message reactions */
+.dm-msg-reactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+.dm-msg-reaction {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2px 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.dm-msg-reaction:hover { border-color: var(--honey-yellow); }
+.dm-msg-reaction .count { font-size: 11px; color: var(--text-secondary); }
+
+/* Deleted message */
+.dm-msg-deleted {
+    font-style: italic;
+    opacity: 0.5;
+}
+
+/* Edited indicator */
+.dm-msg-edited {
+    font-size: 11px;
+    opacity: 0.5;
+    margin-left: 4px;
+}
+
+/* Typing indicator */
+.dm-typing-indicator {
+    display: none;
+    align-self: flex-start;
+    padding: 10px 14px;
+    background: var(--bg-input);
+    border-radius: 18px 18px 18px 6px;
+    margin-top: 4px;
+}
+.dm-typing-indicator.show { display: flex; }
+.dm-typing-dots {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+.dm-typing-dots span {
+    width: 7px;
+    height: 7px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    animation: dmTypingBounce 1.2s ease-in-out infinite;
+}
+.dm-typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.dm-typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dmTypingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Scroll to bottom FAB */
+.dm-scroll-bottom {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 10;
+    transition: all 0.2s;
+}
+.dm-scroll-bottom.show { display: flex; }
+.dm-scroll-bottom:hover { background: var(--honey-yellow); color: #000; }
+
+/* Input Area */
+.dm-input-area {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+/* Reply preview bar */
+.dm-reply-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-input);
+    border-radius: 10px 10px 0 0;
+    border-left: 3px solid var(--honey-yellow);
+    margin-bottom: -2px;
+    font-size: 13px;
+}
+.dm-reply-bar.show { display: flex; }
+.dm-reply-bar .reply-text {
+    flex: 1;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dm-reply-bar .reply-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px;
+}
+
+/* Edit bar */
+.dm-edit-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-input);
+    border-radius: 10px 10px 0 0;
+    border-left: 3px solid #2196F3;
+    margin-bottom: -2px;
+    font-size: 13px;
+}
+.dm-edit-bar.show { display: flex; }
+.dm-edit-bar .edit-label {
+    color: #2196F3;
+    font-weight: 600;
+}
+.dm-edit-bar .edit-text {
+    flex: 1;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dm-edit-bar .edit-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px;
+}
+
+.dm-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+.dm-attach-btns {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding-bottom: 6px;
+}
+.dm-attach-btn {
+    background: none;
+    border: none;
+    color: var(--honey-yellow);
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 4px;
+    transition: opacity 0.2s;
+}
+.dm-attach-btn:hover { opacity: 0.7; }
+
+.dm-text-input {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    max-height: 120px;
+    resize: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+.dm-text-input:focus { border-color: var(--honey-yellow); }
+
+.dm-send-btn {
+    background: var(--honey-yellow);
+    color: #000;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.dm-send-btn:hover { opacity: 0.85; transform: scale(1.05); }
+.dm-send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* DM Image preview */
+.dm-image-preview {
+    display: none;
+    padding: 8px 12px;
+    position: relative;
+}
+.dm-image-preview.show { display: block; }
+.dm-image-preview img {
+    max-height: 100px;
+    border-radius: 10px;
+}
+.dm-image-preview .remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* New DM Modal */
+.dm-new-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9998;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 12vh;
+}
+.dm-new-modal-overlay.show { display: flex; }
+.dm-new-modal {
+    background: var(--bg-card);
+    border-radius: 16px;
+    width: 420px;
+    max-width: 90vw;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.dm-new-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.dm-new-modal-header h4 { margin: 0; font-size: 16px; }
+.dm-new-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.2em;
+}
+.dm-new-modal-search {
+    padding: 12px 20px;
+}
+.dm-new-modal-search input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+.dm-new-modal-search input:focus { border-color: var(--honey-yellow); }
+
+.dm-new-modal-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 8px;
+}
+.dm-new-user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.15s;
+}
+.dm-new-user-item:hover { background: var(--bg-input); }
+.dm-new-user-item img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+}
+.dm-new-user-item .user-name { font-weight: 600; font-size: 14px; }
+.dm-new-user-item .user-handle { color: var(--text-secondary); font-size: 13px; }
+
+/* Conversation Info Panel */
+.dm-info-panel {
+    position: fixed;
+    top: 0;
+    right: -380px;
+    width: 380px;
+    max-width: 90vw;
+    height: 100vh;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border-color);
+    z-index: 9997;
+    transition: right 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.2);
+}
+.dm-info-panel.show { right: 0; }
+.dm-info-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.dm-info-panel-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.2em;
+}
+.dm-info-panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+.dm-info-user {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.dm-info-user img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+.dm-info-section {
+    margin-bottom: 20px;
+}
+.dm-info-section h5 {
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+.dm-info-media-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+.dm-info-media-grid img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.dm-info-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: color 0.2s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+.dm-info-action:hover { color: var(--honey-yellow); }
+.dm-info-action i { width: 20px; text-align: center; }
+.dm-info-action.danger { color: #FF4444; }
+.dm-info-action.danger:hover { color: #FF6666; }
+
+/* Quick emoji reaction picker */
+.dm-reaction-picker {
+    position: absolute;
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 4px 6px;
+    gap: 2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 100;
+}
+.dm-reaction-picker.show { display: flex; }
+.dm-reaction-option {
+    font-size: 18px;
+    cursor: pointer;
+    padding: 3px 5px;
+    border-radius: 8px;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+}
+.dm-reaction-option:hover { background: var(--bg-input); transform: scale(1.2); }
+
+/* In-conversation search */
+.dm-search-bar {
+    display: none;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    gap: 8px;
+    align-items: center;
+}
+.dm-search-bar.show { display: flex; }
+.dm-search-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+}
+.dm-search-bar .search-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+.dm-search-bar .search-nav button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+}
+.dm-search-bar .search-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dm-msg-highlight {
+    background: rgba(255,195,11,0.25) !important;
+    transition: background 0.5s;
+}
+
 </style>
 </head>
 <body>
@@ -10675,57 +11620,7 @@ function showNotifications() {
     `;
 }
 
-// BONUS: Fix showMessages - was just an alert
-function showMessages() {
-    if (!currentUser) return;
-
-    messages.forEach(m => m.unread = false);
-    updateBadgeCounts();
-
-    document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel">
-            <h3 style="margin-bottom: 20px; color: var(--honey-yellow);"><i class="fas fa-envelope"></i> Messages</h3>
-            ${messages.length > 0 ? messages.map(m => `
-                <div class="post-card" style="padding: 15px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;" onclick="showToast('Full messaging coming soon!')">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${m.from}" alt="${m.from}" style="width: 45px; height: 45px; border-radius: 50%;">
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <strong>${m.from}</strong>
-                            <span style="font-size: 12px; color: var(--text-secondary);">${m.time}</span>
-                        </div>
-                        <div style="color: var(--text-secondary); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.text}</div>
-                    </div>
-                    ${m.unread ? '<div style="width: 8px; height: 8px; border-radius: 50%; background: var(--honey-yellow);"></div>' : ''}
-                </div>
-            `).join('') : '<div class="post-card" style="padding: 30px; text-align: center; color: var(--text-secondary);">No messages yet. Connect with the hive! 🐝</div>'}
-
-            <div style="text-align: center; margin-top: 20px;">
-                <button onclick="showToast('Full DM system coming in Phase 2!')" style="background: var(--honey-yellow); color: #000; border: none; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: bold;">
-                    <i class="fas fa-pen"></i> New Message
-                </button>
-            </div>
-        </div>
-    `;
-}
-
-// Wire up the search input with Enter key
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSearch();
-                }
-            });
-        }
-    }, 2000);
-});
-
-
-
-
+// (showMessages #2 removed - replaced by full DM system)
 
 // ============================================
 // PHASE 2: Missing X/Twitter Features
@@ -11868,151 +12763,1148 @@ function addMemberToList(listId) {
     viewList(listId);
 }
 
-// ===== ENHANCED DMs =====
-function showMessages() {
+// ===== DIRECT MESSAGES SYSTEM (FULL) =====
+
+// =============================================
+// DIRECT MESSAGES SYSTEM — FULL IMPLEMENTATION
+// =============================================
+
+// --- DM Data Model & Persistence ---
+var dmData = JSON.parse(localStorage.getItem('polleneer_dm_data') || 'null') || {
+    conversations: {},
+    messageRequests: [],
+    archivedConvIds: [],
+    version: 1
+};
+
+function saveDMData() {
+    localStorage.setItem('polleneer_dm_data', JSON.stringify(dmData));
+}
+
+function dmGenerateId() {
+    return 'dm_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+}
+
+function dmGetConversation(userId) {
+    return Object.values(dmData.conversations).find(c => c.participantId === userId);
+}
+
+function dmGetOrCreateConversation(userId) {
+    var existing = dmGetConversation(userId);
+    if (existing) return existing;
+    var user = users.find(function(u) { return u.id === userId; });
+    if (!user) return null;
+    var convId = dmGenerateId();
+    dmData.conversations[convId] = {
+        id: convId,
+        participantId: userId,
+        messages: [],
+        pinned: false,
+        muted: false,
+        unreadCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    saveDMData();
+    return dmData.conversations[convId];
+}
+
+function dmAddMessage(convId, text, opts) {
+    opts = opts || {};
+    var conv = dmData.conversations[convId];
+    if (!conv) return null;
+    var msg = {
+        id: dmGenerateId(),
+        from: opts.from || 'me',
+        text: text,
+        time: new Date().toISOString(),
+        status: opts.from === 'me' ? 'sent' : 'delivered',
+        replyTo: opts.replyTo || null,
+        image: opts.image || null,
+        reactions: {},
+        edited: false,
+        deleted: false
+    };
+    conv.messages.push(msg);
+    conv.updatedAt = new Date().toISOString();
+    if (msg.from !== 'me') {
+        conv.unreadCount = (conv.unreadCount || 0) + 1;
+    }
+    saveDMData();
+    return msg;
+}
+
+function dmMarkRead(convId) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    conv.unreadCount = 0;
+    conv.messages.forEach(function(m) {
+        if (m.from !== 'me' && m.status !== 'read') m.status = 'read';
+    });
+    saveDMData();
+    dmUpdateGlobalBadge();
+}
+
+function dmDeleteMessage(convId, msgId) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    var msg = conv.messages.find(function(m) { return m.id === msgId; });
+    if (msg) {
+        msg.deleted = true;
+        msg.text = '';
+        msg.image = null;
+        saveDMData();
+    }
+}
+
+function dmEditMessage(convId, msgId, newText) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    var msg = conv.messages.find(function(m) { return m.id === msgId; });
+    if (msg && msg.from === 'me' && !msg.deleted) {
+        msg.text = newText;
+        msg.edited = true;
+        saveDMData();
+    }
+}
+
+function dmToggleReaction(convId, msgId, emoji) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    var msg = conv.messages.find(function(m) { return m.id === msgId; });
+    if (!msg || msg.deleted) return;
+    if (!msg.reactions) msg.reactions = {};
+    if (msg.reactions[emoji]) {
+        delete msg.reactions[emoji];
+    } else {
+        msg.reactions[emoji] = 'me';
+    }
+    saveDMData();
+}
+
+function dmTogglePin(convId) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    conv.pinned = !conv.pinned;
+    saveDMData();
+}
+
+function dmToggleMute(convId) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    conv.muted = !conv.muted;
+    saveDMData();
+}
+
+function dmArchiveConversation(convId) {
+    if (!dmData.archivedConvIds.includes(convId)) {
+        dmData.archivedConvIds.push(convId);
+    }
+    saveDMData();
+}
+
+function dmUnarchiveConversation(convId) {
+    dmData.archivedConvIds = dmData.archivedConvIds.filter(function(id) { return id !== convId; });
+    saveDMData();
+}
+
+function dmDeleteConversation(convId) {
+    delete dmData.conversations[convId];
+    dmData.archivedConvIds = dmData.archivedConvIds.filter(function(id) { return id !== convId; });
+    saveDMData();
+}
+
+function dmGetSortedConversations(tab) {
+    var convs = Object.values(dmData.conversations);
+    if (tab === 'archive') {
+        convs = convs.filter(function(c) { return dmData.archivedConvIds.includes(c.id); });
+    } else {
+        convs = convs.filter(function(c) { return !dmData.archivedConvIds.includes(c.id); });
+    }
+    // Pinned first, then by updatedAt
+    convs.sort(function(a, b) {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+    });
+    return convs;
+}
+
+function dmGetTotalUnread() {
+    return Object.values(dmData.conversations).reduce(function(sum, c) {
+        if (dmData.archivedConvIds.includes(c.id)) return sum;
+        return sum + (c.unreadCount || 0);
+    }, 0);
+}
+
+function dmUpdateGlobalBadge() {
+    var total = dmGetTotalUnread();
+    var badges = ['messageBadge', 'sidebarMessageBadge'];
+    badges.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+            el.textContent = total;
+            el.style.display = total > 0 ? '' : 'none';
+        }
+    });
+}
+
+function dmFormatTime(isoStr) {
+    var d = new Date(isoStr);
+    var now = new Date();
+    var diffMs = now - d;
+    var diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return 'Just now';
+    if (diffMin < 60) return diffMin + 'm ago';
+    var diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return diffHr + 'h ago';
+    var diffDay = Math.floor(diffHr / 24);
+    if (diffDay < 7) return diffDay + 'd ago';
+    return d.toLocaleDateString();
+}
+
+function dmFormatChatTime(isoStr) {
+    var d = new Date(isoStr);
+    var h = d.getHours();
+    var m = d.getMinutes();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+}
+
+function dmFormatDateSep(isoStr) {
+    var d = new Date(isoStr);
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var msgDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var diffDays = Math.round((today - msgDate) / 86400000);
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' });
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+}
+
+// Seed sample conversations on first load
+function dmSeedSampleData() {
+    if (Object.keys(dmData.conversations).length > 0) return;
+    var sampleConvs = [
+        { userId: 2, messages: [
+            { from: 'them', text: 'Hey! Loved your garden post! The cross-pollination idea is brilliant \ud83c\udf38', ago: 600000 },
+            { from: 'me', text: 'Thanks! Been thinking about how bee behavior can inspire social platform design.', ago: 480000 },
+            { from: 'them', text: 'That\'s exactly what makes Polleneer special. The pollination metaphor is so natural.', ago: 300000 },
+            { from: 'me', text: 'Right? Every interaction should feel like a flower visit \ud83c\udf38', ago: 180000 },
+            { from: 'them', text: 'Would love to collaborate on some ideas! Maybe we can create a hive together?', ago: 60000 },
+            { from: 'them', text: 'Also check out this new hexagonal design pattern I found!', ago: 30000 }
+        ]},
+        { userId: 3, messages: [
+            { from: 'them', text: 'Can we collaborate on that algorithm? I have some ideas for the swarm optimization', ago: 3600000 },
+            { from: 'me', text: 'Absolutely! Send me what you have and I\'ll review it.', ago: 3000000 },
+            { from: 'them', text: 'Sent! Let me know your thoughts on the clustering approach.', ago: 2400000 }
+        ]},
+        { userId: 4, messages: [
+            { from: 'them', text: 'The bee colony simulation results are fascinating!', ago: 10800000 },
+            { from: 'me', text: 'I know! The emergent behavior patterns are exactly what we need.', ago: 9000000 }
+        ]},
+        { userId: 5, messages: [
+            { from: 'them', text: 'I designed a new hexagonal logo concept for Polleneer \ud83c\udfa8', ago: 86400000 },
+            { from: 'me', text: 'That looks incredible! Can you make the honeycombs glow?', ago: 82800000 },
+            { from: 'them', text: 'Already on it! \u2728', ago: 79200000 }
+        ]}
+    ];
+
+    sampleConvs.forEach(function(sc) {
+        var conv = dmGetOrCreateConversation(sc.userId);
+        if (!conv) return;
+        sc.messages.forEach(function(m) {
+            var msg = {
+                id: dmGenerateId(),
+                from: m.from,
+                text: m.text,
+                time: new Date(Date.now() - m.ago).toISOString(),
+                status: m.from === 'me' ? 'read' : 'read',
+                replyTo: null,
+                image: null,
+                reactions: {},
+                edited: false,
+                deleted: false
+            };
+            conv.messages.push(msg);
+        });
+        conv.updatedAt = conv.messages[conv.messages.length - 1].time;
+        // Give first conv unread messages
+        if (sc.userId === 2) {
+            conv.unreadCount = 2;
+            conv.messages[conv.messages.length - 1].status = 'delivered';
+            conv.messages[conv.messages.length - 2].status = 'delivered';
+        }
+        if (sc.userId === 3) conv.unreadCount = 1;
+    });
+    saveDMData();
+}
+
+// --- DM Active state ---
+var dmActiveConvId = null;
+var dmActiveTab = 'inbox';
+var dmReplyToMsg = null;
+var dmEditingMsg = null;
+var dmPendingImage = null;
+var dmSearchOpen = false;
+var dmSearchMatches = [];
+var dmSearchIdx = -1;
+
+
+// --- Conversation List View ---
+function showMessages(tab) {
     if (!currentUser) return;
     currentPage = 'messages';
+    dmActiveConvId = null;
+    dmActiveTab = tab || dmActiveTab || 'inbox';
 
-    // Richer message data
-    const conversations = [
-        { id: 1, user: 'FloraCreative', userId: 2, avatar: users.find(u=>u.id===2)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Flora', lastMessage: 'Hey! Loved your garden post! The cross-pollination idea is brilliant 🌸', time: '10m ago', unread: 2 },
-        { id: 2, user: 'TechWorker', userId: 3, avatar: users.find(u=>u.id===3)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Tech', lastMessage: 'Can we collaborate on that algorithm? I have some ideas for the swarm optimization', time: '1h ago', unread: 1 },
-        { id: 3, user: 'ScienceBee', userId: 4, avatar: users.find(u=>u.id===4)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Science', lastMessage: 'The bee colony simulation results are fascinating!', time: '3h ago', unread: 0 },
-        { id: 4, user: 'ArtistBee', userId: 5, avatar: users.find(u=>u.id===5)?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Artist', lastMessage: 'I designed a new hexagonal logo concept for Polleneer 🎨', time: '1d ago', unread: 0 },
-    ];
+    dmSeedSampleData();
+    dmUpdateGlobalBadge();
 
-    document.getElementById('mainContent').innerHTML = `
-        <div class="customization-panel" style="max-width:700px;margin:0 auto;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <h3 style="color:var(--honey-yellow);"><i class="fas fa-envelope"></i> Messages</h3>
-                <button onclick="newDirectMessage()" style="background:var(--honey-yellow);color:#000;border:none;padding:8px 18px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:13px;">
-                    <i class="fas fa-pen"></i> New
-                </button>
-            </div>
+    var convs = dmGetSortedConversations(dmActiveTab === 'archive' ? 'archive' : 'inbox');
+    var totalUnread = dmGetTotalUnread();
 
-            <div style="margin-bottom:15px;">
-                <input type="text" placeholder="Search messages..." style="width:100%;padding:10px 15px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;">
-            </div>
+    var convListHTML = '';
+    if (convs.length === 0) {
+        var emptyIcon = dmActiveTab === 'archive' ? 'fa-archive' : 'fa-envelope-open';
+        var emptyTitle = dmActiveTab === 'archive' ? 'No archived messages' : 'No messages yet';
+        var emptyDesc = dmActiveTab === 'archive' ? 'Archived conversations will appear here.' : 'Start a conversation — tap the New button above.';
+        convListHTML = '<div class="dm-empty"><i class="fas ' + emptyIcon + '"></i><h4>' + emptyTitle + '</h4><p>' + emptyDesc + '</p></div>';
+    } else {
+        convListHTML = '<div style="display:grid;gap:2px;" id="dmConvList">';
+        convs.forEach(function(conv) {
+            var user = users.find(function(u) { return u.id === conv.participantId; });
+            if (!user) return;
+            var lastMsg = conv.messages.length > 0 ? conv.messages[conv.messages.length - 1] : null;
+            var preview = lastMsg ? (lastMsg.deleted ? 'This message was deleted' : (lastMsg.image && !lastMsg.text ? '\ud83d\uddbc\ufe0f Photo' : lastMsg.text)) : 'No messages yet';
+            if (lastMsg && lastMsg.from === 'me') preview = 'You: ' + preview;
+            var timeStr = lastMsg ? dmFormatTime(lastMsg.time) : '';
+            var status = getUserStatus(user);
+            var statusClass = status.status;
 
-            <div style="display:grid;gap:2px;">
-                ${conversations.map(c => `
-                    <div class="post-card" style="padding:15px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background 0.2s;border-radius:0;${c.unread > 0 ? 'border-left:3px solid var(--honey-yellow);' : ''}"
-                         onclick="openConversation(${c.id}, '${c.user}', '${c.avatar}', ${c.userId})"
-                         onmouseover="this.style.background='var(--bg-input)'" onmouseout="this.style.background=''">
-                        <div style="position:relative;">
-                            <img src="${c.avatar}" alt="${c.user}" style="width:50px;height:50px;border-radius:50%;">
-                            ${c.unread > 0 ? `<div style="position:absolute;bottom:-2px;right:-2px;background:var(--honey-yellow);color:#000;font-size:10px;font-weight:bold;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;">${c.unread}</div>` : ''}
-                        </div>
-                        <div style="flex:1;min-width:0;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;">
-                                <strong style="font-size:15px;">${c.user}</strong>
-                                <span style="font-size:12px;color:var(--text-secondary);">${c.time}</span>
-                            </div>
-                            <div style="color:var(--text-secondary);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;${c.unread > 0 ? 'color:var(--text-primary);font-weight:500;' : ''}">${c.lastMessage}</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
+            var icons = '';
+            if (conv.pinned) icons += '<i class="fas fa-thumbtack dm-conv-pin"></i>';
+            if (conv.muted) icons += '<i class="fas fa-bell-slash dm-conv-mute"></i>';
+
+            convListHTML += '<div class="dm-conv-card post-card' + (conv.unreadCount > 0 ? ' unread' : '') + (conv.pinned ? ' pinned' : '') + '" ' +
+                'onclick="openConversation(\'' + conv.id + '\')" ' +
+                'oncontextmenu="dmShowContextMenu(event, \'' + conv.id + '\')">' +
+                '<div class="dm-conv-avatar-wrap">' +
+                    '<img src="' + user.avatar + '" alt="' + (user.displayName || user.username) + '" class="dm-conv-avatar">' +
+                    '<div class="dm-conv-status ' + statusClass + '"></div>' +
+                '</div>' +
+                '<div class="dm-conv-body">' +
+                    '<div class="dm-conv-top">' +
+                        '<strong class="dm-conv-name">' + (user.displayName || user.username) + '</strong>' +
+                        '<div style="display:flex;align-items:center;gap:6px;">' +
+                            '<div class="dm-conv-icons">' + icons + '</div>' +
+                            '<span class="dm-conv-time">' + timeStr + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:8px;">' +
+                        '<div class="dm-conv-preview" style="flex:1;">' + preview + '</div>' +
+                        (conv.unreadCount > 0 ? '<div class="dm-conv-unread-badge">' + conv.unreadCount + '</div>' : '') +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        });
+        convListHTML += '</div>';
+    }
+
+    var archiveCount = dmData.archivedConvIds.length;
+
+    document.getElementById('mainContent').innerHTML =
+        '<div class="dm-list-container">' +
+            '<div class="dm-header">' +
+                '<h3><i class="fas fa-envelope"></i> Messages</h3>' +
+                '<button class="dm-new-btn" onclick="newDirectMessage()"><i class="fas fa-pen"></i> New</button>' +
+            '</div>' +
+            '<div class="dm-tabs">' +
+                '<button class="dm-tab' + (dmActiveTab === 'inbox' ? ' active' : '') + '" onclick="showMessages(\'inbox\')">Inbox' + (totalUnread > 0 ? ' <span class="tab-badge">' + totalUnread + '</span>' : '') + '</button>' +
+                '<button class="dm-tab' + (dmActiveTab === 'requests' ? ' active' : '') + '" onclick="showMessages(\'requests\')">Requests</button>' +
+                '<button class="dm-tab' + (dmActiveTab === 'archive' ? ' active' : '') + '" onclick="showMessages(\'archive\')">Archive' + (archiveCount > 0 ? ' <span class="tab-badge">' + archiveCount + '</span>' : '') + '</button>' +
+            '</div>' +
+            '<div class="dm-search"><i class="fas fa-search"></i><input type="text" id="dmListSearch" placeholder="Search conversations..." oninput="dmFilterConversations(this.value)"></div>' +
+            convListHTML +
+        '</div>';
+
+    updateActiveNavLink('messages');
 }
 
-function openConversation(convId, userName, userAvatar, userId) {
-    const sampleMessages = [
-        { from: 'them', text: 'Hey! I saw your latest post about cross-pollination. Amazing concept! 🐝', time: '10:30 AM' },
-        { from: 'me', text: 'Thanks! I\'ve been thinking about how bee behavior can inspire social platform design.', time: '10:32 AM' },
-        { from: 'them', text: 'That\'s exactly what makes Polleneer special. The pollination metaphor is so natural.', time: '10:35 AM' },
-        { from: 'me', text: 'Right? Every interaction should feel like a flower visit 🌸', time: '10:37 AM' },
-        { from: 'them', text: 'Would love to collaborate on some ideas! Maybe we can create a hive together?', time: '10:40 AM' },
-    ];
-
-    document.getElementById('mainContent').innerHTML = `
-        <div style="max-width:700px;margin:0 auto;display:flex;flex-direction:column;height:calc(100vh - 120px);">
-            <!-- Header -->
-            <div style="display:flex;align-items:center;gap:12px;padding:15px;border-bottom:1px solid var(--border-color);">
-                <button onclick="showMessages()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-size:1.2em;"><i class="fas fa-arrow-left"></i></button>
-                <img src="${userAvatar}" style="width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="goToUserProfile(${userId})">
-                <div style="cursor:pointer;" onclick="goToUserProfile(${userId})">
-                    <strong>${userName}</strong>
-                    <div style="font-size:12px;color:var(--text-secondary);">@${userName.toLowerCase().replace(/\s/g,'')} · Online</div>
-                </div>
-            </div>
-
-            <!-- Messages -->
-            <div id="conversationMessages" style="flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:10px;">
-                ${sampleMessages.map(m => `
-                    <div style="display:flex;justify-content:${m.from === 'me' ? 'flex-end' : 'flex-start'};">
-                        <div style="max-width:70%;padding:10px 15px;border-radius:${m.from === 'me' ? '15px 15px 5px 15px' : '15px 15px 15px 5px'};background:${m.from === 'me' ? 'var(--honey-yellow)' : 'var(--bg-input)'};color:${m.from === 'me' ? '#000' : 'var(--text-primary)'};">
-                            <div style="line-height:1.4;">${m.text}</div>
-                            <div style="font-size:11px;margin-top:4px;opacity:0.7;text-align:right;">${m.time}</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-
-            <!-- Input -->
-            <div style="padding:12px;border-top:1px solid var(--border-color);display:flex;gap:10px;align-items:end;">
-                <div style="display:flex;gap:8px;align-items:center;">
-                    <button onclick="showGifPicker()" style="background:none;border:none;color:var(--honey-yellow);cursor:pointer;font-size:1.1em;"><i class="fas fa-image"></i></button>
-                    <button onclick="showEmojiPicker()" style="background:none;border:none;color:var(--honey-yellow);cursor:pointer;font-size:1.1em;"><i class="fas fa-face-smile"></i></button>
-                </div>
-                <input type="text" id="dmInput" placeholder="Send a message..." style="flex:1;padding:10px 15px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;"
-                    onkeypress="if(event.key==='Enter')sendDM('${userName}')">
-                <button onclick="sendDM('${userName}')" style="background:var(--honey-yellow);color:#000;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    `;
-
-    // Scroll to bottom
-    const msgContainer = document.getElementById('conversationMessages');
-    if (msgContainer) msgContainer.scrollTop = msgContainer.scrollHeight;
+function dmFilterConversations(query) {
+    query = query.toLowerCase().trim();
+    var cards = document.querySelectorAll('.dm-conv-card');
+    cards.forEach(function(card) {
+        var name = card.querySelector('.dm-conv-name');
+        var preview = card.querySelector('.dm-conv-preview');
+        var text = (name ? name.textContent : '') + ' ' + (preview ? preview.textContent : '');
+        card.style.display = text.toLowerCase().includes(query) ? '' : 'none';
+    });
 }
 
-function sendDM(userName) {
-    const input = document.getElementById('dmInput');
-    if (!input || !input.value.trim()) return;
+// --- Context Menu ---
+var dmContextMenuConvId = null;
 
-    const msgContainer = document.getElementById('conversationMessages');
-    const msgHTML = `
-        <div style="display:flex;justify-content:flex-end;">
-            <div style="max-width:70%;padding:10px 15px;border-radius:15px 15px 5px 15px;background:var(--honey-yellow);color:#000;">
-                <div style="line-height:1.4;">${input.value.trim()}</div>
-                <div style="font-size:11px;margin-top:4px;opacity:0.7;text-align:right;">Just now</div>
-            </div>
-        </div>
-    `;
-    msgContainer.innerHTML += msgHTML;
-    msgContainer.scrollTop = msgContainer.scrollHeight;
+function dmShowContextMenu(e, convId) {
+    e.preventDefault();
+    e.stopPropagation();
+    dmContextMenuConvId = convId;
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    var isArchived = dmData.archivedConvIds.includes(convId);
 
-    input.value = '';
+    var menuEl = document.getElementById('dmContextMenu');
+    if (!menuEl) {
+        menuEl = document.createElement('div');
+        menuEl.id = 'dmContextMenu';
+        menuEl.className = 'dm-context-menu';
+        document.body.appendChild(menuEl);
+    }
 
-    // Simulate reply after 2s
-    setTimeout(() => {
-        const replies = ['That sounds great! 🐝', 'Absolutely! Let\'s make it happen.', 'Love that idea! 🍯', 'I\'m in! When should we start?', 'Amazing, let me think about it! ✨'];
-        const reply = replies[Math.floor(Math.random() * replies.length)];
-        const replyHTML = `
-            <div style="display:flex;justify-content:flex-start;">
-                <div style="max-width:70%;padding:10px 15px;border-radius:15px 15px 15px 5px;background:var(--bg-input);color:var(--text-primary);">
-                    <div style="line-height:1.4;">${reply}</div>
-                    <div style="font-size:11px;margin-top:4px;opacity:0.7;">Just now</div>
-                </div>
-            </div>
-        `;
-        msgContainer.innerHTML += replyHTML;
-        msgContainer.scrollTop = msgContainer.scrollHeight;
-    }, 2000);
+    menuEl.innerHTML =
+        '<button class="dm-context-item" onclick="dmContextAction(\'pin\')"><i class="fas fa-thumbtack"></i> ' + (conv.pinned ? 'Unpin' : 'Pin') + '</button>' +
+        '<button class="dm-context-item" onclick="dmContextAction(\'mute\')"><i class="fas fa-bell-slash"></i> ' + (conv.muted ? 'Unmute' : 'Mute') + '</button>' +
+        '<button class="dm-context-item" onclick="dmContextAction(\'markread\')"><i class="fas fa-check-double"></i> Mark as read</button>' +
+        '<button class="dm-context-item" onclick="dmContextAction(\'' + (isArchived ? 'unarchive' : 'archive') + '\')"><i class="fas fa-archive"></i> ' + (isArchived ? 'Unarchive' : 'Archive') + '</button>' +
+        '<button class="dm-context-item danger" onclick="dmContextAction(\'delete\')"><i class="fas fa-trash"></i> Delete conversation</button>';
+
+    menuEl.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
+    menuEl.style.top = Math.min(e.clientY, window.innerHeight - 250) + 'px';
+    menuEl.classList.add('show');
+
+    setTimeout(function() {
+        document.addEventListener('click', dmHideContextMenu);
+    }, 10);
 }
 
+function dmHideContextMenu() {
+    var m = document.getElementById('dmContextMenu');
+    if (m) m.classList.remove('show');
+    document.removeEventListener('click', dmHideContextMenu);
+}
+
+function dmContextAction(action) {
+    dmHideContextMenu();
+    var convId = dmContextMenuConvId;
+    if (!convId) return;
+    switch (action) {
+        case 'pin': dmTogglePin(convId); break;
+        case 'mute': dmToggleMute(convId); break;
+        case 'markread': dmMarkRead(convId); break;
+        case 'archive': dmArchiveConversation(convId); break;
+        case 'unarchive': dmUnarchiveConversation(convId); break;
+        case 'delete':
+            if (confirm('Delete this conversation? This cannot be undone.')) {
+                dmDeleteConversation(convId);
+            }
+            break;
+    }
+    showMessages(dmActiveTab);
+}
+
+// --- New DM Modal ---
 function newDirectMessage() {
-    const username = prompt('Who would you like to message? (Enter username):');
-    if (!username) return;
-    const user = users.find(u => u.username.toLowerCase() === username.toLowerCase().replace('@', ''));
-    if (!user) { showToast('User not found. Try a different username.'); return; }
-    openConversation(Date.now(), user.displayName || user.username, user.avatar, user.id);
+    var existingOverlay = document.getElementById('dmNewModalOverlay');
+    if (existingOverlay) existingOverlay.remove();
+
+    var userItems = '';
+    // Recent conversations first, then all users
+    var recentIds = dmGetSortedConversations('inbox').map(function(c) { return c.participantId; }).slice(0, 5);
+    var allUsers = users.filter(function(u) { return u.id !== currentUser.id; });
+    // Sort: recent first
+    allUsers.sort(function(a, b) {
+        var aIdx = recentIds.indexOf(a.id);
+        var bIdx = recentIds.indexOf(b.id);
+        if (aIdx >= 0 && bIdx < 0) return -1;
+        if (aIdx < 0 && bIdx >= 0) return 1;
+        if (aIdx >= 0 && bIdx >= 0) return aIdx - bIdx;
+        return 0;
+    });
+
+    allUsers.forEach(function(u) {
+        var isRecent = recentIds.includes(u.id);
+        userItems += '<div class="dm-new-user-item" onclick="dmStartConversation(' + u.id + ')">' +
+            '<img src="' + u.avatar + '" alt="' + (u.displayName || u.username) + '">' +
+            '<div>' +
+                '<div class="user-name">' + (u.displayName || u.username) + (isRecent ? ' <span style="font-size:11px;color:var(--text-secondary);font-weight:normal;">\u00b7 Recent</span>' : '') + '</div>' +
+                '<div class="user-handle">@' + u.username + '</div>' +
+            '</div>' +
+        '</div>';
+    });
+
+    var overlay = document.createElement('div');
+    overlay.id = 'dmNewModalOverlay';
+    overlay.className = 'dm-new-modal-overlay show';
+    overlay.innerHTML =
+        '<div class="dm-new-modal">' +
+            '<div class="dm-new-modal-header">' +
+                '<h4>New Message</h4>' +
+                '<button class="dm-new-modal-close" onclick="dmCloseNewModal()"><i class="fas fa-times"></i></button>' +
+            '</div>' +
+            '<div class="dm-new-modal-search">' +
+                '<input type="text" id="dmNewSearch" placeholder="Search people..." oninput="dmFilterNewUsers(this.value)" autofocus>' +
+            '</div>' +
+            '<div class="dm-new-modal-list" id="dmNewUserList">' + userItems + '</div>' +
+        '</div>';
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) dmCloseNewModal(); });
+    document.body.appendChild(overlay);
+    setTimeout(function() { var inp = document.getElementById('dmNewSearch'); if (inp) inp.focus(); }, 100);
 }
 
+function dmCloseNewModal() {
+    var el = document.getElementById('dmNewModalOverlay');
+    if (el) el.remove();
+}
+
+function dmFilterNewUsers(query) {
+    query = query.toLowerCase().trim();
+    var items = document.querySelectorAll('.dm-new-user-item');
+    items.forEach(function(item) {
+        var text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+
+function dmStartConversation(userId) {
+    dmCloseNewModal();
+    var conv = dmGetOrCreateConversation(userId);
+    if (conv) openConversation(conv.id);
+}
+
+
+// --- Chat View ---
+function openConversation(convId) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    dmActiveConvId = convId;
+    dmReplyToMsg = null;
+    dmEditingMsg = null;
+    dmPendingImage = null;
+    dmSearchOpen = false;
+
+    dmMarkRead(convId);
+
+    var user = users.find(function(u) { return u.id === conv.participantId; });
+    if (!user) return;
+    var status = getUserStatus(user);
+
+    var statusDotClass = status.status;
+    var statusText = status.status === 'online' ? 'Online' : (status.status === 'away' ? 'Away' : status.tooltip || 'Offline');
+
+    document.getElementById('mainContent').innerHTML =
+        '<div class="dm-container" id="dmChatContainer">' +
+            '<!-- Header -->' +
+            '<div class="dm-chat-header">' +
+                '<button class="dm-back-btn" onclick="showMessages()"><i class="fas fa-arrow-left"></i></button>' +
+                '<img src="' + user.avatar + '" style="width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="goToUserProfile(' + user.id + ')">' +
+                '<div class="dm-chat-user-info" onclick="goToUserProfile(' + user.id + ')">' +
+                    '<strong>' + (user.displayName || user.username) + '</strong>' +
+                    '<div class="dm-chat-user-status"><span class="online-dot ' + statusDotClass + '"></span> ' + statusText + '</div>' +
+                '</div>' +
+                '<div class="dm-chat-header-actions">' +
+                    '<button class="dm-chat-header-btn" onclick="dmToggleChatSearch()" title="Search"><i class="fas fa-search"></i></button>' +
+                    '<button class="dm-chat-header-btn" onclick="dmShowInfoPanel(\'' + convId + '\')" title="Info"><i class="fas fa-info-circle"></i></button>' +
+                '</div>' +
+            '</div>' +
+            '<!-- Search bar -->' +
+            '<div class="dm-search-bar" id="dmChatSearchBar">' +
+                '<input type="text" id="dmChatSearchInput" placeholder="Search in conversation..." oninput="dmSearchInConversation(this.value)">' +
+                '<div class="search-nav" id="dmSearchNav"><span id="dmSearchCount"></span>' +
+                    '<button onclick="dmSearchPrev()"><i class="fas fa-chevron-up"></i></button>' +
+                    '<button onclick="dmSearchNext()"><i class="fas fa-chevron-down"></i></button>' +
+                '</div>' +
+                '<button class="search-close" onclick="dmToggleChatSearch()"><i class="fas fa-times"></i></button>' +
+            '</div>' +
+            '<!-- Messages -->' +
+            '<div class="dm-messages" id="dmMessages" onscroll="dmHandleScroll()">' +
+                dmRenderMessages(conv) +
+                '<div class="dm-typing-indicator" id="dmTypingIndicator">' +
+                    '<div class="dm-typing-dots"><span></span><span></span><span></span></div>' +
+                '</div>' +
+            '</div>' +
+            '<!-- Scroll to bottom -->' +
+            '<button class="dm-scroll-bottom" id="dmScrollBottom" onclick="dmScrollToBottom()"><i class="fas fa-chevron-down"></i></button>' +
+            '<!-- Input Area -->' +
+            '<div class="dm-input-area">' +
+                '<div class="dm-image-preview" id="dmImagePreview"></div>' +
+                '<div class="dm-reply-bar" id="dmReplyBar">' +
+                    '<i class="fas fa-reply" style="color:var(--honey-yellow);"></i>' +
+                    '<span class="reply-text" id="dmReplyText"></span>' +
+                    '<button class="reply-close" onclick="dmCancelReply()"><i class="fas fa-times"></i></button>' +
+                '</div>' +
+                '<div class="dm-edit-bar" id="dmEditBar">' +
+                    '<span class="edit-label">Editing</span>' +
+                    '<span class="edit-text" id="dmEditText"></span>' +
+                    '<button class="edit-close" onclick="dmCancelEdit()"><i class="fas fa-times"></i></button>' +
+                '</div>' +
+                '<div class="dm-input-row">' +
+                    '<div class="dm-attach-btns">' +
+                        '<button class="dm-attach-btn" onclick="dmAttachImage()" title="Image"><i class="fas fa-image"></i></button>' +
+                        '<button class="dm-attach-btn" onclick="window._emojiTarget=\'dmTextInput\';showStickerPicker()" title="Sticker"><i class="fas fa-note-sticky"></i></button>' +
+                        '<button class="dm-attach-btn" onclick="dmShowEmojiForChat()" title="Emoji"><i class="fas fa-face-smile"></i></button>' +
+                    '</div>' +
+                    '<input type="text" class="dm-text-input" id="dmTextInput" placeholder="Send a message..." ' +
+                        'onkeydown="dmHandleKeydown(event)" oninput="dmHandleInput()">' +
+                    '<input type="file" id="dmFileInput" accept="image/*" style="display:none;" onchange="dmHandleFileSelect(event)">' +
+                    '<button class="dm-send-btn" id="dmSendBtn" onclick="sendDM()" disabled><i class="fas fa-paper-plane"></i></button>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+
+    dmScrollToBottom();
+}
+
+function dmRenderMessages(conv) {
+    if (conv.messages.length === 0) {
+        var user = users.find(function(u) { return u.id === conv.participantId; });
+        return '<div class="dm-empty" style="padding:40px 20px;"><i class="fas fa-comments"></i><h4>Start of conversation</h4><p>Say hello to ' + (user ? user.displayName || user.username : 'this user') + '!</p></div>';
+    }
+
+    var html = '';
+    var lastDate = '';
+    var lastFrom = '';
+
+    conv.messages.forEach(function(msg, idx) {
+        // Date separator
+        var msgDate = dmFormatDateSep(msg.time);
+        if (msgDate !== lastDate) {
+            html += '<div class="dm-date-sep"><span>' + msgDate + '</span></div>';
+            lastDate = msgDate;
+            lastFrom = '';
+        }
+
+        var isGrouped = msg.from === lastFrom && idx > 0 && !conv.messages[idx-1].deleted;
+        var rowClass = 'dm-msg-row ' + (msg.from === 'me' ? 'sent' : 'received') + (isGrouped ? ' grouped' : '');
+
+        if (msg.deleted) {
+            html += '<div class="' + rowClass + '" data-msg-id="' + msg.id + '">' +
+                '<div class="dm-msg-bubble"><div class="dm-msg-deleted"><i class="fas fa-ban"></i> This message was deleted</div></div>' +
+            '</div>';
+            lastFrom = msg.from;
+            return;
+        }
+
+        var replyQuote = '';
+        if (msg.replyTo) {
+            var replied = conv.messages.find(function(m) { return m.id === msg.replyTo; });
+            if (replied && !replied.deleted) {
+                replyQuote = '<div class="dm-msg-reply-quote" onclick="dmScrollToMessage(\'' + replied.id + '\')">' +
+                    '<strong style="font-size:11px;">' + (replied.from === 'me' ? 'You' : (users.find(function(u){return u.id===conv.participantId;})?.displayName || 'User')) + '</strong><br>' +
+                    replied.text.substring(0, 60) + (replied.text.length > 60 ? '...' : '') +
+                '</div>';
+            }
+        }
+
+        var imageHtml = '';
+        if (msg.image) {
+            imageHtml = '<img src="' + msg.image + '" class="dm-msg-image" onclick="viewMedia(\'' + msg.image + '\')">';
+        }
+
+        var reactionsHtml = '';
+        if (msg.reactions && Object.keys(msg.reactions).length > 0) {
+            reactionsHtml = '<div class="dm-msg-reactions">';
+            Object.keys(msg.reactions).forEach(function(emoji) {
+                reactionsHtml += '<span class="dm-msg-reaction" onclick="dmToggleReaction(\'' + conv.id + '\', \'' + msg.id + '\', \'' + emoji + '\'); dmRefreshChat();">' + emoji + '</span>';
+            });
+            reactionsHtml += '</div>';
+        }
+
+        var checkHtml = '';
+        if (msg.from === 'me') {
+            if (msg.status === 'sent') checkHtml = '<i class="fas fa-check dm-check sent"></i>';
+            else if (msg.status === 'delivered') checkHtml = '<i class="fas fa-check-double dm-check delivered"></i>';
+            else if (msg.status === 'read') checkHtml = '<i class="fas fa-check-double dm-check read"></i>';
+        }
+
+        var editedHtml = msg.edited ? '<span class="dm-msg-edited">(edited)</span>' : '';
+
+        // Hover actions
+        var actionsHtml = '<div class="dm-msg-actions">' +
+            '<button class="dm-msg-action-btn" onclick="event.stopPropagation(); dmStartReply(\'' + msg.id + '\')" title="Reply"><i class="fas fa-reply"></i></button>' +
+            '<button class="dm-msg-action-btn" onclick="event.stopPropagation(); dmShowReactionPicker(\'' + msg.id + '\')" title="React"><i class="fas fa-face-smile"></i></button>';
+        if (msg.from === 'me') {
+            actionsHtml += '<button class="dm-msg-action-btn" onclick="event.stopPropagation(); dmStartEdit(\'' + msg.id + '\')" title="Edit"><i class="fas fa-pen"></i></button>';
+        }
+        actionsHtml += '<button class="dm-msg-action-btn" onclick="event.stopPropagation(); dmDeleteMsgUI(\'' + msg.id + '\')" title="Delete"><i class="fas fa-trash"></i></button>' +
+        '</div>';
+
+        html += '<div class="' + rowClass + '" data-msg-id="' + msg.id + '">' +
+            actionsHtml +
+            '<div class="dm-msg-bubble">' +
+                replyQuote +
+                imageHtml +
+                (msg.text ? '<div style="line-height:1.45;">' + dmFormatMsgText(msg.text) + editedHtml + '</div>' : '') +
+                '<div class="dm-msg-meta">' + dmFormatChatTime(msg.time) + ' ' + checkHtml + '</div>' +
+                reactionsHtml +
+            '</div>' +
+        '</div>';
+
+        lastFrom = msg.from;
+    });
+
+    return html;
+}
+
+function dmFormatMsgText(text) {
+    // Escape HTML, then format links, bold, italic
+    text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // URLs
+    text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:inherit;text-decoration:underline;">$1</a>');
+    // Bold **text**
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Italic *text*
+    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return text;
+}
+
+function dmRefreshChat() {
+    if (!dmActiveConvId) return;
+    var conv = dmData.conversations[dmActiveConvId];
+    if (!conv) return;
+    var container = document.getElementById('dmMessages');
+    if (!container) return;
+    var wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+    var typingEl = document.getElementById('dmTypingIndicator');
+    var typingClass = typingEl ? typingEl.className : 'dm-typing-indicator';
+    container.innerHTML = dmRenderMessages(conv) +
+        '<div class="dm-typing-indicator" id="dmTypingIndicator" class="' + typingClass + '">' +
+            '<div class="dm-typing-dots"><span></span><span></span><span></span></div>' +
+        '</div>';
+    if (wasAtBottom) dmScrollToBottom();
+}
+
+function dmScrollToBottom() {
+    setTimeout(function() {
+        var el = document.getElementById('dmMessages');
+        if (el) el.scrollTop = el.scrollHeight;
+    }, 50);
+}
+
+function dmScrollToMessage(msgId) {
+    var el = document.querySelector('[data-msg-id="' + msgId + '"]');
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.querySelector('.dm-msg-bubble').classList.add('dm-msg-highlight');
+        setTimeout(function() {
+            el.querySelector('.dm-msg-bubble').classList.remove('dm-msg-highlight');
+        }, 2000);
+    }
+}
+
+function dmHandleScroll() {
+    var el = document.getElementById('dmMessages');
+    var fab = document.getElementById('dmScrollBottom');
+    if (!el || !fab) return;
+    var atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    fab.classList.toggle('show', !atBottom);
+}
+
+
+// --- Send Message ---
+function sendDM() {
+    var input = document.getElementById('dmTextInput');
+    var text = input ? input.value.trim() : '';
+    var image = dmPendingImage;
+
+    if (!text && !image) return;
+    if (!dmActiveConvId) return;
+
+    if (dmEditingMsg) {
+        // Editing existing message
+        dmEditMessage(dmActiveConvId, dmEditingMsg.id, text);
+        dmCancelEdit();
+        dmRefreshChat();
+        input.value = '';
+        dmUpdateSendBtn();
+        return;
+    }
+
+    var opts = { from: 'me' };
+    if (dmReplyToMsg) opts.replyTo = dmReplyToMsg.id;
+    if (image) opts.image = image;
+
+    dmAddMessage(dmActiveConvId, text, opts);
+    input.value = '';
+    dmPendingImage = null;
+    dmCancelReply();
+    dmHideImagePreview();
+    dmUpdateSendBtn();
+    dmRefreshChat();
+    dmScrollToBottom();
+    dmUpdateGlobalBadge();
+
+    // Simulate read receipt after 1s and reply after 2-4s
+    var convId = dmActiveConvId;
+    setTimeout(function() {
+        var conv = dmData.conversations[convId];
+        if (!conv) return;
+        var lastMsg = conv.messages.filter(function(m) { return m.from === 'me'; }).pop();
+        if (lastMsg) { lastMsg.status = 'delivered'; saveDMData(); dmRefreshChat(); }
+    }, 800);
+
+    setTimeout(function() {
+        var conv = dmData.conversations[convId];
+        if (!conv) return;
+        var lastMsg = conv.messages.filter(function(m) { return m.from === 'me'; }).pop();
+        if (lastMsg) { lastMsg.status = 'read'; saveDMData(); dmRefreshChat(); }
+    }, 1500);
+
+    // Typing indicator + auto-reply
+    setTimeout(function() {
+        if (dmActiveConvId !== convId) return;
+        var typing = document.getElementById('dmTypingIndicator');
+        if (typing) typing.classList.add('show');
+        dmScrollToBottom();
+    }, 2000);
+
+    var replyDelay = 3000 + Math.random() * 2000;
+    setTimeout(function() {
+        var typing = document.getElementById('dmTypingIndicator');
+        if (typing) typing.classList.remove('show');
+
+        var conv = dmData.conversations[convId];
+        if (!conv) return;
+        var replies = [
+            'That sounds great! \ud83d\udc1d', 'Absolutely! Let\'s make it happen.',
+            'Love that idea! \ud83c\udf6f', 'I\'m in! When should we start?',
+            'Amazing, let me think about it! \u2728', 'Totally agree!',
+            'That\'s a really interesting perspective \ud83d\ude4c', 'Can\'t wait to see how it turns out!',
+            'You always have the best ideas \ud83d\udc9b', 'Let\'s do it! \ud83d\ude80'
+        ];
+        var reply = replies[Math.floor(Math.random() * replies.length)];
+        dmAddMessage(convId, reply, { from: 'them' });
+
+        if (dmActiveConvId === convId) {
+            dmMarkRead(convId);
+            dmRefreshChat();
+            dmScrollToBottom();
+        }
+        dmUpdateGlobalBadge();
+    }, replyDelay);
+}
+
+function dmHandleKeydown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendDM();
+    }
+    if (e.key === 'Escape') {
+        if (dmEditingMsg) dmCancelEdit();
+        else if (dmReplyToMsg) dmCancelReply();
+    }
+}
+
+function dmHandleInput() {
+    dmUpdateSendBtn();
+}
+
+function dmUpdateSendBtn() {
+    var input = document.getElementById('dmTextInput');
+    var btn = document.getElementById('dmSendBtn');
+    if (!input || !btn) return;
+    btn.disabled = !input.value.trim() && !dmPendingImage;
+}
+
+// --- Reply ---
+function dmStartReply(msgId) {
+    var conv = dmData.conversations[dmActiveConvId];
+    if (!conv) return;
+    var msg = conv.messages.find(function(m) { return m.id === msgId; });
+    if (!msg || msg.deleted) return;
+    dmReplyToMsg = msg;
+    dmCancelEdit();
+    var user = users.find(function(u) { return u.id === conv.participantId; });
+    var name = msg.from === 'me' ? 'yourself' : (user ? user.displayName || user.username : 'User');
+    var bar = document.getElementById('dmReplyBar');
+    var text = document.getElementById('dmReplyText');
+    if (bar) bar.classList.add('show');
+    if (text) text.textContent = 'Replying to ' + name + ': ' + msg.text.substring(0, 50);
+    document.getElementById('dmTextInput').focus();
+}
+
+function dmCancelReply() {
+    dmReplyToMsg = null;
+    var bar = document.getElementById('dmReplyBar');
+    if (bar) bar.classList.remove('show');
+}
+
+// --- Edit ---
+function dmStartEdit(msgId) {
+    var conv = dmData.conversations[dmActiveConvId];
+    if (!conv) return;
+    var msg = conv.messages.find(function(m) { return m.id === msgId; });
+    if (!msg || msg.deleted || msg.from !== 'me') return;
+    dmEditingMsg = msg;
+    dmCancelReply();
+    var bar = document.getElementById('dmEditBar');
+    var text = document.getElementById('dmEditText');
+    if (bar) bar.classList.add('show');
+    if (text) text.textContent = msg.text.substring(0, 50);
+    var input = document.getElementById('dmTextInput');
+    if (input) { input.value = msg.text; input.focus(); }
+    dmUpdateSendBtn();
+}
+
+function dmCancelEdit() {
+    dmEditingMsg = null;
+    var bar = document.getElementById('dmEditBar');
+    if (bar) bar.classList.remove('show');
+    var input = document.getElementById('dmTextInput');
+    if (input) input.value = '';
+    dmUpdateSendBtn();
+}
+
+// --- Delete ---
+function dmDeleteMsgUI(msgId) {
+    if (!confirm('Delete this message?')) return;
+    dmDeleteMessage(dmActiveConvId, msgId);
+    dmRefreshChat();
+}
+
+// --- Reactions ---
+function dmShowReactionPicker(msgId) {
+    // Remove existing picker
+    var existing = document.querySelector('.dm-reaction-picker.show');
+    if (existing) existing.remove();
+
+    var msgEl = document.querySelector('[data-msg-id="' + msgId + '"]');
+    if (!msgEl) return;
+
+    var emojis = ['\u2764\ufe0f', '\ud83d\ude02', '\ud83d\ude2e', '\ud83d\udc4d', '\ud83d\ude22', '\ud83d\udd25', '\ud83c\udf6f', '\ud83d\udc1d'];
+    var picker = document.createElement('div');
+    picker.className = 'dm-reaction-picker show';
+    emojis.forEach(function(emoji) {
+        var btn = document.createElement('button');
+        btn.className = 'dm-reaction-option';
+        btn.textContent = emoji;
+        btn.onclick = function(e) {
+            e.stopPropagation();
+            dmToggleReaction(dmActiveConvId, msgId, emoji);
+            picker.remove();
+            dmRefreshChat();
+        };
+        picker.appendChild(btn);
+    });
+
+    msgEl.style.position = 'relative';
+    picker.style.position = 'absolute';
+    picker.style.top = '-36px';
+    if (msgEl.classList.contains('sent')) {
+        picker.style.right = '0';
+    } else {
+        picker.style.left = '0';
+    }
+    msgEl.appendChild(picker);
+
+    setTimeout(function() {
+        document.addEventListener('click', function removePicker() {
+            picker.remove();
+            document.removeEventListener('click', removePicker);
+        });
+    }, 10);
+}
+
+// --- Image Attachment ---
+function dmAttachImage() {
+    var input = document.getElementById('dmFileInput');
+    if (input) input.click();
+}
+
+function dmHandleFileSelect(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Only images are supported'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB'); return; }
+
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        dmPendingImage = ev.target.result;
+        dmShowImagePreview(dmPendingImage);
+        dmUpdateSendBtn();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+
+function dmShowImagePreview(src) {
+    var container = document.getElementById('dmImagePreview');
+    if (!container) return;
+    container.innerHTML = '<img src="' + src + '"><button class="remove-btn" onclick="dmRemoveImage()"><i class="fas fa-times"></i></button>';
+    container.classList.add('show');
+}
+
+function dmHideImagePreview() {
+    var container = document.getElementById('dmImagePreview');
+    if (container) { container.classList.remove('show'); container.innerHTML = ''; }
+}
+
+function dmRemoveImage() {
+    dmPendingImage = null;
+    dmHideImagePreview();
+    dmUpdateSendBtn();
+}
+
+// --- Emoji for DM ---
+function dmShowEmojiForChat() {
+    window._emojiTarget = 'dmTextInput';
+    if (typeof showEmojiPicker === 'function') showEmojiPicker();
+    else if (typeof showEmojiPickerInline === 'function') showEmojiPickerInline();
+}
+
+// --- In-Conversation Search ---
+function dmToggleChatSearch() {
+    dmSearchOpen = !dmSearchOpen;
+    var bar = document.getElementById('dmChatSearchBar');
+    if (bar) bar.classList.toggle('show', dmSearchOpen);
+    if (dmSearchOpen) {
+        var inp = document.getElementById('dmChatSearchInput');
+        if (inp) { inp.value = ''; inp.focus(); }
+    } else {
+        // Clear highlights
+        document.querySelectorAll('.dm-msg-highlight').forEach(function(el) {
+            el.classList.remove('dm-msg-highlight');
+        });
+        dmSearchMatches = [];
+        dmSearchIdx = -1;
+    }
+}
+
+function dmSearchInConversation(query) {
+    query = query.toLowerCase().trim();
+    dmSearchMatches = [];
+    dmSearchIdx = -1;
+
+    // Clear all highlights
+    document.querySelectorAll('.dm-msg-highlight').forEach(function(el) {
+        el.classList.remove('dm-msg-highlight');
+    });
+
+    if (!query) {
+        document.getElementById('dmSearchCount').textContent = '';
+        return;
+    }
+
+    var conv = dmData.conversations[dmActiveConvId];
+    if (!conv) return;
+
+    conv.messages.forEach(function(msg) {
+        if (!msg.deleted && msg.text && msg.text.toLowerCase().includes(query)) {
+            dmSearchMatches.push(msg.id);
+        }
+    });
+
+    document.getElementById('dmSearchCount').textContent = dmSearchMatches.length > 0 ? '0/' + dmSearchMatches.length : 'No results';
+
+    if (dmSearchMatches.length > 0) {
+        dmSearchIdx = dmSearchMatches.length - 1;
+        dmHighlightSearchResult();
+    }
+}
+
+function dmSearchPrev() {
+    if (dmSearchMatches.length === 0) return;
+    dmSearchIdx = (dmSearchIdx - 1 + dmSearchMatches.length) % dmSearchMatches.length;
+    dmHighlightSearchResult();
+}
+
+function dmSearchNext() {
+    if (dmSearchMatches.length === 0) return;
+    dmSearchIdx = (dmSearchIdx + 1) % dmSearchMatches.length;
+    dmHighlightSearchResult();
+}
+
+function dmHighlightSearchResult() {
+    document.querySelectorAll('.dm-msg-highlight').forEach(function(el) {
+        el.classList.remove('dm-msg-highlight');
+    });
+    var msgId = dmSearchMatches[dmSearchIdx];
+    var el = document.querySelector('[data-msg-id="' + msgId + '"] .dm-msg-bubble');
+    if (el) {
+        el.classList.add('dm-msg-highlight');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    document.getElementById('dmSearchCount').textContent = (dmSearchIdx + 1) + '/' + dmSearchMatches.length;
+}
+
+// --- Conversation Info Panel ---
+function dmShowInfoPanel(convId) {
+    var conv = dmData.conversations[convId];
+    if (!conv) return;
+    var user = users.find(function(u) { return u.id === conv.participantId; });
+    if (!user) return;
+
+    // Collect shared media
+    var sharedMedia = conv.messages.filter(function(m) { return m.image && !m.deleted; });
+    var mediaGrid = '';
+    if (sharedMedia.length > 0) {
+        mediaGrid = '<div class="dm-info-media-grid">';
+        sharedMedia.slice(-9).forEach(function(m) {
+            mediaGrid += '<img src="' + m.image + '" onclick="viewMedia(\'' + m.image + '\')">';
+        });
+        mediaGrid += '</div>';
+    } else {
+        mediaGrid = '<p style="color:var(--text-secondary);font-size:13px;">No shared media yet</p>';
+    }
+
+    var status = getUserStatus(user);
+
+    // Remove existing panel
+    var existing = document.getElementById('dmInfoPanel');
+    if (existing) existing.remove();
+
+    var panel = document.createElement('div');
+    panel.id = 'dmInfoPanel';
+    panel.className = 'dm-info-panel';
+    panel.innerHTML =
+        '<div class="dm-info-panel-header">' +
+            '<strong>Conversation Info</strong>' +
+            '<button class="dm-info-panel-close" onclick="dmCloseInfoPanel()"><i class="fas fa-times"></i></button>' +
+        '</div>' +
+        '<div class="dm-info-panel-body">' +
+            '<div class="dm-info-user">' +
+                '<img src="' + user.avatar + '">' +
+                '<div><strong style="font-size:16px;">' + (user.displayName || user.username) + '</strong></div>' +
+                '<div style="color:var(--text-secondary);font-size:13px;">@' + user.username + ' \u00b7 ' + status.label + '</div>' +
+                '<div style="color:var(--text-secondary);font-size:12px;margin-top:4px;">' + (user.bio || '') + '</div>' +
+            '</div>' +
+            '<div class="dm-info-section">' +
+                '<h5>Shared Media (' + sharedMedia.length + ')</h5>' +
+                mediaGrid +
+            '</div>' +
+            '<div class="dm-info-section">' +
+                '<h5>Actions</h5>' +
+                '<button class="dm-info-action" onclick="dmToggleMute(\'' + convId + '\'); dmCloseInfoPanel(); showToast(\'Toggled mute\');"><i class="fas fa-bell-slash"></i> ' + (conv.muted ? 'Unmute' : 'Mute') + ' notifications</button>' +
+                '<button class="dm-info-action" onclick="goToUserProfile(' + user.id + '); dmCloseInfoPanel();"><i class="fas fa-user"></i> View profile</button>' +
+                '<button class="dm-info-action danger" onclick="if(confirm(\'Block this user?\')) { showToast(\'User blocked\'); dmCloseInfoPanel(); }"><i class="fas fa-ban"></i> Block user</button>' +
+                '<button class="dm-info-action danger" onclick="if(confirm(\'Report this user?\')) { showToast(\'Report submitted\'); dmCloseInfoPanel(); }"><i class="fas fa-flag"></i> Report</button>' +
+            '</div>' +
+        '</div>';
+
+    document.body.appendChild(panel);
+    setTimeout(function() { panel.classList.add('show'); }, 10);
+
+    // Close on overlay click
+    var overlay = document.createElement('div');
+    overlay.id = 'dmInfoOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9996;';
+    overlay.onclick = dmCloseInfoPanel;
+    document.body.appendChild(overlay);
+}
+
+function dmCloseInfoPanel() {
+    var panel = document.getElementById('dmInfoPanel');
+    if (panel) { panel.classList.remove('show'); setTimeout(function() { panel.remove(); }, 300); }
+    var overlay = document.getElementById('dmInfoOverlay');
+    if (overlay) overlay.remove();
+}
+
+// Init DM on page load
+(function() {
+    dmSeedSampleData();
+    dmUpdateGlobalBadge();
+})();
 
 
 // ===== CLEAN showCreatePostModal (buttons now in HTML template) =====
