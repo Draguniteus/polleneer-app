@@ -13633,13 +13633,17 @@ function openConversation(convId) {
             (isRequest ? requestBar :
             '<!-- Input area -->' +
             '<div class="dm-input-area">' +
-                '<button class="dm-input-btn" onclick="dmAttachImage()" title="Attach image"><i class="fas fa-image"></i></button>' +
-                '<button class="dm-input-btn" onclick="showEmojiPicker()" title="Emoji"><i class="fas fa-face-smile"></i></button>' +
-                '<button class="dm-input-btn" onclick="dmCreatePoll()" title="Poll"><i class="fas fa-poll"></i></button>' +
-                '<input type="text" id="dmTextInput" placeholder="Type a message..." oninput="dmHandleInput()" onkeydown="dmHandleKeydown(event)" autocomplete="off">' +
-                '<button class="dm-input-btn" id="dmVoiceBtn" onclick="dmStartVoiceRecord()" title="Voice Message"><i class="fas fa-microphone"></i></button>' +
-                '<button class="dm-input-btn" onclick="dmShowEffectPicker()" title="Send Effect" style="font-size:14px;"><i class="fas fa-wand-magic-sparkles"></i></button>' +
-                '<button class="dm-send-btn" id="dmSendBtn" onclick="dmSendMessage()" disabled><i class="fas fa-paper-plane"></i></button>' +
+                '<div class="dm-input-row">' +
+                    '<div class="dm-attach-btns">' +
+                        '<button class="dm-attach-btn" onclick="dmAttachImage()" title="Attach image"><i class="fas fa-image"></i></button>' +
+                        '<button class="dm-attach-btn" onclick="showEmojiPicker()" title="Emoji"><i class="fas fa-face-smile"></i></button>' +
+                        '<button class="dm-attach-btn" onclick="dmCreatePoll()" title="Poll"><i class="fas fa-poll"></i></button>' +
+                        '<button class="dm-attach-btn" id="dmVoiceBtn" onclick="dmStartVoiceRecord()" title="Voice Message"><i class="fas fa-microphone"></i></button>' +
+                        '<button class="dm-attach-btn" onclick="dmShowEffectPicker()" title="Send Effect"><i class="fas fa-wand-magic-sparkles"></i></button>' +
+                    '</div>' +
+                    '<input type="text" id="dmTextInput" class="dm-text-input" placeholder="Type a message..." oninput="dmHandleInput()" onkeydown="dmHandleKeydown(event)" autocomplete="off">' +
+                    '<button class="dm-send-btn" id="dmSendBtn" onclick="dmSendMessage()" disabled><i class="fas fa-paper-plane"></i></button>' +
+                '</div>' +
             '</div>') +
             '<!-- Scroll to bottom FAB -->' +
             '<button class="dm-scroll-bottom" id="dmScrollFab" onclick="dmScrollToBottom()" style="display:none;"><i class="fas fa-chevron-down"></i></button>' +
