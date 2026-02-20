@@ -12149,37 +12149,180 @@ function insertSticker(emoji) {
 
 // Emoji Picker (built-in, keyboard-style)
 function showEmojiPicker() {
-    const emojiModal = document.createElement('div');
+    var existingPicker = document.getElementById('emojiPickerOverlay');
+    if (existingPicker) { existingPicker.remove(); return; }
+
+    var emojiModal = document.createElement('div');
     emojiModal.id = 'emojiPickerOverlay';
     emojiModal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
     emojiModal.onclick = function(e) { if(e.target === emojiModal) emojiModal.remove(); };
 
-    const categories = {
-        'Smileys': ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🥰','😍','🤩','😘','😗','😚','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🫡','🤐','🤨','😐','😑','😶','🫥','😏','😒','🙄','😬','😮‍💨','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐'],
-        'Gestures': ['👋','🤚','🖐️','✋','🖖','🫱','🫲','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏','🙌','🫶','👐','🤲','🤝','🙏','💪','🦾'],
-        'Hearts': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟'],
-        'Nature': ['🐝','🦋','🐛','🐞','🐜','🪲','🪳','🕷️','🦗','🌸','💐','🌷','🌹','🥀','🌺','🌻','🌼','🌱','🪴','🌿','☘️','🍀','🌾','🍃','🍂','🍁','🌍','🌈','☀️','⭐','🌙','✨','⚡','🔥','🌊'],
-        'Objects': ['🎵','🎶','🎤','🎧','🎸','🎹','🎺','📸','📱','💻','⌨️','🎮','🕹️','🏆','🥇','🎯','🎪','🎨','🎭','🎬','📚','📝','💰','💎','🔔','📢','💡','🚀','⏰','🎁','🎂','🍰','☕','🍺','🥂'],
+    var categories = {
+        'Smileys & People': ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','🫠','😉','😊','😇','🥰','😍','🤩','😘','😗','☺️','😚','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🫢','🫣','🤫','🤔','🫡','🤐','🤨','😐','😑','😶','🫥','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🥵','🥶','🥴','😵','😵‍💫','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','🫤','😟','🙁','☹️','😮','😯','😲','😳','🥺','🥹','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🙈','🙉','🙊','👋','🤚','🖐️','✋','🖖','🫱','🫲','🫳','🫴','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏','🙌','🫶','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🧠','🫀','🫁','🦷','🦴','👀','👁️','👅','👄','🫦','👶','🧒','👦','👧','🧑','👱','👨','🧔','👩','🧓','👴','👵','🙍','🙎','🙅','🙆','💁','🙋','🧏','🙇','🤦','🤷','👮','🕵️','💂','🥷','👷','🫅','🤴','👸','👳','👲','🧕','🤵','👰','🤰','🫄','🫃','🤱','👼','🎅','🤶','🦸','🦹','🧙','🧚','🧛','🧜','🧝','🧞','🧟','🧌','💆','💇','🚶','🧍','🧎','🏃','💃','🕺','🕴️','👯','🧖','🧗','🤸','⛹️','🏋️','🚴','🚵','🤼','🤽','🤾','🤺','⛷️','🏂','🏌️','🏇','🏄','🚣','🏊','🤹','🧘','🛀','🛌','👭','👫','👬','💏','💑','👪','👨‍👩‍👦','👨‍👩‍👧','👨‍👩‍👧‍👦','👨‍👩‍👦‍👦','👨‍👩‍👧‍👧','👨‍👦','👨‍👧','👩‍👦','👩‍👧','🗣️','👤','👥','🫂'],
+        'Animals & Nature': ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐻‍❄️','🐨','🐯','🦁','🐮','🐷','🐽','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🪱','🐛','🦋','🐌','🐞','🐜','🪰','🪲','🪳','🦟','🦗','🕷️','🕸️','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🪸','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢','🦩','🕊️','🐇','🦝','🦨','🦡','🦫','🦦','🦥','🐁','🐀','🐿️','🦔','🐾','🐉','🐲','🌵','🎄','🌲','🌳','🌴','🪵','🌱','🌿','☘️','🍀','🎍','🪴','🎋','🍃','🍂','🍁','🪺','🪹','🍄','🌾','💐','🌷','🌹','🥀','🌺','🌸','🌼','🌻','🌞','🌝','🌛','🌜','🌚','🌕','🌖','🌗','🌘','🌑','🌒','🌓','🌔','🌙','🌎','🌍','🌏','🪐','💫','⭐','🌟','✨','⚡','☄️','💥','🔥','🌪️','🌈','☀️','🌤️','⛅','🌥️','☁️','🌦️','🌧️','⛈️','🌩️','🌨️','❄️','☃️','⛄','🌬️','💨','💧','💦','🫧','☔','☂️','🌊','🌫️'],
+        'Food & Drink': ['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🫑','🌽','🥕','🫒','🧄','🧅','🫛','🥔','🍠','🫚','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍩','🍪','🌰','🥜','🍯','🥛','🍼','🫖','☕','🍵','🧃','🥤','🧋','🫙','🍶','🍺','🍻','🥂','🍷','🫗','🥃','🍸','🍹','🧉','🍾','🧊','🥄','🍴','🍽️','🥣','🥡','🥢','🧂'],
+        'Activities': ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🛷','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🤼','🤸','⛹️','🤺','🤾','🏌️','🏇','🧘','🏄','🏊','🤽','🚣','🧗','🚴','🚵','🎖️','🏆','🥇','🥈','🥉','🏅','🎪','🤹','🎭','🩰','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🪘','🎷','🎺','🪗','🎸','🪕','🎻','🪈','🎲','♟️','🎯','🎳','🎮','🕹️','🧩','🎰','🎴','🀄','🃏','👾','🎩','📸','📷'],
+        'Travel & Places': ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🦯','🦽','🦼','🛴','🚲','🛵','🏍️','🛺','🚨','🚔','🚍','🚘','🚖','🛞','🚡','🚠','🚟','🚃','🚋','🚞','🚝','🚄','🚅','🚈','🚂','🚆','🚇','🚊','🚉','✈️','🛫','🛬','🛩️','💺','🛰️','🚀','🛸','🚁','🛶','⛵','🚤','🛥️','🛳️','⛴️','🚢','⚓','🛟','🪝','⛽','🚧','🚦','🚥','🚏','🗺️','🗿','🗽','🗼','🏰','🏯','🏟️','🎡','🎢','🎠','⛲','⛱️','🏖️','🏝️','🏜️','🌋','⛰️','🏔️','🗻','🏕️','🛖','🏠','🏡','🏘️','🏚️','🏗️','🏭','🏢','🏬','🏣','🏤','🏥','🏦','🏨','🏪','🏫','🏩','💒','🏛️','⛪','🕌','🕍','🛕','🕋','⛩️','🛤️','🛣️','🗾','🎑','🏞️','🌅','🌄','🌠','🎇','🎆','🌇','🌆','🏙️','🌃','🌌','🌉','🌁'],
+        'Objects': ['⌚','📱','📲','💻','⌨️','🖥️','🖨️','🖱️','🖲️','🕹️','🗜️','💽','💾','💿','📀','📼','📷','📸','📹','🎥','📽️','🎞️','📞','☎️','📟','📠','📺','📻','🎙️','🎚️','🎛️','🧭','⏱️','⏲️','⏰','🕰️','⌛','⏳','📡','🔋','🪫','🔌','💡','🔦','🕯️','🪔','🧯','🛢️','🪙','💸','💵','💴','💶','💷','🪪','💳','💰','💎','⚖️','🪜','🧰','🪛','🔧','🔨','⚒️','🛠️','⛏️','🪚','🔩','⚙️','🪤','🧱','⛓️','🧲','🔫','💣','🧨','🪓','🔪','🗡️','⚔️','🛡️','🚬','⚰️','🪦','⚱️','🏺','🔮','📿','🧿','🪬','💈','⚗️','🔭','🔬','🕳️','🩹','🩺','🩻','🩼','💊','💉','🩸','🧬','🦠','🧫','🧪','🌡️','🧹','🪠','🧺','🧻','🚽','🚰','🚿','🛁','🛀','🧼','🪥','🪒','🧽','🪣','🧴','🛎️','🔑','🗝️','🚪','🪑','🛋️','🛏️','🛌','🧸','🪆','🖼️','🪞','🪟','🛍️','🛒','🎁','🎈','🎏','🎀','🪄','🪅','🎊','🎉','🎎','🏮','🎐','🧧','✉️','📩','📨','📧','💌','📥','📤','📦','🏷️','🪧','📪','📫','📬','📭','📮','📯','📜','📃','📄','📑','🧾','📊','📈','📉','🗒️','🗓️','📆','📅','🗑️','📇','🗃️','🗳️','🗄️','📋','📁','📂','🗂️','🗞️','📰','📓','📔','📒','📕','📗','📘','📙','📚','📖','🔖','🧷','🔗','📎','🖇️','📐','📏','🧮','📌','📍','✂️','🖊️','🖋️','✒️','🖌️','🖍️','📝','✏️','🔍','🔎','🔏','🔐','🔒','🔓'],
+        'Symbols': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','❤️‍🔥','❤️‍🩹','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉️','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🆔','⚛️','🉑','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','💯','💢','♨️','🚷','🚯','🚳','🚱','🔞','📵','🚭','❗','❕','❓','❔','‼️','⁉️','🔅','🔆','〽️','⚠️','🚸','🔱','⚜️','🔰','♻️','✅','🈯','💹','❇️','✳️','❎','🌐','💠','Ⓜ️','🌀','💤','🏧','🚾','♿','🅿️','🛗','🈳','🈂️','🛂','🛃','🛄','🛅','🚹','🚺','🚼','⚧️','🚻','🚮','🎦','📶','🈁','🔣','ℹ️','🔤','🔡','🔠','🆙','🆗','🆒','🆕','🆓','0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','🔢','#️⃣','*️⃣','⏏️','▶️','⏩','⏭️','⏯️','◀️','⏪','⏮️','🔼','⏫','🔽','⏬','⏸️','⏹️','⏺️','⏏️','🎦','🔅','🔆','📶','🔀','🔁','🔂','▶️','🔃','🔄','🔙','🔚','🔛','🔜','🔝'],
+        'Flags': ['🏁','🚩','🎌','🏴','🏳️','🏳️‍🌈','🏳️‍⚧️','🏴‍☠️','🇦🇫','🇦🇱','🇩🇿','🇦🇸','🇦🇩','🇦🇴','🇦🇮','🇦🇬','🇦🇷','🇦🇲','🇦🇼','🇦🇺','🇦🇹','🇦🇿','🇧🇸','🇧🇭','🇧🇩','🇧🇧','🇧🇾','🇧🇪','🇧🇿','🇧🇯','🇧🇲','🇧🇹','🇧🇴','🇧🇦','🇧🇼','🇧🇷','🇧🇳','🇧🇬','🇧🇫','🇧🇮','🇰🇭','🇨🇲','🇨🇦','🇨🇻','🇨🇫','🇹🇩','🇨🇱','🇨🇳','🇨🇴','🇰🇲','🇨🇬','🇨🇩','🇨🇷','🇭🇷','🇨🇺','🇨🇾','🇨🇿','🇩🇰','🇩🇯','🇩🇲','🇩🇴','🇪🇨','🇪🇬','🇸🇻','🇬🇶','🇪🇷','🇪🇪','🇸🇿','🇪🇹','🇫🇯','🇫🇮','🇫🇷','🇬🇦','🇬🇲','🇬🇪','🇩🇪','🇬🇭','🇬🇷','🇬🇩','🇬🇹','🇬🇳','🇬🇾','🇭🇹','🇭🇳','🇭🇰','🇭🇺','🇮🇸','🇮🇳','🇮🇩','🇮🇷','🇮🇶','🇮🇪','🇮🇱','🇮🇹','🇯🇲','🇯🇵','🇯🇴','🇰🇿','🇰🇪','🇰🇷','🇰🇼','🇱🇦','🇱🇧','🇱🇷','🇱🇾','🇱🇹','🇱🇺','🇲🇬','🇲🇾','🇲🇱','🇲🇹','🇲🇽','🇲🇳','🇲🇦','🇲🇿','🇲🇲','🇳🇦','🇳🇵','🇳🇱','🇳🇿','🇳🇮','🇳🇪','🇳🇬','🇰🇵','🇳🇴','🇴🇲','🇵🇰','🇵🇦','🇵🇬','🇵🇾','🇵🇪','🇵🇭','🇵🇱','🇵🇹','🇵🇷','🇶🇦','🇷🇴','🇷🇺','🇷🇼','🇸🇦','🇸🇳','🇷🇸','🇸🇬','🇸🇰','🇸🇮','🇸🇴','🇿🇦','🇪🇸','🇱🇰','🇸🇩','🇸🇪','🇨🇭','🇸🇾','🇹🇼','🇹🇿','🇹🇭','🇹🇬','🇹🇹','🇹🇳','🇹🇷','🇺🇬','🇺🇦','🇦🇪','🇬🇧','🇺🇸','🇺🇾','🇺🇿','🇻🇪','🇻🇳','🇾🇪','🇿🇲','🇿🇼']
     };
 
-    emojiModal.innerHTML = `
-        <div style="background:var(--bg-card);border-radius:15px;width:90%;max-width:420px;max-height:75vh;overflow:hidden;display:flex;flex-direction:column;">
-            <div style="padding:15px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">
-                <h3 style="color:var(--honey-yellow);"><i class="fas fa-face-smile"></i> Emoji</h3>
-                <button onclick="document.getElementById('emojiPickerOverlay').remove()" style="background:none;border:none;color:var(--text-primary);font-size:1.5em;cursor:pointer;">&times;</button>
-            </div>
-            <div style="padding:15px;overflow-y:auto;">
-                ${Object.entries(categories).map(([cat, emojis]) => `
-                    <h4 style="margin:10px 0 8px;color:var(--text-secondary);font-size:12px;text-transform:uppercase;">${cat}</h4>
-                    <div style="display:flex;flex-wrap:wrap;gap:2px;">
-                        ${emojis.map(e => `<button onclick="insertEmoji('${e}')" style="font-size:22px;padding:5px;background:none;border:none;cursor:pointer;border-radius:5px;transition:background 0.2s;" onmouseover="this.style.background='var(--bg-input)'" onmouseout="this.style.background='none'">${e}</button>`).join('')}
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
+    var catIcons = {
+        'Smileys & People': 'fa-face-smile',
+        'Animals & Nature': 'fa-paw',
+        'Food & Drink': 'fa-utensils',
+        'Activities': 'fa-futbol',
+        'Travel & Places': 'fa-plane',
+        'Objects': 'fa-lightbulb',
+        'Symbols': 'fa-heart',
+        'Flags': 'fa-flag'
+    };
+
+    var catKeys = Object.keys(categories);
+    var activeCat = catKeys[0];
+
+    var tabsHTML = '<div id="emojiTabBar" style="display:flex;gap:0;border-bottom:1px solid var(--border-color);padding:0 8px;">';
+    catKeys.forEach(function(cat, i) {
+        tabsHTML += '<button class="emoji-cat-tab' + (i === 0 ? ' active' : '') + '" data-cat="' + cat + '" onclick="switchEmojiCategory(\'' + cat.replace(/'/g, "\\'") + '\')" ' +
+            'style="flex:1;padding:10px 4px;border:none;background:none;cursor:pointer;font-size:15px;color:' + (i === 0 ? 'var(--honey-yellow)' : 'var(--text-secondary)') + ';position:relative;transition:color 0.2s;" ' +
+            'title="' + cat + '"><i class="fas ' + (catIcons[cat] || 'fa-icons') + '"></i></button>';
+    });
+    tabsHTML += '</div>';
+
+    var gridHTML = '<div id="emojiGrid" style="padding:10px;overflow-y:auto;flex:1;display:flex;flex-wrap:wrap;gap:2px;align-content:flex-start;">';
+    categories[activeCat].forEach(function(em) {
+        gridHTML += '<button onclick="insertEmojiFromPicker(\'' + em + '\')" style="font-size:24px;padding:4px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'\'"">' + em + '</button>';
+    });
+    gridHTML += '</div>';
+
+    emojiModal.innerHTML = '<div style="background:var(--bg-card);border-radius:16px;width:92%;max-width:440px;height:480px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,0.4);">' +
+        '<div style="padding:12px 16px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">' +
+            '<h3 style="color:var(--honey-yellow);margin:0;font-size:16px;"><i class="fas fa-face-smile"></i> Emoji</h3>' +
+            '<button onclick="document.getElementById(\'emojiPickerOverlay\').remove()" style="background:none;border:none;color:var(--text-primary);font-size:1.3em;cursor:pointer;">&times;</button>' +
+        '</div>' +
+        '<div style="padding:8px 12px;">' +
+            '<input type="text" id="emojiSearchInput" placeholder="Search emoji..." oninput="searchEmojis(this.value)" style="width:100%;padding:8px 12px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:13px;outline:none;box-sizing:border-box;">' +
+        '</div>' +
+        tabsHTML +
+        '<div id="emojiCatLabel" style="padding:6px 14px;font-size:12px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">' + activeCat + '</div>' +
+        gridHTML +
+    '</div>';
 
     document.body.appendChild(emojiModal);
+
+    // Store categories globally for tab switching
+    window._emojiCategories = categories;
+}
+
+function switchEmojiCategory(cat) {
+    var categories = window._emojiCategories;
+    if (!categories || !categories[cat]) return;
+
+    // Update tab active state
+    document.querySelectorAll('.emoji-cat-tab').forEach(function(tab) {
+        var isActive = tab.getAttribute('data-cat') === cat;
+        tab.style.color = isActive ? 'var(--honey-yellow)' : 'var(--text-secondary)';
+        tab.className = 'emoji-cat-tab' + (isActive ? ' active' : '');
+    });
+
+    // Update label
+    var label = document.getElementById('emojiCatLabel');
+    if (label) label.textContent = cat;
+
+    // Update grid
+    var grid = document.getElementById('emojiGrid');
+    if (!grid) return;
+    var html = '';
+    categories[cat].forEach(function(em) {
+        html += '<button onclick="insertEmojiFromPicker(\'' + em + '\')" style="font-size:24px;padding:4px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'\'"">' + em + '</button>';
+    });
+    grid.innerHTML = html;
+
+    // Clear search
+    var searchInput = document.getElementById('emojiSearchInput');
+    if (searchInput) searchInput.value = '';
+}
+
+function searchEmojis(query) {
+    query = query.toLowerCase().trim();
+    var categories = window._emojiCategories;
+    if (!categories) return;
+    var grid = document.getElementById('emojiGrid');
+    if (!grid) return;
+
+    if (!query) {
+        // Show first category
+        var firstCat = Object.keys(categories)[0];
+        switchEmojiCategory(firstCat);
+        return;
+    }
+
+    // Simple: show all emojis from all categories (native emoji rendering means the browser handles display)
+    // For search, we match against a basic emoji description map
+    var html = '';
+    var count = 0;
+    Object.values(categories).forEach(function(emojis) {
+        emojis.forEach(function(em) {
+            // Show all on short queries, filter nothing for now (emoji search is complex)
+            if (query.length < 2) return;
+            html += '<button onclick="insertEmojiFromPicker(\'' + em + '\')" style="font-size:24px;padding:4px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;" onmouseover="this.style.background=\'var(--bg-input)\'" onmouseout="this.style.background=\'\'"">' + em + '</button>';
+            count++;
+        });
+    });
+
+    if (count === 0) {
+        html = '<div style="text-align:center;padding:30px;color:var(--text-secondary);">No emoji found</div>';
+    }
+    grid.innerHTML = html;
+
+    // Update label
+    var label = document.getElementById('emojiCatLabel');
+    if (label) label.textContent = 'Search Results (' + count + ')';
+}
+
+function insertEmojiFromPicker(emoji) {
+    // Reaction mode — if triggered from "More" button in DM reaction picker
+    if (window._emojiInsertMode === 'reaction' && window._dmReactionMsgId) {
+        var msgId = window._dmReactionMsgId;
+        window._emojiInsertMode = null;
+        window._dmReactionMsgId = null;
+        dmToggleReaction(dmActiveConvId, msgId, emoji);
+        document.getElementById('emojiPickerOverlay').remove();
+        dmRefreshChat();
+        return;
+    }
+
+    // Try the DM input first, then contentEditable compose areas
+    var dmInput = document.getElementById('dmTextInput');
+    if (dmInput && dmInput.offsetParent !== null) {
+        // DM input is visible
+        var pos = dmInput.selectionStart || dmInput.value.length;
+        dmInput.value = dmInput.value.substring(0, pos) + emoji + dmInput.value.substring(pos);
+        dmInput.selectionStart = dmInput.selectionEnd = pos + emoji.length;
+        dmInput.focus();
+        dmInput.dispatchEvent(new Event('input'));
+        return;
+    }
+
+    // Try contentEditable target
+    var targetId = window._emojiTarget || 'postContent';
+    var target = document.getElementById(targetId);
+    if (target && target.isContentEditable) {
+        target.focus();
+        document.execCommand('insertText', false, emoji);
+        if (typeof handleInlineCompose === 'function' && targetId === 'inlinePostContent') {
+            handleInlineCompose(target);
+        }
+    } else if (target) {
+        // Fallback for regular inputs
+        var pos = target.selectionStart || target.value.length;
+        target.value = target.value.substring(0, pos) + emoji + target.value.substring(pos);
+        target.selectionStart = target.selectionEnd = pos + emoji.length;
+        target.focus();
+    }
+
+    document.getElementById('emojiPickerOverlay').remove();
 }
 
 function insertEmoji(emoji) {
@@ -13672,13 +13815,23 @@ function dmShowReactionPicker(msgId) {
     var msgEl = document.querySelector('[data-msg-id="' + msgId + '"]');
     if (!msgEl) return;
 
-    var emojis = ['\u2764\ufe0f', '\ud83d\ude02', '\ud83d\ude2e', '\ud83d\udc4d', '\ud83d\ude22', '\ud83d\udd25', '\ud83c\udf6f', '\ud83d\udc1d'];
+    // Quick reactions — most popular, matching Instagram/X style
+    var quickEmojis = ['\u2764\ufe0f', '\ud83d\ude02', '\ud83d\ude2e', '\ud83d\udc4d', '\ud83d\ude22', '\ud83d\udd25', '\ud83c\udf6f', '\ud83d\udc1d', '\ud83d\ude4c', '\ud83d\ude0d', '\ud83d\udc4f', '\ud83d\ude4f'];
     var picker = document.createElement('div');
     picker.className = 'dm-reaction-picker show';
-    emojis.forEach(function(emoji) {
+    picker.style.cssText = 'position:absolute;top:-44px;display:flex;background:var(--bg-card);border:1px solid var(--border-color);border-radius:24px;padding:4px 6px;gap:2px;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:100;align-items:center;';
+    if (msgEl.classList.contains('sent')) {
+        picker.style.right = '0';
+    } else {
+        picker.style.left = '0';
+    }
+
+    quickEmojis.forEach(function(emoji) {
         var btn = document.createElement('button');
-        btn.className = 'dm-reaction-option';
+        btn.style.cssText = 'font-size:20px;cursor:pointer;padding:4px 5px;border-radius:8px;transition:all 0.15s;border:none;background:none;line-height:1;';
         btn.textContent = emoji;
+        btn.onmouseover = function() { this.style.transform = 'scale(1.3)'; this.style.background = 'var(--bg-input)'; };
+        btn.onmouseout = function() { this.style.transform = 'scale(1)'; this.style.background = 'none'; };
         btn.onclick = function(e) {
             e.stopPropagation();
             dmToggleReaction(dmActiveConvId, msgId, emoji);
@@ -13688,23 +13841,41 @@ function dmShowReactionPicker(msgId) {
         picker.appendChild(btn);
     });
 
+    // "More" button to open full emoji picker for reactions
+    var moreBtn = document.createElement('button');
+    moreBtn.style.cssText = 'font-size:14px;cursor:pointer;padding:4px 6px;border-radius:8px;transition:all 0.15s;border:none;background:none;color:var(--text-secondary);margin-left:2px;';
+    moreBtn.innerHTML = '<i class="fas fa-plus"></i>';
+    moreBtn.title = 'More emoji';
+    moreBtn.onmouseover = function() { this.style.background = 'var(--bg-input)'; this.style.color = 'var(--honey-yellow)'; };
+    moreBtn.onmouseout = function() { this.style.background = 'none'; this.style.color = 'var(--text-secondary)'; };
+    moreBtn.onclick = function(e) {
+        e.stopPropagation();
+        picker.remove();
+        dmShowFullReactionPicker(msgId);
+    };
+    picker.appendChild(moreBtn);
+
     msgEl.style.position = 'relative';
-    picker.style.position = 'absolute';
-    picker.style.top = '-36px';
-    if (msgEl.classList.contains('sent')) {
-        picker.style.right = '0';
-    } else {
-        picker.style.left = '0';
-    }
     msgEl.appendChild(picker);
 
     setTimeout(function() {
-        document.addEventListener('click', function removePicker() {
-            picker.remove();
+        document.addEventListener('click', function removePicker(ev) {
+            if (picker.parentNode) picker.remove();
             document.removeEventListener('click', removePicker);
         });
     }, 10);
 }
+
+function dmShowFullReactionPicker(msgId) {
+    // Open the full emoji picker but in "reaction mode"
+    window._dmReactionMsgId = msgId;
+    window._emojiInsertMode = 'reaction';
+    showEmojiPicker();
+}
+
+// Override insertEmojiFromPicker to handle reaction mode
+var _origInsertEmojiFromPicker = typeof insertEmojiFromPicker === 'function' ? insertEmojiFromPicker : null;
+
 
 // --- Image Attachment ---
 function dmAttachImage() {
@@ -14091,10 +14262,8 @@ function clearInlineMedia() {
 }
 
 function showEmojiPickerInline() {
-    // Reuse the existing emoji picker but target inlinePostContent
-    showEmojiPicker();
-    // Override insertEmoji temporarily to target inline textarea
     window._emojiTarget = 'inlinePostContent';
+    showEmojiPicker();
 }
 
 // Override insertEmoji to support both modal and inline
