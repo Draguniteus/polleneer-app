@@ -7394,47 +7394,244 @@ function showSettings() {
             </div>
 
             <div class="post-card" style="padding: 20px; margin-bottom: 15px;">
-                <h4 style="margin-bottom: 15px;"><i class="fas fa-shield-alt"></i> Privacy</h4>
+                <h4 style="margin-bottom: 15px;"><i class="fas fa-lock"></i> Security & Account Access</h4>
                 <div style="display: grid; gap: 12px;">
-                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
-                        <div><strong>Private Account</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Only approved followers see your posts</span></div>
-                        <input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
-                    </label>
-                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
-                        <div><strong>Allow Direct Messages</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Let anyone send you messages</span></div>
-                        <input type="checkbox" checked style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
-                    </label>
-                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
-                        <div><strong>Show Online Status</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Others can see when you're active</span></div>
-                        <input type="checkbox" checked style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
-                    </label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Two-Factor Authentication</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Add an extra layer of security to your account</span></div>
+                        <button onclick="showToast('2FA setup will be available with backend integration.')" style="background: var(--honey-yellow); color: #000; border: none; padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Set Up</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Login Activity</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Review recent logins and active sessions</span></div>
+                        <button onclick="showLoginActivity()" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">View</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Connected Apps</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Manage third-party apps with access to your account</span></div>
+                        <button onclick="showToast('Connected apps management coming soon.')" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Manage</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Login Alerts</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Get notified of unrecognized login attempts</span></div>
+                        <input type="checkbox" checked onchange="saveSettingsToggle('loginAlerts', this.checked)" data-setting="loginAlerts" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Password Requirements</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Require strong passwords (8+ chars, mixed case, numbers)</span></div>
+                        <input type="checkbox" checked onchange="saveSettingsToggle('strongPassword', this.checked)" data-setting="strongPassword" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-card" style="padding: 20px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 15px;"><i class="fas fa-shield-alt"></i> Privacy & Safety</h4>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 15px;">Control who can see your content and interact with you</p>
+
+                <div style="margin-bottom: 16px;">
+                    <h5 style="margin-bottom: 10px; color: var(--honey-yellow); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Account Privacy</h5>
+                    <div style="display: grid; gap: 10px;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Private Account</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Only approved followers can see your posts</span></div>
+                            <input type="checkbox" onchange="saveSettingsToggle('privateAccount', this.checked)" data-setting="privateAccount" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Profile Discoverability</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Allow your profile to appear in search results and suggestions</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('discoverable', this.checked)" data-setting="discoverable" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Show Online Status</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Others can see when you are active</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('showOnline', this.checked)" data-setting="showOnline" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <h5 style="margin-bottom: 10px; color: var(--honey-yellow); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Direct Messages</h5>
+                    <div style="display: grid; gap: 10px;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Allow Direct Messages</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Let anyone send you messages</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('allowDMs', this.checked)" data-setting="allowDMs" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Message Requests Filter</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Filter message requests from accounts you don't follow</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('filterMsgRequests', this.checked)" data-setting="filterMsgRequests" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Read Receipts</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Let others know when you have read their messages</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('readReceipts', this.checked)" data-setting="readReceipts" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <h5 style="margin-bottom: 10px; color: var(--honey-yellow); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Content & Interactions</h5>
+                    <div style="display: grid; gap: 10px;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Hide Sensitive Content</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Blur media that may contain sensitive material</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('hideSensitive', this.checked)" data-setting="hideSensitive" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Allow Tagging</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Let others tag you in posts and media</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('allowTagging', this.checked)" data-setting="allowTagging" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Allow Mentions</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Let anyone @mention you in posts</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('allowMentions', this.checked)" data-setting="allowMentions" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Comment Filtering</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Automatically hide comments containing offensive language</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('commentFilter', this.checked)" data-setting="commentFilter" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 style="margin-bottom: 10px; color: var(--honey-yellow); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Blocked & Muted</h5>
+                    <div style="display: grid; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                            <div><strong>Blocked Accounts</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Manage accounts you have blocked</span></div>
+                            <button onclick="showBlockedAccounts()" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">View</button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                            <div><strong>Muted Accounts</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Manage accounts you have muted</span></div>
+                            <button onclick="showMutedAccounts()" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">View</button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                            <div><strong>Muted Words</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Hide posts containing specific words or phrases</span></div>
+                            <button onclick="showMutedWords()" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Manage</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="post-card" style="padding: 20px; margin-bottom: 15px;">
                 <h4 style="margin-bottom: 15px;"><i class="fas fa-bell"></i> Notifications</h4>
-                <div style="display: grid; gap: 12px;">
-                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
-                        <div><strong>Push Notifications</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Get notified about likes, comments, follows</span></div>
-                        <input type="checkbox" checked style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 15px;">Choose how and when you want to be notified</p>
+
+                <div style="margin-bottom: 16px;">
+                    <h5 style="margin-bottom: 10px; color: var(--honey-yellow); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Push Notifications</h5>
+                    <div style="display: grid; gap: 10px;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Likes</strong><br><span style="color: var(--text-secondary); font-size: 13px;">When someone likes your post</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('notifLikes', this.checked)" data-setting="notifLikes" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Comments</strong><br><span style="color: var(--text-secondary); font-size: 13px;">When someone comments on your post</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('notifComments', this.checked)" data-setting="notifComments" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Repollinations</strong><br><span style="color: var(--text-secondary); font-size: 13px;">When someone reposts your content</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('notifReposts', this.checked)" data-setting="notifReposts" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>New Followers</strong><br><span style="color: var(--text-secondary); font-size: 13px;">When someone follows you</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('notifFollows', this.checked)" data-setting="notifFollows" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Mentions</strong><br><span style="color: var(--text-secondary); font-size: 13px;">When someone mentions you in a post</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('notifMentions', this.checked)" data-setting="notifMentions" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Direct Messages</strong><br><span style="color: var(--text-secondary); font-size: 13px;">When you receive a new message</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('notifDMs', this.checked)" data-setting="notifDMs" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <h5 style="margin-bottom: 10px; color: var(--honey-yellow); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Email Notifications</h5>
+                    <div style="display: grid; gap: 10px;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Email Digest</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Receive a daily summary of activity on your account</span></div>
+                            <input type="checkbox" onchange="saveSettingsToggle('emailDigest', this.checked)" data-setting="emailDigest" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>New Follower Emails</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Get an email when someone new follows you</span></div>
+                            <input type="checkbox" onchange="saveSettingsToggle('emailFollows', this.checked)" data-setting="emailFollows" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Direct Message Emails</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Get an email for unread messages</span></div>
+                            <input type="checkbox" onchange="saveSettingsToggle('emailDMs', this.checked)" data-setting="emailDMs" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Product Updates</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Hear about new features and improvements</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('emailProduct', this.checked)" data-setting="emailProduct" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 style="margin-bottom: 10px; color: var(--honey-yellow); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Sound & Vibration</h5>
+                    <div style="display: grid; gap: 10px;">
+                        <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                            <div><strong>Notification Sounds</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Play a sound when you receive a notification</span></div>
+                            <input type="checkbox" checked onchange="saveSettingsToggle('notifSounds', this.checked)" data-setting="notifSounds" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-card" style="padding: 20px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 15px;"><i class="fas fa-universal-access"></i> Accessibility</h4>
+                <div style="display: grid; gap: 10px;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                        <div><strong>Reduce Motion</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Minimize animations and auto-playing media</span></div>
+                        <input type="checkbox" onchange="saveSettingsToggle('reduceMotion', this.checked)" data-setting="reduceMotion" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
                     </label>
-                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
-                        <div><strong>Email Notifications</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Receive email updates</span></div>
-                        <input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                        <div><strong>High Contrast</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Increase contrast for better readability</span></div>
+                        <input type="checkbox" onchange="saveSettingsToggle('highContrast', this.checked)" data-setting="highContrast" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
                     </label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Font Size</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Adjust the text size across the platform</span></div>
+                        <select onchange="saveSettingsToggle('fontSize', this.value)" data-setting="fontSize" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;">
+                            <option value="small">Small</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="large">Large</option>
+                            <option value="xlarge">Extra Large</option>
+                        </select>
+                    </div>
+                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                        <div><strong>Auto-Play Media</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Automatically play GIFs and videos in feed</span></div>
+                        <input type="checkbox" checked onchange="saveSettingsToggle('autoPlayMedia', this.checked)" data-setting="autoPlayMedia" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                    </label>
+                </div>
+            </div>
+
+            <div class="post-card" style="padding: 20px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 15px;"><i class="fas fa-database"></i> Data & Storage</h4>
+                <div style="display: grid; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Download Your Data</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Request a copy of all your Polleneer data</span></div>
+                        <button onclick="showToast('Data export will be available with backend integration.')" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Request</button>
+                    </div>
+                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input); cursor: pointer;">
+                        <div><strong>Data Saver Mode</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Reduce data usage by loading lower quality images</span></div>
+                        <input type="checkbox" onchange="saveSettingsToggle('dataSaver', this.checked)" data-setting="dataSaver" style="width: 20px; height: 20px; accent-color: var(--honey-yellow);">
+                    </label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: var(--bg-input);">
+                        <div><strong>Clear Cache</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Free up storage by clearing cached data</span></div>
+                        <button onclick="if(confirm('Clear all cached data? This won\\\\t delete your account or posts.')) { localStorage.removeItem('polleneer_cache'); showToast('Cache cleared!'); }" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Clear</button>
+                    </div>
                 </div>
             </div>
 
             <div class="post-card" style="padding: 20px; border: 1px solid rgba(255,0,0,0.3);">
                 <h4 style="margin-bottom: 15px; color: #FF4444;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h4>
-                <button onclick="if(confirm('Are you sure you want to deactivate your account?')) showToast('Account deactivation will be available with backend integration.')" 
-                    style="background: transparent; border: 1px solid #FF4444; color: #FF4444; padding: 8px 20px; border-radius: 10px; cursor: pointer;">
-                    Deactivate Account
-                </button>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 15px;">Irreversible actions that affect your account</p>
+                <div style="display: grid; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: rgba(255,68,68,0.05); border: 1px solid rgba(255,68,68,0.2);">
+                        <div><strong style="color: #FF4444;">Deactivate Account</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Temporarily disable your account. You can reactivate anytime.</span></div>
+                        <button onclick="if(confirm('Are you sure you want to deactivate your account? You can reactivate anytime.')) showToast('Account deactivation will be available with backend integration.')" 
+                            style="background: transparent; border: 1px solid #FF4444; color: #FF4444; padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Deactivate</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: rgba(255,68,68,0.05); border: 1px solid rgba(255,68,68,0.2);">
+                        <div><strong style="color: #FF4444;">Delete Account</strong><br><span style="color: var(--text-secondary); font-size: 13px;">Permanently delete your account and all data. This cannot be undone.</span></div>
+                        <button onclick="if(confirm('This will PERMANENTLY delete your account and all your data. This action CANNOT be undone. Are you absolutely sure?')) showToast('Account deletion will be available with backend integration.')" 
+                            style="background: #FF4444; border: none; color: #fff; padding: 6px 15px; border-radius: 10px; cursor: pointer; font-size: 12px;">Delete</button>
+                    </div>
+                </div>
             </div>
         </div>
     `;
     updateActiveNavLink('settings');
+    loadSettingsToggles();
 }
 
 function editSettingsField(field) {
@@ -7446,6 +7643,117 @@ function editSettingsField(field) {
         showSettings();
     }
 }
+
+// Settings toggle persistence
+function saveSettingsToggle(key, value) {
+    var settings = {};
+    try { settings = JSON.parse(localStorage.getItem('polleneer_settings') || '{}'); } catch(e) {}
+    settings[key] = value;
+    localStorage.setItem('polleneer_settings', JSON.stringify(settings));
+    showToast('Setting updated');
+}
+
+function loadSettingsToggles() {
+    var settings = {};
+    try { settings = JSON.parse(localStorage.getItem('polleneer_settings') || '{}'); } catch(e) {}
+    document.querySelectorAll('[data-setting]').forEach(function(el) {
+        var key = el.getAttribute('data-setting');
+        if (settings.hasOwnProperty(key)) {
+            if (el.type === 'checkbox') el.checked = settings[key];
+            else if (el.tagName === 'SELECT') el.value = settings[key];
+        }
+    });
+}
+
+function showLoginActivity() {
+    var now = new Date();
+    var sessions = [
+        { device: 'Chrome on Windows', location: 'Your current session', time: 'Active now', current: true },
+        { device: 'Safari on iPhone', location: 'New York, US', time: now.toLocaleDateString() + ' at ' + now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}), current: false },
+        { device: 'Firefox on macOS', location: 'Los Angeles, US', time: new Date(now - 86400000).toLocaleDateString(), current: false }
+    ];
+    var content = '<div style="padding:20px;"><h4 style="margin-bottom:15px;">Login Activity</h4>';
+    sessions.forEach(function(s) {
+        content += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:var(--bg-input);margin-bottom:8px;">' +
+            '<div><strong>' + s.device + '</strong>' + (s.current ? ' <span style="color:var(--honey-yellow);font-size:11px;"> (Current)</span>' : '') +
+            '<br><span style="color:var(--text-secondary);font-size:13px;">' + s.location + ' — ' + s.time + '</span></div>' +
+            (s.current ? '' : '<button onclick="showToast(\'Session revoked\')" style="background:transparent;border:1px solid #FF4444;color:#FF4444;padding:4px 12px;border-radius:8px;cursor:pointer;font-size:12px;">Revoke</button>') +
+        '</div>';
+    });
+    content += '<button onclick="showToast(\'All other sessions revoked\')" style="margin-top:12px;background:#FF4444;border:none;color:#fff;padding:8px 20px;border-radius:10px;cursor:pointer;font-size:13px;width:100%;">Revoke All Other Sessions</button></div>';
+    openModal('genericSettingsModal');
+    document.getElementById('genericSettingsModalBody').innerHTML = content;
+}
+
+function showBlockedAccounts() {
+    openModal('genericSettingsModal');
+    document.getElementById('genericSettingsModalBody').innerHTML = '<div style="padding:20px;text-align:center;">' +
+        '<i class="fas fa-ban" style="font-size:40px;color:var(--text-secondary);margin-bottom:12px;"></i>' +
+        '<h4 style="margin-bottom:8px;">No Blocked Accounts</h4>' +
+        '<p style="color:var(--text-secondary);font-size:14px;">When you block someone, they won\\t be able to see your profile or contact you.</p></div>';
+}
+
+function showMutedAccounts() {
+    openModal('genericSettingsModal');
+    document.getElementById('genericSettingsModalBody').innerHTML = '<div style="padding:20px;text-align:center;">' +
+        '<i class="fas fa-volume-mute" style="font-size:40px;color:var(--text-secondary);margin-bottom:12px;"></i>' +
+        '<h4 style="margin-bottom:8px;">No Muted Accounts</h4>' +
+        '<p style="color:var(--text-secondary);font-size:14px;">Muted accounts can still follow you and interact, but you won\\t see their posts in your feed.</p></div>';
+}
+
+function showMutedWords() {
+    openModal('genericSettingsModal');
+    document.getElementById('genericSettingsModalBody').innerHTML = '<div style="padding:20px;">' +
+        '<h4 style="margin-bottom:12px;">Muted Words</h4>' +
+        '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Posts containing these words will be hidden from your feed.</p>' +
+        '<div style="display:flex;gap:8px;margin-bottom:16px;">' +
+            '<input type="text" id="mutedWordInput" placeholder="Add a word or phrase..." style="flex:1;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:14px;">' +
+            '<button onclick="addMutedWord()" style="background:var(--honey-yellow);color:#000;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:600;">Add</button>' +
+        '</div>' +
+        '<div id="mutedWordsList"></div>' +
+        '</div>';
+    renderMutedWords();
+}
+
+function addMutedWord() {
+    var input = document.getElementById('mutedWordInput');
+    var word = (input.value || '').trim();
+    if (!word) return;
+    var words = [];
+    try { words = JSON.parse(localStorage.getItem('polleneer_muted_words') || '[]'); } catch(e) {}
+    if (words.indexOf(word) === -1) words.push(word);
+    localStorage.setItem('polleneer_muted_words', JSON.stringify(words));
+    input.value = '';
+    renderMutedWords();
+    showToast('Word muted: ' + word);
+}
+
+function removeMutedWord(word) {
+    var words = [];
+    try { words = JSON.parse(localStorage.getItem('polleneer_muted_words') || '[]'); } catch(e) {}
+    words = words.filter(function(w) { return w !== word; });
+    localStorage.setItem('polleneer_muted_words', JSON.stringify(words));
+    renderMutedWords();
+    showToast('Word unmuted');
+}
+
+function renderMutedWords() {
+    var words = [];
+    try { words = JSON.parse(localStorage.getItem('polleneer_muted_words') || '[]'); } catch(e) {}
+    var container = document.getElementById('mutedWordsList');
+    if (!container) return;
+    if (words.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;text-align:center;">No muted words yet</p>';
+        return;
+    }
+    container.innerHTML = words.map(function(w) {
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:var(--bg-input);margin-bottom:6px;">' +
+            '<span style="font-size:14px;">' + w + '</span>' +
+            '<button onclick="removeMutedWord(\'' + w.replace(/'/g, "\\\\'") + '\')" style="background:transparent;border:none;color:#FF4444;cursor:pointer;font-size:16px;"><i class="fas fa-times"></i></button>' +
+        '</div>';
+    }).join('');
+}
+
 
 // 4. showHelp - was empty, now shows help center
 function showHelp() {
@@ -10718,5 +11026,17 @@ function loadPinnedPost() {
 
 
 </script>
+
+    <!-- Generic Settings Modal -->
+    <div class="modal" id="genericSettingsModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="modal-close" onclick="closeModal('genericSettingsModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="genericSettingsModalBody">
+            </div>
+        </div>
+    </div>
 </body>
 </html>
