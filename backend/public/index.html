@@ -4342,6 +4342,10 @@
     display: flex;
     max-width: 75%;
     position: relative;
+    overflow: visible;
+}
+.dm-msg-row:hover {
+    z-index: 10;
 }
 .dm-msg-row.sent {
     align-self: flex-end;
@@ -4358,6 +4362,7 @@
     position: relative;
     word-wrap: break-word;
     max-width: 100%;
+    overflow: visible;
 }
 .dm-msg-row.sent .dm-msg-bubble {
     background: var(--honey-yellow);
@@ -4421,14 +4426,32 @@
 /* Message hover actions */
 .dm-msg-actions {
     position: absolute;
-    top: -8px;
+    top: -14px;
     display: none;
     gap: 2px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    padding: 2px 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    padding: 4px 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 100;
+    white-space: nowrap;
+}
+.dm-msg-actions button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.15s;
+    line-height: 1;
+}
+.dm-msg-actions button:hover {
+    background: var(--bg-input);
+    color: var(--honey-yellow);
+    transform: scale(1.1);
 }
 .dm-msg-row.sent .dm-msg-actions { right: 0; }
 .dm-msg-row.received .dm-msg-actions { left: 0; }
@@ -12875,8 +12898,9 @@ function showAnalytics() {
 
 // ===== VERIFIED BADGES =====
 // Override createPostHTML to add verified badges and quote pollination support
-const _originalCreatePostHTML = createPostHTML;
-function createPostHTML(post) {
+(function() {
+var _originalCreatePostHTML = createPostHTML;
+createPostHTML = function(post) {
     let html = _originalCreatePostHTML(post);
 
     // Add verified badge for queen/admin users
@@ -12911,6 +12935,8 @@ function createPostHTML(post) {
 
     return html;
 }
+})();
+
 
 // ===== USER LISTS =====
 function showLists() {
@@ -13864,8 +13890,8 @@ function dmRenderMessages(conv) {
         '</div>';
 
         html += '<div class="' + rowClass + '" data-msg-id="' + msg.id + '">' +
-            actions +
             '<div class="dm-msg-bubble">' +
+            actions +
                 forwardedLabel +
                 replyQuote +
                 imageHtml +
@@ -14116,7 +14142,7 @@ function dmShowReactionPicker(msgId) {
     var quickEmojis = ['\u2764\ufe0f', '\ud83d\ude02', '\ud83d\ude2e', '\ud83d\udc4d', '\ud83d\ude22', '\ud83d\udd25', '\ud83c\udf6f', '\ud83d\udc1d', '\ud83d\ude4c', '\ud83d\ude0d', '\ud83d\udc4f', '\ud83d\ude4f'];
     var picker = document.createElement('div');
     picker.className = 'dm-reaction-picker show';
-    picker.style.cssText = 'position:absolute;top:-44px;display:flex;background:var(--bg-card);border:1px solid var(--border-color);border-radius:24px;padding:4px 6px;gap:2px;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:100;align-items:center;';
+    picker.style.cssText = 'position:absolute;top:-14px;display:flex;background:var(--bg-card);border:1px solid var(--border-color);border-radius:24px;padding:4px 6px;gap:2px;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:100;align-items:center;';
     if (msgEl.classList.contains('sent')) {
         picker.style.right = '0';
     } else {
@@ -14153,7 +14179,7 @@ function dmShowReactionPicker(msgId) {
     picker.appendChild(moreBtn);
 
     msgEl.style.position = 'relative';
-    msgEl.appendChild(picker);
+    (msgEl.querySelector('.dm-msg-bubble') || msgEl).appendChild(picker);
 
     setTimeout(function() {
         document.addEventListener('click', function removePicker(ev) {
