@@ -4305,7 +4305,9 @@
 .dm-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 15px;
+    overflow-x: hidden;
+    padding: 15px 15px 15px 15px;
+    padding-top: 40px;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -4342,6 +4344,10 @@
     display: flex;
     max-width: 75%;
     position: relative;
+    overflow: visible;
+}
+.dm-msg-row:hover {
+    z-index: 10;
 }
 .dm-msg-row.sent {
     align-self: flex-end;
@@ -4421,15 +4427,34 @@
 /* Message hover actions */
 .dm-msg-actions {
     position: absolute;
-    top: -8px;
+    top: -32px;
     display: none;
     gap: 2px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    padding: 2px 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    padding: 4px 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 100;
 }
+
+.dm-msg-actions button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.15s;
+    line-height: 1;
+}
+.dm-msg-actions button:hover {
+    background: var(--bg-input);
+    color: var(--honey-yellow);
+    transform: scale(1.1);
+}
+
 .dm-msg-row.sent .dm-msg-actions { right: 0; }
 .dm-msg-row.received .dm-msg-actions { left: 0; }
 .dm-msg-row:hover .dm-msg-actions { display: flex; }
