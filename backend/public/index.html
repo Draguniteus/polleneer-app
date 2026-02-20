@@ -4305,9 +4305,7 @@
 .dm-messages {
     flex: 1;
     overflow-y: auto;
-    overflow-x: hidden;
-    padding: 15px 15px 15px 15px;
-    padding-top: 40px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -4344,10 +4342,6 @@
     display: flex;
     max-width: 75%;
     position: relative;
-    overflow: visible;
-}
-.dm-msg-row:hover {
-    z-index: 10;
 }
 .dm-msg-row.sent {
     align-self: flex-end;
@@ -4427,34 +4421,15 @@
 /* Message hover actions */
 .dm-msg-actions {
     position: absolute;
-    top: -32px;
+    top: -8px;
     display: none;
     gap: 2px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    padding: 4px 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 100;
+    padding: 2px 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-
-.dm-msg-actions button {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: all 0.15s;
-    line-height: 1;
-}
-.dm-msg-actions button:hover {
-    background: var(--bg-input);
-    color: var(--honey-yellow);
-    transform: scale(1.1);
-}
-
 .dm-msg-row.sent .dm-msg-actions { right: 0; }
 .dm-msg-row.received .dm-msg-actions { left: 0; }
 .dm-msg-row:hover .dm-msg-actions { display: flex; }
@@ -4480,6 +4455,49 @@
     flex-wrap: wrap;
     gap: 4px;
     margin-top: 4px;
+}
+
+.dm-reaction-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1.2;
+    backdrop-filter: blur(8px);
+}
+.dm-reaction-btn:hover {
+    background: var(--bg-input);
+    border-color: var(--honey-yellow);
+    transform: scale(1.08);
+}
+.dm-reaction-btn.mine {
+    background: rgba(255, 184, 0, 0.15);
+    border-color: var(--honey-yellow);
+    color: var(--honey-yellow);
+}
+.dm-reaction-btn.mine:hover {
+    background: rgba(255, 184, 0, 0.25);
+}
+.dm-reaction-btn img.twemoji {
+    height: 18px;
+    width: 18px;
+}
+
+.dm-reaction-emoji {
+    font-size: 16px;
+    line-height: 1;
+}
+.dm-reaction-count {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.8;
 }
 .dm-msg-reaction {
     background: var(--bg-secondary);
@@ -13667,7 +13685,7 @@ function openConversation(convId) {
                         '<button class="dm-attach-btn" onclick="dmShowEffectPicker()" title="Send Effect"><i class="fas fa-wand-magic-sparkles"></i></button>' +
                     '</div>' +
                     '<input type="text" id="dmTextInput" class="dm-text-input" placeholder="Type a message..." oninput="dmHandleInput()" onkeydown="dmHandleKeydown(event)" autocomplete="off">' +
-                    '<button class="dm-send-btn" id="dmSendBtn" onclick="dmSendMessage()" disabled><i class="fas fa-paper-plane"></i></button>' +
+                    '<button class="dm-send-btn" id="dmSendBtn" onclick="sendDM()" disabled><i class="fas fa-paper-plane"></i></button>' +
                 '</div>' +
             '</div>') +
             '<!-- Scroll to bottom FAB -->' +
@@ -13818,7 +13836,10 @@ function dmRenderMessages(conv) {
             reactionKeys.forEach(function(emoji) {
                 var count = msg.reactions[emoji].length;
                 var isMine = msg.reactions[emoji].includes(currentUser.id);
-                reactionsHtml += '<button class="dm-reaction-btn' + (isMine ? ' mine' : '') + '" onclick="event.stopPropagation();dmToggleReaction(\'' + dmActiveConvId + '\',\'' + msg.id + '\',\'' + emoji + '\')">' + emoji + (count > 1 ? ' ' + count : '') + '</button>';
+                reactionsHtml += '<button class="dm-reaction-btn' + (isMine ? ' mine' : '') + '" onclick="event.stopPropagation();dmToggleReaction(\'' + dmActiveConvId + '\',\'' + msg.id + '\',\'' + emoji + '\')">' +
+                    '<span class="dm-reaction-emoji">' + emoji + '</span>' +
+                    (count > 1 ? '<span class="dm-reaction-count">' + count + '</span>' : '') +
+                '</button>';
             });
             reactionsHtml += '</div>';
         }
@@ -13949,6 +13970,8 @@ function sendDM() {
     dmHideImagePreview();
     dmUpdateSendBtn();
     dmRefreshChat();
+    
+    if (typeof dmSendEffect !== "undefined" && dmSendEffect) { dmPlaySendEffect(dmSendEffect); dmSendEffect = null; }
     dmScrollToBottom();
     dmUpdateGlobalBadge();
 
