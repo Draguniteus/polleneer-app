@@ -2332,11 +2332,7 @@
             margin-bottom: 5px;
         }
 
-        .profile-username {
-            color: var(--text-secondary);
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
+        
 
         .profile-bio {
             font-size: 16px;
@@ -3248,6 +3244,111 @@
             font-size: 13px;
             align-items: flex-start;
         }
+        
+        /* Online Status Indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            vertical-align: middle;
+            position: relative;
+            cursor: default;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .status-dot.online {
+            background: #4CAF50;
+            box-shadow: 0 0 6px #4CAF50, 0 0 12px rgba(76,175,80,0.4);
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+        .status-dot.busy {
+            background: #FF9800;
+            box-shadow: 0 0 6px #FF9800, 0 0 12px rgba(255,152,0,0.4);
+            animation: statusGlow 3s ease-in-out infinite;
+        }
+        .status-dot.offline {
+            background: #FF4444;
+            box-shadow: 0 0 4px rgba(255,68,68,0.3);
+        }
+        .status-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .status-label.online { color: #4CAF50; }
+        .status-label.busy { color: #FF9800; }
+        .status-label.offline { color: #FF4444; }
+
+        @keyframes statusPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+        @keyframes statusGlow {
+            0%, 100% { box-shadow: 0 0 6px #FF9800, 0 0 12px rgba(255,152,0,0.4); }
+            50% { box-shadow: 0 0 8px #FF9800, 0 0 18px rgba(255,152,0,0.5); }
+        }
+
+        .status-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .status-indicator:hover .status-tooltip {
+            opacity: 1;
+        }
+
+        .profile-username {
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Mini status dot for posts, comments, suggested users */
+        .mini-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+        .mini-status-dot.online {
+            background: #4CAF50;
+            box-shadow: 0 0 4px #4CAF50;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+        .mini-status-dot.busy {
+            background: #FF9800;
+            box-shadow: 0 0 4px #FF9800;
+            animation: statusGlow 3s ease-in-out infinite;
+        }
+        .mini-status-dot.offline {
+            background: #FF4444;
+        }
+
         @media (max-width: 768px) {
             .admin-modal-fullscreen .modal-content {
                 width: 100%;
@@ -5988,7 +6089,8 @@
             password: 'polleneer2024',
             email: 'admin@polleneer.com',
             role: 'admin',
-            honeyPoints: 9999
+            honeyPoints: 9999,
+            lastActive: new Date()
         };
 
         // Sample data
@@ -6005,6 +6107,7 @@
                 following: 247,
                 avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=BeeKeeper',
                 joined: '2024-01-01',
+                lastActive: new Date(Date.now() - 3 * 60000),
                 customization: {}
             },
             {
@@ -6016,7 +6119,8 @@
                 honeyPoints: 892,
                 followers: 843,
                 following: 156,
-                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=FloraCreative'
+                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=FloraCreative',
+                lastActive: new Date(Date.now() - 45 * 60000)
             },
             {
                 id: 3,
@@ -6027,7 +6131,8 @@
                 honeyPoints: 567,
                 followers: 432,
                 following: 189,
-                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TechWorker'
+                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TechWorker',
+                lastActive: new Date(Date.now() - 3 * 3600000)
             },
             {
                 id: 4,
@@ -6038,7 +6143,8 @@
                 honeyPoints: 1123,
                 followers: 987,
                 following: 210,
-                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ScienceBee'
+                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ScienceBee',
+                lastActive: new Date(Date.now() - 8 * 3600000)
             }
         ];
 
@@ -7297,7 +7403,7 @@
                             <img src="${user.avatar}" alt="Profile" class="profile-avatar-large" id="profileAvatar" onclick="changeAvatar()">
                             <div class="profile-details">
                                 <div class="profile-name">${user.displayName}</div>
-                                <div class="profile-username">@${user.username}</div>
+                                <div class="profile-username">@${user.username}${getUserStatusHTML(user)}</div>
                                 <div class="profile-bio">${user.bio}</div>
                                 <div class="profile-stats">
                                     <div class="stat-item" onclick="showFollowers()">
@@ -13268,7 +13374,109 @@ function loadPinnedPost() {
 
 
 
-</script>
+
+// ==================== ONLINE STATUS INDICATOR ====================
+
+function getUserStatus(user) {
+    if (!user) return { status: 'offline', label: 'Offline', tooltip: 'User is offline' };
+
+    // Current user is always online
+    if (user.username === (currentUser && currentUser.username)) {
+        return { status: 'online', label: 'Online Now', tooltip: 'Active right now' };
+    }
+
+    var lastActive = user.lastActive;
+    if (!lastActive) return { status: 'offline', label: 'Offline', tooltip: 'No recent activity' };
+
+    var now = Date.now();
+    var lastTime = (lastActive instanceof Date) ? lastActive.getTime() : new Date(lastActive).getTime();
+    var diffMs = now - lastTime;
+    var diffMins = Math.floor(diffMs / 60000);
+    var diffHours = Math.floor(diffMs / 3600000);
+    var diffDays = Math.floor(diffMs / 86400000);
+
+    // Online: active within last 10 minutes
+    if (diffMins < 10) {
+        return {
+            status: 'online',
+            label: 'Online Now',
+            tooltip: 'Active ' + (diffMins <= 1 ? 'just now' : diffMins + ' minutes ago')
+        };
+    }
+
+    // Busy/Away: active between 10 minutes and 2 hours ago
+    if (diffHours < 2) {
+        var timeAgo = diffMins < 60 ? diffMins + 'min ago' : '1hr ago';
+        return {
+            status: 'busy',
+            label: 'Away',
+            tooltip: 'Last seen ' + timeAgo
+        };
+    }
+
+    // Offline: more than 2 hours ago
+    var timeLabel = '';
+    if (diffHours < 24) {
+        timeLabel = diffHours + 'hr' + (diffHours > 1 ? 's' : '') + ' ago';
+    } else if (diffDays < 7) {
+        timeLabel = diffDays + ' day' + (diffDays > 1 ? 's' : '') + ' ago';
+    } else {
+        timeLabel = new Date(lastTime).toLocaleDateString();
+    }
+
+    return {
+        status: 'offline',
+        label: 'Offline',
+        tooltip: 'Last seen ' + timeLabel
+    };
+}
+
+function getUserStatusHTML(user) {
+    var info = getUserStatus(user);
+    return '<span class="status-indicator">' +
+        '<span class="status-dot ' + info.status + '"></span>' +
+        '<span class="status-label ' + info.status + '">' + info.label + '</span>' +
+        '<span class="status-tooltip">' + info.tooltip + '</span>' +
+    '</span>';
+}
+
+function getMiniStatusDot(user) {
+    var info = getUserStatus(user);
+    return '<span class="mini-status-dot ' + info.status + '" title="' + info.tooltip + '"></span>';
+}
+
+// Keep currentUser lastActive fresh (simulates real-time tracking)
+(function() {
+    setInterval(function() {
+        if (currentUser) {
+            currentUser.lastActive = new Date();
+        }
+    }, 60000);
+
+    // Also update on any user interaction
+    document.addEventListener('click', function() {
+        if (currentUser) currentUser.lastActive = new Date();
+    });
+    document.addEventListener('keydown', function() {
+        if (currentUser) currentUser.lastActive = new Date();
+    });
+})();
+
+// Simulate other users' activity changes (for demo)
+(function() {
+    setInterval(function() {
+        if (typeof SAMPLE_USERS !== 'undefined') {
+            SAMPLE_USERS.forEach(function(u) {
+                // Random chance a user "does something" 
+                if (Math.random() < 0.15) {
+                    u.lastActive = new Date(Date.now() - Math.floor(Math.random() * 10) * 60000);
+                }
+            });
+        }
+    }, 30000);
+})();
+
+        </script>
 
     <!-- Generic Settings Modal -->
     <div class="modal" id="genericSettingsModal">
