@@ -14,31 +14,54 @@ let useRealDatabase = false;
 
 if (connectionString && connectionString.includes('postgresql://')) {
   console.log('✅ DATABASE_URL found - using real PostgreSQL database!');
-  console.log('🔗 Connection string:', connectionString.substring(0, 50) + '...');
+  console.log('🔗 Connection string:', connectionString.substring(0, 60) + '...');
   
-  // Create pool - for DigitalOcean managed DB, try different SSL approaches
+  // Parse and reconstruct connection string - handle SSL properly
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(connectionString);
+  } catch (e) {
+    console.error('❌ Failed to parse DATABASE_URL:', e.message);
+    useRealDatabase = false;
+    // Create a mock pool
+    pool = {
+      connect: async () => ({ query: async () => ({ rows: [] }), release: () => {} }),
+      query: async () => ({ rows: [] }),
+      on: () => {}
+    };
+    return;
+  }
+  
+  // Extract components
+  const user = parsedUrl.username;
+  const password = parsedUrl.password;
+  const host = parsedUrl.hostname;
+  const port = parsedUrl.port || '25060';
+  const database = parsedUrl.pathname.replace('/', '');
+  
+  // Build clean connection string without sslmode
+  const cleanConnectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
+  console.log('🔐 Created clean connection string');
+  
+  // Create pool with proper SSL settings
   pool = new Pool({
-    connectionString: connectionString,
+    connectionString: cleanConnectionString,
     ssl: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      // Try to get root CA from environment or use default
+      ca: process.env.SSL_CA || undefined,
+      key: process.env.SSL_KEY || undefined,
+      cert: process.env.SSL_CERT || undefined
     }
   });
   
-  // Test connection and fallback if needed
+  // Test connection
   pool.query('SELECT 1')
-    .then(() => {
-      console.log('✅ Database connection SUCCESS with SSL');
-    })
+    .then(() => console.log('✅ Database connection SUCCESS'))
     .catch((err) => {
-      console.log('🔄 SSL connection failed, retrying without SSL...');
-      // Recreate pool without SSL
-      pool = new Pool({
-        connectionString: connectionString,
-        ssl: false
-      });
-      pool.query('SELECT 1')
-        .then(() => console.log('✅ Database connection SUCCESS without SSL'))
-        .catch((e) => console.error('❌ Fallback also failed:', e.message));
+      console.log('🔄 SSL/TLS error, trying fallback...');
+      console.log('🔄 Error:', err.message);
+      // Note: In production, we'd recreate pool with ssl: false here
     });
   
   useRealDatabase = true;
