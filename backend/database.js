@@ -16,39 +16,55 @@ if (connectionString && connectionString.includes('postgresql://')) {
   console.log('✅ DATABASE_URL found - using real PostgreSQL database!');
   console.log('🔗 Connection string:', connectionString.substring(0, 50) + '...');
   
-  // Parse connection string - remove sslmode from URL and handle separately
-  let cleanConnectionString = connectionString;
+  // Parse connection string
   const urlObj = new URL(connectionString);
-  const sslmode = urlObj.searchParams.get('sslmode');
+  const sslmode = urlObj.searchParams.get('sslmode') || 'require';
   
-  // Remove sslmode from connection string if present
-  if (sslmode) {
-    urlObj.searchParams.delete('sslmode');
-    cleanConnectionString = urlObj.toString();
-    console.log('🔐 SSL mode from URL:', sslmode);
-  }
-  
+  // Create pool with proper SSL configuration for DigitalOcean managed DB
   const poolConfig = {
-    connectionString: cleanConnectionString,
+    connectionString: connectionString, // Keep full URL including sslmode
+    ssl: {
+      // For DigitalOcean managed PostgreSQL, we need to accept self-signed certs
+      rejectUnauthorized: false,
+      // Force TLS 1.2 minimum
+      minVersion: 'TLSv1.2',
+      // Handle various SSL scenarios
+      ...(sslmode === 'require' ? { mode: 'require' } : {})
+    }
   };
   
-  // Handle SSL based on sslmode
-  if (sslmode === 'require' || sslmode === 'verify-full') {
-    poolConfig.ssl = {
-      rejectUnauthorized: false
-    };
-    console.log('🔐 SSL enabled with rejectUnauthorized: false');
-  } else if (sslmode === 'disable') {
-    poolConfig.ssl = false;
-    console.log('🔐 SSL disabled');
-  }
+  console.log('🔐 SSL mode:', sslmode);
+  console.log('🔐 SSL config: rejectUnauthorized = false');
   
   pool = new Pool(poolConfig);
   
-  // Test connection
-  pool.query('SELECT 1')
-    .then(() => console.log('✅ Database connection TEST SUCCESSFUL'))
-    .catch(err => console.error('❌ Database connection TEST FAILED:', err.message));
+  // Test connection with retry logic
+  const testConnection = async () => {
+    try {
+      const result = await pool.query('SELECT 1 as test');
+      console.log('✅ Database connection TEST SUCCESSFUL');
+      console.log('📊 Test result:', result.rows[0]);
+      return true;
+    } catch (err) {
+      console.error('❌ Database connection TEST FAILED:', err.message);
+      // Try with SSL disabled if initial attempt fails
+      if (err.message.includes('certificate') || err.message.includes('SSL')) {
+        console.log('🔄 Retrying with SSL disabled...');
+        poolConfig.ssl = false;
+        try {
+          const result = await pool.query('SELECT 1 as test');
+          console.log('✅ Database connection SUCCESS (SSL disabled)');
+          return true;
+        } catch (retryErr) {
+          console.error('❌ Retry also failed:', retryErr.message);
+          return false;
+        }
+      }
+      return false;
+    }
+  };
+  
+  testConnection();
   
   useRealDatabase = true;
 } else {
