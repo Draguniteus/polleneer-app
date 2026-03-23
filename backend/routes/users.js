@@ -1,57 +1,87 @@
 const express = require('express');
 const router = express.Router();
+const { pool, useRealDatabase } = require('../database');
 
-// Mock users data
-const mockUsers = [
-  {
-    id: 1,
-    username: 'admin',
-    display_name: 'Admin Bee',
-    role: 'admin',
-    bio: 'The hive administrator. Building Polleneer for everyone!',
-    honey_points: 9999,
-    followers: 100,
-    following: 50,
-    avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
-    created_at: '2024-01-01T00:00:00.000Z'
-  },
-  {
-    id: 2,
-    username: 'testuser',
-    display_name: 'Test User',
-    role: 'worker',
-    bio: 'Just testing Polleneer! Love the bee theme.',
-    honey_points: 250,
-    followers: 10,
-    following: 20,
-    avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Test',
-    created_at: '2024-01-02T00:00:00.000Z'
-  },
-  {
-    id: 3,
-    username: 'beelover',
-    display_name: 'Bee Lover',
-    role: 'honeybee',
-    bio: 'Beekeeper and nature enthusiast. 🐝🌸',
-    honey_points: 500,
-    followers: 45,
-    following: 32,
-    avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=BeeLover',
-    created_at: '2024-01-03T00:00:00.000Z'
+// Get all users
+router.get('/', async (req, res) => {
+  try {
+    if (!useRealDatabase) {
+      // Return mock data if no database
+      const mockUsers = [
+        {
+          id: 1,
+          username: 'admin',
+          display_name: 'Admin Bee',
+          role: 'admin',
+          bio: 'The hive administrator. Building Polleneer for everyone!',
+          honey_points: 9999,
+          followers: 100,
+          following: 50,
+          avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+        }
+      ];
+      return res.json(mockUsers);
+    }
+
+    // Use real database
+    const result = await pool.query('SELECT id, username, display_name, role, bio, honey_points, avatar_url, created_at FROM users ORDER BY honey_points DESC LIMIT 50');
+    
+    const users = result.rows.map(row => ({
+      id: row.id,
+      username: row.username,
+      display_name: row.display_name,
+      role: row.role,
+      bio: row.bio,
+      honey_points: row.honey_points,
+      followers: Math.floor(row.honey_points / 10),
+      following: Math.floor(row.honey_points / 20),
+      avatar_url: row.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${row.username}`,
+      created_at: row.created_at
+    }));
+    
+    res.json(users);
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json({ error: 'Server error' });
   }
-];
+});
 
-// Get user profile
+// Get user by ID
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const user = mockUsers.find(u => u.id === parseInt(id));
     
-    if (!user) {
+    if (!useRealDatabase) {
+      return res.json({
+        id: 1,
+        username: 'admin',
+        display_name: 'Admin Bee',
+        role: 'admin',
+        bio: 'The hive administrator',
+        honey_points: 9999,
+        avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+      });
+    }
+
+    const result = await pool.query('SELECT id, username, display_name, role, bio, honey_points, avatar_url, created_at FROM users WHERE id = $1', [id]);
+    
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    res.json({ user });
+    const row = result.rows[0];
+    res.json({
+      id: row.id,
+      username: row.username,
+      display_name: row.display_name,
+      role: row.role,
+      bio: row.bio,
+      honey_points: row.honey_points,
+      followers: Math.floor(row.honey_points / 10),
+      following: Math.floor(row.honey_points / 20),
+      avatar_url: row.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${row.username}`,
+      created_at: row.created_at
+    });
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Server error' });
@@ -62,58 +92,20 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { bio, avatar_url } = req.body;
+    const { display_name, bio, avatar_url } = req.body;
     
-    const user = mockUsers.find(u => u.id === parseInt(id));
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    if (!useRealDatabase) {
+      return res.json({ message: 'User updated (mock)', id, display_name, bio });
     }
+
+    const result = await pool.query(
+      'UPDATE users SET display_name = COALESCE($1, display_name), bio = COALESCE($2, bio), avatar_url = COALESCE($3, avatar_url) WHERE id = $4 RETURNING *',
+      [display_name, bio, avatar_url, id]
+    );
     
-    // Update fields
-    if (bio !== undefined) user.bio = bio;
-    if (avatar_url !== undefined) user.avatar_url = avatar_url;
-    
-    res.json({ 
-      message: 'Profile updated successfully',
-      user 
-    });
-    
+    res.json({ message: 'User updated', user: result.rows[0] });
   } catch (error) {
     console.error('Update user error:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// Get user's posts
-router.get('/:id/posts', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    // In real app, query posts by user_id
-    // For demo, return some mock posts
-    const mockUserPosts = [
-      {
-        id: 1,
-        user_id: parseInt(id),
-        content: `User ${id}'s first post! Testing Polleneer.`,
-        likes_count: 10,
-        comments_count: 2,
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 2,
-        user_id: parseInt(id),
-        content: `Another post from user ${id}. The hive is buzzing! 🐝`,
-        likes_count: 5,
-        comments_count: 1,
-        created_at: new Date(Date.now() - 3600000).toISOString()
-      }
-    ];
-    
-    res.json(mockUserPosts);
-  } catch (error) {
-    console.error('Get user posts error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
