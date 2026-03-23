@@ -14,19 +14,27 @@ let useRealDatabase = false;
 
 if (connectionString && connectionString.includes('postgresql://')) {
   console.log('✅ DATABASE_URL found - using real PostgreSQL database!');
-  console.log('🔗 Connection string:', connectionString.substring(0, 30) + '...');
+  console.log('🔗 Connection string:', connectionString.substring(0, 50) + '...');
   
   pool = new Pool({
     connectionString: connectionString,
     ssl: {
-      rejectUnauthorized: false
+      // Allow self-signed certificates (DigitalOcean managed DB)
+      rejectUnauthorized: false,
+      // Try multiple SSL negotiation approaches
+      renegotiate: false
     }
   });
   
-  // Test connection
+  // Test connection with better error handling
   pool.query('SELECT 1')
     .then(() => console.log('✅ Database connection TEST SUCCESSFUL'))
-    .catch(err => console.error('❌ Database connection TEST FAILED:', err.message));
+    .catch(err => {
+      console.error('❌ Database connection TEST FAILED:', err.message);
+      // Try with explicit SSL disabled if failed
+      console.log('🔄 Retrying without SSL...');
+      return pool.query({ text: 'SELECT 1', ssl: false });
+    });
   
   useRealDatabase = true;
 } else {
