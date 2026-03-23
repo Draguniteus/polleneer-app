@@ -38,15 +38,17 @@ app.use(express.static(publicPath));
 // Health check
 app.get('/api/health', async (req, res) => {
   let dbStatus = 'disconnected';
+  let dbError = null;
   if (useRealDatabase) {
     try {
-      await pool.query('SELECT 1');
-      dbStatus = 'connected';
+      const result = await pool.query('SELECT 1 as test');
+      dbStatus = result.rows[0].test === 1 ? 'connected' : 'error';
     } catch (e) {
       dbStatus = 'error';
+      dbError = e.message;
     }
   }
-  res.json({ status: 'ok', database: dbStatus, timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', database: dbStatus, error: dbError, timestamp: new Date().toISOString() });
 });
 
 // Test endpoint
