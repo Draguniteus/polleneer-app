@@ -16,25 +16,39 @@ if (connectionString && connectionString.includes('postgresql://')) {
   console.log('✅ DATABASE_URL found - using real PostgreSQL database!');
   console.log('🔗 Connection string:', connectionString.substring(0, 50) + '...');
   
-  pool = new Pool({
-    connectionString: connectionString,
-    ssl: {
-      // Allow self-signed certificates (DigitalOcean managed DB)
-      rejectUnauthorized: false,
-      // Try multiple SSL negotiation approaches
-      renegotiate: false
-    }
-  });
+  // Parse connection string - remove sslmode from URL and handle separately
+  let cleanConnectionString = connectionString;
+  const urlObj = new URL(connectionString);
+  const sslmode = urlObj.searchParams.get('sslmode');
   
-  // Test connection with better error handling
+  // Remove sslmode from connection string if present
+  if (sslmode) {
+    urlObj.searchParams.delete('sslmode');
+    cleanConnectionString = urlObj.toString();
+    console.log('🔐 SSL mode from URL:', sslmode);
+  }
+  
+  const poolConfig = {
+    connectionString: cleanConnectionString,
+  };
+  
+  // Handle SSL based on sslmode
+  if (sslmode === 'require' || sslmode === 'verify-full') {
+    poolConfig.ssl = {
+      rejectUnauthorized: false
+    };
+    console.log('🔐 SSL enabled with rejectUnauthorized: false');
+  } else if (sslmode === 'disable') {
+    poolConfig.ssl = false;
+    console.log('🔐 SSL disabled');
+  }
+  
+  pool = new Pool(poolConfig);
+  
+  // Test connection
   pool.query('SELECT 1')
     .then(() => console.log('✅ Database connection TEST SUCCESSFUL'))
-    .catch(err => {
-      console.error('❌ Database connection TEST FAILED:', err.message);
-      // Try with explicit SSL disabled if failed
-      console.log('🔄 Retrying without SSL...');
-      return pool.query({ text: 'SELECT 1', ssl: false });
-    });
+    .catch(err => console.error('❌ Database connection TEST FAILED:', err.message));
   
   useRealDatabase = true;
 } else {
