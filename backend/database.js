@@ -6,22 +6,32 @@ require('dotenv').config();
 const connectionString = process.env.DATABASE_URL;
 
 console.log('🔧 Database module loaded');
+console.log('📝 DATABASE_URL value:', connectionString ? 'SET' : 'NOT SET');
 
 // Check if DATABASE_URL is available
 let pool;
 let useRealDatabase = false;
 
-if (connectionString) {
+if (connectionString && connectionString.includes('postgresql://')) {
   console.log('✅ DATABASE_URL found - using real PostgreSQL database!');
+  console.log('🔗 Connection string:', connectionString.substring(0, 30) + '...');
+  
   pool = new Pool({
     connectionString: connectionString,
     ssl: {
       rejectUnauthorized: false
     }
   });
+  
+  // Test connection
+  pool.query('SELECT 1')
+    .then(() => console.log('✅ Database connection TEST SUCCESSFUL'))
+    .catch(err => console.error('❌ Database connection TEST FAILED:', err.message));
+  
   useRealDatabase = true;
 } else {
-  console.log('⚠️ DATABASE_URL not found - using mock data');
+  console.log('⚠️ DATABASE_URL not found or invalid - using mock data');
+  console.log('📝 Connection string value:', connectionString);
   // Create a mock pool that won't crash the app
   pool = {
     connect: async () => {
