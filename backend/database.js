@@ -12,66 +12,10 @@ console.log('📝 DATABASE_URL value:', connectionString ? 'SET' : 'NOT SET');
 let pool;
 let useRealDatabase = false;
 
-if (connectionString && connectionString.includes('postgresql://')) {
-  console.log('✅ DATABASE_URL found - using real PostgreSQL database!');
-  console.log('🔗 Connection string:', connectionString.substring(0, 50) + '...');
-  
-  // Parse connection string
-  const urlObj = new URL(connectionString);
-  const sslmode = urlObj.searchParams.get('sslmode') || 'require';
-  
-  // Create pool with proper SSL configuration for DigitalOcean managed DB
-  const poolConfig = {
-    connectionString: connectionString, // Keep full URL including sslmode
-    ssl: {
-      // For DigitalOcean managed PostgreSQL, we need to accept self-signed certs
-      rejectUnauthorized: false,
-      // Force TLS 1.2 minimum
-      minVersion: 'TLSv1.2',
-      // Handle various SSL scenarios
-      ...(sslmode === 'require' ? { mode: 'require' } : {})
-    }
-  };
-  
-  console.log('🔐 SSL mode:', sslmode);
-  console.log('🔐 SSL config: rejectUnauthorized = false');
-  
-  pool = new Pool(poolConfig);
-  
-  // Test connection with retry logic
-  const testConnection = async () => {
-    try {
-      const result = await pool.query('SELECT 1 as test');
-      console.log('✅ Database connection TEST SUCCESSFUL');
-      console.log('📊 Test result:', result.rows[0]);
-      return true;
-    } catch (err) {
-      console.error('❌ Database connection TEST FAILED:', err.message);
-      // Try with SSL disabled if initial attempt fails
-      if (err.message.includes('certificate') || err.message.includes('SSL')) {
-        console.log('🔄 Retrying with SSL disabled...');
-        poolConfig.ssl = false;
-        try {
-          const result = await pool.query('SELECT 1 as test');
-          console.log('✅ Database connection SUCCESS (SSL disabled)');
-          return true;
-        } catch (retryErr) {
-          console.error('❌ Retry also failed:', retryErr.message);
-          return false;
-        }
-      }
-      return false;
-    }
-  };
-  
-  testConnection();
-  
-  useRealDatabase = true;
-} else {
-  console.log('⚠️ DATABASE_URL not found or invalid - using mock data');
-  console.log('📝 Connection string value:', connectionString);
-  // Create a mock pool that won't crash the app
-  pool = {
+// Helper function to create mock pool
+function createMockPool() {
+  console.log('📦 Creating mock database pool');
+  return {
     connect: async () => {
       console.log('📦 Mock database connection');
       return {
@@ -82,6 +26,62 @@ if (connectionString && connectionString.includes('postgresql://')) {
     query: async () => ({ rows: [] }),
     on: () => {} // Empty event handlers
   };
+}
+
+if (connectionString && connectionString.includes('postgresql://')) {
+  console.log('✅ DATABASE_URL found - using real PostgreSQL database!');
+  console.log('🔗 Connection string:', connectionString.substring(0, 50) + '...');
+  
+  // Parse connection string
+  const urlObj = new URL(connectionString);
+  const sslmode = urlObj.searchParams.get('sslmode') || 'require';
+  
+  console.log('🔐 SSL mode from URL:', sslmode);
+  
+  // Try with SSL first, then without if it fails
+  const tryConnect = async (sslOption) => {
+    const poolConfig = {
+      connectionString: connectionString,
+      ssl: sslOption
+    };
+    
+    const testPool = new Pool(poolConfig);
+    try {
+      const result = await testPool.query('SELECT 1 as test');
+      console.log('✅ Database connection SUCCESS!');
+      await testPool.end();
+      return testPool;
+    } catch (err) {
+      console.log('❌ Connection attempt failed:', err.message);
+      await testPool.end();
+      throw err;
+    }
+  };
+  
+  // Main connection setup with fallback
+  (async () => {
+    try {
+      // First try with SSL (rejectUnauthorized: false for self-signed certs)
+      pool = await tryConnect({ rejectUnauthorized: false, minVersion: 'TLSv1.2' });
+      console.log('🔐 Connected with SSL (self-signed cert allowed)');
+    } catch (sslErr) {
+      console.log('🔄 SSL connection failed, trying without SSL...');
+      try {
+        pool = await tryConnect(false);
+        console.log('🔐 Connected without SSL');
+      } catch (noSslErr) {
+        console.error('❌ All connection attempts failed:', noSslErr.message);
+        // Fall back to mock pool
+        pool = createMockPool();
+      }
+    }
+  })();
+  
+  useRealDatabase = true;
+} else {
+  console.log('⚠️ DATABASE_URL not found or invalid - using mock data');
+  console.log('📝 Connection string value:', connectionString);
+  pool = createMockPool();
 }
 
 async function initializeDatabase() {
