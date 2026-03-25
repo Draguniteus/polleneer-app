@@ -51,6 +51,60 @@ app.get('/api/health', async (req, res) => {
   res.json({ status: 'ok', database: dbStatus, error: dbError, timestamp: new Date().toISOString() });
 });
 
+// 🚨 SECRET SETUP ENDPOINT - Creates database tables
+// Visit this ONCE to set up the database, then never again
+app.get('/setup-tables', async (req, res) => {
+  if (!useRealDatabase) {
+    return res.send('❌ No database configured. Set DATABASE_URL first.');
+  }
+  
+  try {
+    // Grant permissions
+    try { await pool.query('GRANT ALL ON SCHEMA public TO CURRENT_USER;'); } catch (e) { console.log('perm warning:', e.message); }
+    
+    // Create users table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        display_name VARCHAR(255),
+        role VARCHAR(50) DEFAULT 'worker',
+        bio TEXT,
+        honey_points INTEGER DEFAULT 100,
+        followers INTEGER DEFAULT 0,
+        following INTEGER DEFAULT 0,
+        avatar_url TEXT,
+        website TEXT,
+        location VARCHAR(255),
+        joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    
+    // Create posts table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        image_url TEXT,
+        likes INTEGER DEFAULT 0,
+        pollinations INTEGER DEFAULT 0,
+        comments_count INTEGER DEFAULT 0,
+        views INTEGER DEFAULT 0,
+        is_pinned BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    
+    res.send('✅ Tables created successfully! You can now register and login at /');
+  } catch (error) {
+    res.send('❌ Error: ' + error.message);
+  }
+});
+
 // Test endpoint
 app.get('/api/test', (req, res) => {
   res.json({ 
