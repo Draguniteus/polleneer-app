@@ -128,13 +128,34 @@ app.get('/setup-tables', async (req, res) => {
   }
 });
 
-// Test endpoint
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    message: '🐝 Polleneer API is working!', 
-    database: useRealDatabase ? 'CONNECTED' : 'MOCK',
-    status: 'success' 
-  });
+// Database diagnostic endpoint
+app.get('/api/db-status', async (req, res) => {
+  if (!useRealDatabase) {
+    return res.json({ error: 'No database configured' });
+  }
+  
+  try {
+    const tablesResult = await pool.query(`
+      SELECT table_schema, table_name 
+      FROM information_schema.tables 
+      WHERE table_schema IN ('polleneer', 'public')
+      ORDER BY table_schema, table_name
+    `);
+    
+    const usersResult = await pool.query('SELECT COUNT(*) as count FROM polleneer.users');
+    const postsResult = await pool.query('SELECT COUNT(*) as count FROM polleneer.posts');
+    
+    res.json({
+      status: 'connected',
+      tables: tablesResult.rows,
+      stats: {
+        users: parseInt(usersResult.rows[0].count),
+        posts: parseInt(postsResult.rows[0].count)
+      }
+    });
+  } catch (error) {
+    res.json({ error: error.message, tables: [], stats: { users: 0, posts: 0 } });
+  }
 });
 
 // Auth routes
