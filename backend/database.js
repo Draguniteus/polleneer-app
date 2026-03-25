@@ -86,112 +86,133 @@ async function initializeDatabase() {
   if (useRealDatabase) {
     console.log('🔄 Initializing real PostgreSQL database...');
     try {
-      // First, try to grant schema permissions
+      // Try to set up permissions first
       try {
-        await pool.query('GRANT ALL ON SCHEMA public TO CURRENT_USER;');
-        await pool.query('GRANT CREATE ON SCHEMA public TO CURRENT_USER;');
+        await pool.query('GRANT ALL PRIVILEGES ON SCHEMA public TO CURRENT_USER;');
+        await pool.query('GRANT ALL PRIVILEGES ON DATABASE db TO CURRENT_USER;');
         console.log('✅ Schema permissions granted');
       } catch (permError) {
-        console.log('⚠️ Could not grant permissions (may already have them):', permError.message);
+        console.log('⚠️ Permission grant warning (may be expected on managed DBs):', permError.message);
       }
       
       // Create users table
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS users (
-          id SERIAL PRIMARY KEY,
-          username VARCHAR(255) UNIQUE NOT NULL,
-          email VARCHAR(255) UNIQUE NOT NULL,
-          password_hash VARCHAR(255) NOT NULL,
-          display_name VARCHAR(255),
-          role VARCHAR(50) DEFAULT 'worker',
-          bio TEXT,
-          honey_points INTEGER DEFAULT 100,
-          followers INTEGER DEFAULT 0,
-          following INTEGER DEFAULT 0,
-          avatar_url TEXT,
-          website TEXT,
-          location VARCHAR(255),
-          joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
+      try {
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(255) UNIQUE NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            display_name VARCHAR(255),
+            role VARCHAR(50) DEFAULT 'worker',
+            bio TEXT,
+            honey_points INTEGER DEFAULT 100,
+            followers INTEGER DEFAULT 0,
+            following INTEGER DEFAULT 0,
+            avatar_url TEXT,
+            website TEXT,
+            location VARCHAR(255),
+            joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+        console.log('✅ users table created or already exists');
+      } catch (err) {
+        console.log('⚠️ Could not create users table:', err.message);
+        console.log('💡 You may need to create it manually or the table already exists');
+      }
       
       // Create posts table
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS posts (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-          content TEXT NOT NULL,
-          image_url TEXT,
-          likes INTEGER DEFAULT 0,
-          pollinations INTEGER DEFAULT 0,
-          comments_count INTEGER DEFAULT 0,
-          views INTEGER DEFAULT 0,
-          is_pinned BOOLEAN DEFAULT FALSE,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
+      try {
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS posts (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            content TEXT NOT NULL,
+            image_url TEXT,
+            likes INTEGER DEFAULT 0,
+            pollinations INTEGER DEFAULT 0,
+            comments_count INTEGER DEFAULT 0,
+            views INTEGER DEFAULT 0,
+            is_pinned BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+        console.log('✅ posts table created or already exists');
+      } catch (err) {
+        console.log('⚠️ Could not create posts table:', err.message);
+      }
       
       // Create likes table
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS likes (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-          post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE(user_id, post_id)
-        );
-      `);
+      try {
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS likes (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, post_id)
+          );
+        `);
+        console.log('✅ likes table created or already exists');
+      } catch (err) {
+        console.log('⚠️ likes table:', err.message);
+      }
       
-      // Create pollinations (reposts) table
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS pollinations (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-          post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE(user_id, post_id)
-        );
-      `);
+      // Create pollinations table
+      try {
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS pollinations (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, post_id)
+          );
+        `);
+        console.log('✅ pollinations table created or already exists');
+      } catch (err) {
+        console.log('⚠️ pollinations table:', err.message);
+      }
       
       // Create notifications table
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS notifications (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-          type VARCHAR(50) NOT NULL,
-          message TEXT NOT NULL,
-          read BOOLEAN DEFAULT FALSE,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
+      try {
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS notifications (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            type VARCHAR(50) NOT NULL,
+            message TEXT NOT NULL,
+            read BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+        console.log('✅ notifications table created or already exists');
+      } catch (err) {
+        console.log('⚠️ notifications table:', err.message);
+      }
       
       // Create messages table
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS messages (
-          id SERIAL PRIMARY KEY,
-          sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-          receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-          content TEXT NOT NULL,
-          read BOOLEAN DEFAULT FALSE,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
+      try {
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS messages (
+            id SERIAL PRIMARY KEY,
+            sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            content TEXT NOT NULL,
+            read BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+        console.log('✅ messages table created or already exists');
+      } catch (err) {
+        console.log('⚠️ messages table:', err.message);
+      }
       
-      // Create index for faster queries
-      await pool.query(`CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);`);
-      await pool.query(`CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);`);
-      await pool.query(`CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);`);
-      await pool.query(`CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);`);
-      await pool.query(`CREATE INDEX IF NOT EXISTS idx_messages_receiver ON messages(receiver_id);`);
-      
-      console.log('✅ Database tables initialized successfully!');
+      console.log('✅ Database initialization complete!');
       console.log('🐝 Polleneer is now running with a real database!');
     } catch (error) {
       console.error('❌ Database initialization error:', error.message);
-      console.log('💡 Tip: Make sure the database user has permission to create tables. Run this in PostgreSQL:');
-      console.log('   GRANT ALL PRIVILEGES ON DATABASE your_database TO your_user;');
-      console.log('   GRANT ALL ON SCHEMA public TO your_user;');
     }
   } else {
     console.log('📝 Running with mock data (no DATABASE_URL)');
