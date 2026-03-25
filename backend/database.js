@@ -86,6 +86,15 @@ async function initializeDatabase() {
   if (useRealDatabase) {
     console.log('🔄 Initializing real PostgreSQL database...');
     try {
+      // First, try to grant schema permissions
+      try {
+        await pool.query('GRANT ALL ON SCHEMA public TO CURRENT_USER;');
+        await pool.query('GRANT CREATE ON SCHEMA public TO CURRENT_USER;');
+        console.log('✅ Schema permissions granted');
+      } catch (permError) {
+        console.log('⚠️ Could not grant permissions (may already have them):', permError.message);
+      }
+      
       // Create users table
       await pool.query(`
         CREATE TABLE IF NOT EXISTS users (
@@ -180,6 +189,9 @@ async function initializeDatabase() {
       console.log('🐝 Polleneer is now running with a real database!');
     } catch (error) {
       console.error('❌ Database initialization error:', error.message);
+      console.log('💡 Tip: Make sure the database user has permission to create tables. Run this in PostgreSQL:');
+      console.log('   GRANT ALL PRIVILEGES ON DATABASE your_database TO your_user;');
+      console.log('   GRANT ALL ON SCHEMA public TO your_user;');
     }
   } else {
     console.log('📝 Running with mock data (no DATABASE_URL)');
