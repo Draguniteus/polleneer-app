@@ -8298,50 +8298,61 @@ img.twemoji {
         }
 
         // ============================================
-        // AUTHENTICATION FUNCTIONS
+        // AUTHENTICATION FUNCTIONS - CONNECTED TO REAL BACKEND
         // ============================================
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            if (email === ADMIN_CREDENTIALS.username || email === ADMIN_CREDENTIALS.email) {
-                if (password === ADMIN_CREDENTIALS.password) {
-                    currentUser = { ...ADMIN_CREDENTIALS };
-                    isAdmin = true;
+            try {
+                showToast('🔄 Logging in...');
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showToast(data.error || 'Login failed');
+                    return;
+                }
+                
+                // Store token and user
+                localStorage.setItem('polleneer_token', data.token);
+                localStorage.setItem('polleneer_user', JSON.stringify(data.user));
+                
+                currentUser = data.user;
+                isAdmin = currentUser.role === 'admin';
+                
+                if (isAdmin) {
                     document.getElementById('adminPanelBtn').style.display = 'block';
-                    showToast('Welcome back, Admin! 🐝');
-                } else {
-                    showToast('Invalid password for admin account');
-                    return;
                 }
-            } else {
-                const user = users.find(u => u.email === email || u.username === email);
-                if (!user || password !== 'password123') {
-                    showToast('Invalid credentials. Try: admin/polleneer2024 or any username/password123');
-                    return;
-                }
-                currentUser = { ...user };
-                isAdmin = false;
-            }
-            
-            // Ensure currentUser has all required fields for profile
-            if (!currentUser.displayName) currentUser.displayName = currentUser.username || 'User';
-            if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! 🐝';
-            if (!currentUser.joined) currentUser.joined = new Date().toISOString().split('T')[0];
-            if (!currentUser.followers) currentUser.followers = 0;
-            if (!currentUser.following) currentUser.following = 0;
-            if (!currentUser.avatar) currentUser.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (currentUser.username || 'User');
-            if (!currentUser.id) currentUser.id = 999;
+                
+                // Ensure currentUser has all required fields for profile
+                if (!currentUser.displayName) currentUser.displayName = currentUser.username || 'User';
+                if (!currentUser.bio) currentUser.bio = 'Welcome to Polleneer! 🐝';
+                if (!currentUser.joined) currentUser.joined = new Date().toISOString().split('T')[0];
+                if (!currentUser.followers) currentUser.followers = 0;
+                if (!currentUser.following) currentUser.following = 0;
+                if (!currentUser.avatar) currentUser.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (currentUser.username || 'User');
+                if (!currentUser.id) currentUser.id = 999;
 
-            localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-            showApp();
-            updateUIForUser();
-            loadHomeFeed();
-            showToast(`Welcome back, ${currentUser.username}! 🐝`);
+                showApp();
+                updateUIForUser();
+                loadHomeFeed();
+                showToast(`Welcome back, ${currentUser.username}! 🐝`);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Connection failed. Please try again.');
+            }
         }
 
-        function handleRegister(e) {
+        async function handleRegister(e) {
             e.preventDefault();
             const username = document.getElementById('regUsername').value;
             const email = document.getElementById('regEmail').value;
@@ -8354,41 +8365,51 @@ img.twemoji {
                 return;
             }
             
-            if (users.some(u => u.username === username)) {
-                showToast('Username already taken!');
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters!');
                 return;
             }
             
-            if (users.some(u => u.email === email)) {
-                showToast('Email already registered!');
-                return;
+            try {
+                showToast('🔄 Creating account...');
+                
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, beeRole })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showToast(data.error || 'Registration failed');
+                    return;
+                }
+                
+                // Store token and user
+                localStorage.setItem('polleneer_token', data.token);
+                localStorage.setItem('polleneer_user', JSON.stringify(data.user));
+                
+                currentUser = data.user;
+                isAdmin = false;
+                
+                // Ensure all required fields
+                if (!currentUser.displayName) currentUser.displayName = currentUser.username || 'User';
+                if (!currentUser.bio) currentUser.bio = 'New to Polleneer! Ready to start pollinating ideas.';
+                if (!currentUser.joined) currentUser.joined = new Date().toISOString().split('T')[0];
+                if (!currentUser.followers) currentUser.followers = 0;
+                if (!currentUser.following) currentUser.following = 0;
+                if (!currentUser.avatar) currentUser.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (currentUser.username || 'User');
+
+                showApp();
+                updateUIForUser();
+                loadHomeFeed();
+                showToast(`Welcome to Polleneer, ${username}! 🎉 You've earned 100 Honey Points!`);
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showToast('Connection failed. Please try again.');
             }
-            
-            const newUser = {
-                id: users.length + 1,
-                username: username,
-                displayName: username,
-                email: email,
-                role: beeRole,
-                bio: 'New to Polleneer! Ready to start pollinating ideas.',
-                honeyPoints: 100,
-                followers: 0,
-                following: 0,
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
-                joined: new Date().toISOString().split('T')[0],
-                customization: {}
-            };
-            
-            users.push(newUser);
-            currentUser = newUser;
-            isAdmin = false;
-            
-            localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
-            showApp();
-            updateUIForUser();
-            loadHomeFeed();
-            showToast(`Welcome to Polleneer, ${username}! 🎉 You've earned 100 Honey Points!`);
-            showLoginForm();
         }
 
         function handleGoogleLogin() {
