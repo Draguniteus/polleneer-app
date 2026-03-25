@@ -42,13 +42,13 @@ if (connectionString && connectionString.includes('postgresql://')) {
   // Build clean connection string without sslmode
   const cleanConnectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
   console.log('🔐 Created clean connection string');
+  console.log('👤 Connecting as user:', user);
   
   // Create pool with proper SSL settings
   pool = new Pool({
     connectionString: cleanConnectionString,
     ssl: {
       rejectUnauthorized: false,
-      // Try to get root CA from environment or use default
       ca: process.env.SSL_CA || undefined,
       key: process.env.SSL_KEY || undefined,
       cert: process.env.SSL_CERT || undefined
@@ -61,7 +61,6 @@ if (connectionString && connectionString.includes('postgresql://')) {
     .catch((err) => {
       console.log('🔄 SSL/TLS error, trying fallback...');
       console.log('🔄 Error:', err.message);
-      // Note: In production, we'd recreate pool with ssl: false here
     });
   
   useRealDatabase = true;

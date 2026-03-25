@@ -58,13 +58,34 @@ app.get('/setup-tables', async (req, res) => {
     return res.send('❌ No database configured. Set DATABASE_URL first.');
   }
   
+  const userSchema = 'polleneer';
+  
   try {
-    // Grant permissions
-    try { await pool.query('GRANT ALL ON SCHEMA public TO CURRENT_USER;'); } catch (e) { console.log('perm warning:', e.message); }
+    // Try to create a schema for the app's tables
+    try { 
+      await pool.query('CREATE SCHEMA IF NOT EXISTS ' + userSchema); 
+      console.log('✅ Created schema:', userSchema);
+    } catch (e) { 
+      console.log('⚠️ Schema creation failed (may exist or no permission):', e.message); 
+    }
+    
+    // Grant schema permissions
+    try {
+      await pool.query('GRANT ALL PRIVILEGES ON SCHEMA ' + userSchema + ' TO CURRENT_USER');
+    } catch (e) {
+      console.log('⚠️ Grant schema failed:', e.message);
+    }
+    
+    // Set search path
+    try {
+      await pool.query('SET search_path TO ' + userSchema + ', public');
+    } catch (e) {
+      console.log('⚠️ search_path setting failed:', e.message);
+    }
     
     // Create users table
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
+      CREATE TABLE IF NOT EXISTS ${userSchema}.users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(255) UNIQUE NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -82,12 +103,13 @@ app.get('/setup-tables', async (req, res) => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    console.log('✅ users table created');
     
     // Create posts table
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS posts (
+      CREATE TABLE IF NOT EXISTS ${userSchema}.posts (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES ${userSchema}.users(id) ON DELETE CASCADE,
         content TEXT NOT NULL,
         image_url TEXT,
         likes INTEGER DEFAULT 0,
@@ -98,8 +120,9 @@ app.get('/setup-tables', async (req, res) => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    console.log('✅ posts table created');
     
-    res.send('✅ Tables created successfully! You can now register and login at /');
+    res.send('✅ Tables created in schema "' + userSchema + '"! You can now register and login at /');
   } catch (error) {
     res.send('❌ Error: ' + error.message);
   }
