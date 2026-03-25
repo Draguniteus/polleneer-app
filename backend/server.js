@@ -128,33 +128,21 @@ app.get('/setup-tables', async (req, res) => {
   }
 });
 
-// Database diagnostic endpoint
-app.get('/api/db-status', async (req, res) => {
+// Simple test endpoint
+app.get('/api/test-insert', async (req, res) => {
   if (!useRealDatabase) {
-    return res.json({ error: 'No database configured' });
+    return res.json({ error: 'No database' });
   }
   
   try {
-    const tablesResult = await pool.query(`
-      SELECT table_schema, table_name 
-      FROM information_schema.tables 
-      WHERE table_schema IN ('polleneer', 'public')
-      ORDER BY table_schema, table_name
-    `);
-    
-    const usersResult = await pool.query('SELECT COUNT(*) as count FROM polleneer.users');
-    const postsResult = await pool.query('SELECT COUNT(*) as count FROM polleneer.posts');
-    
-    res.json({
-      status: 'connected',
-      tables: tablesResult.rows,
-      stats: {
-        users: parseInt(usersResult.rows[0].count),
-        posts: parseInt(postsResult.rows[0].count)
-      }
-    });
+    // Try inserting a test user
+    const result = await pool.query(
+      'INSERT INTO polleneer.users (username, email, password_hash, display_name, honey_points, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username',
+      ['test_' + Date.now(), 'test@test.com', 'test123', 'Test User', 100, 'worker']
+    );
+    res.json({ success: true, user: result.rows[0] });
   } catch (error) {
-    res.json({ error: error.message, tables: [], stats: { users: 0, posts: 0 } });
+    res.json({ error: error.message, detail: error.code });
   }
 });
 
