@@ -179,7 +179,7 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     // Hash password in production
     const result = await pool.query(
-      'INSERT INTO users (username, email, password_hash, display_name, honey_points, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, email, display_name, role, honey_points',
+      'INSERT INTO polleneer.users (username, email, password_hash, display_name, honey_points, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, email, display_name, role, honey_points',
       [username, email, password, display_name || username, 100, 'worker']
     );
     res.status(201).json({ message: 'Registration successful', user: result.rows[0], token: 'real-token-123' });
@@ -200,7 +200,7 @@ app.post('/api/auth/login', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT id, username, display_name, email, role, honey_points FROM users WHERE username = $1 AND password_hash = $2',
+      'SELECT id, username, display_name, email, role, honey_points FROM polleneer.users WHERE username = $1 AND password_hash = $2',
       [username, password]
     );
     
@@ -230,7 +230,7 @@ app.get('/api/users/:id', async (req, res) => {
   }
 
   try {
-    const result = await pool.query('SELECT id, username, display_name, role, bio, honey_points, avatar_url FROM users WHERE id = $1', [id]);
+    const result = await pool.query('SELECT id, username, display_name, role, bio, honey_points, avatar_url FROM polleneer.users WHERE id = $1', [id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }

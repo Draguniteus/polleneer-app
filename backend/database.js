@@ -57,7 +57,16 @@ if (connectionString && connectionString.includes('postgresql://')) {
   
   // Test connection
   pool.query('SELECT 1')
-    .then(() => console.log('✅ Database connection SUCCESS'))
+    .then(async () => {
+      console.log('✅ Database connection SUCCESS');
+      // Set default search path to polleneer schema
+      try {
+        await pool.query('SET search_path TO polleneer, public');
+        console.log('✅ Search path set to polleneer schema');
+      } catch (e) {
+        console.log('⚠️ Could not set search_path:', e.message);
+      }
+    })
     .catch((err) => {
       console.log('🔄 SSL/TLS error, trying fallback...');
       console.log('🔄 Error:', err.message);
