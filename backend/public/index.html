@@ -9210,13 +9210,36 @@ img.twemoji {
         // ============================================
         // POST CREATION FUNCTIONS
         // ============================================
-        function submitPost() {
+        async function submitPost() {
             const content = getPlainText('postContent').trim();
             if (!content) {
                 showToast('Please write something before posting!');
                 return;
             }
             
+            // Try to save to real database
+            try {
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        content: content,
+                        user_id: currentUser.id,
+                        image_url: document.getElementById('mediaPreview').querySelector('img')?.src || null
+                    })
+                });
+                
+                if (response.ok) {
+                    const savedPost = await response.json();
+                    showToast('Post saved to database! +25 Honey Points 🍯');
+                } else {
+                    showToast('Post saved locally (database error)');
+                }
+            } catch (error) {
+                console.error('Post API error:', error);
+            }
+            
+            // Always add to local feed for immediate display
             const newPost = {
                 id: posts.length + 1,
                 userId: currentUser.id,
@@ -9235,7 +9258,6 @@ img.twemoji {
             posts.unshift(newPost);
             
             clearEditable('postContent');
-            // postTags removed
             document.getElementById('mediaPreview').innerHTML = '';
             document.getElementById('postMediaContainer').classList.add('hidden');
             document.getElementById('postPollContainer').classList.add('hidden');
