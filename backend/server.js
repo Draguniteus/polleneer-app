@@ -255,6 +255,57 @@ app.get('/api/bee-roles/:id', (req, res) => {
   }
 });
 
+// Posts routes
+app.post('/api/posts', async (req, res) => {
+  const { content, image_url, user_id } = req.body;
+  
+  if (!content) {
+    return res.status(400).json({ error: 'Content is required' });
+  }
+  
+  if (!useRealDatabase) {
+    // Mock response
+    return res.status(201).json({ 
+      id: Date.now(), 
+      content, 
+      image_url, 
+      user_id: user_id || 1,
+      likes: 0, 
+      pollinations: 0,
+      comments_count: 0,
+      views: 0,
+      created_at: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const result = await pool.query(
+      'INSERT INTO polleneer.posts (content, image_url, user_id, likes, pollinations, comments_count, views) VALUES ($1, $2, $3, 0, 0, 0, 0) RETURNING *',
+      [content, image_url, user_id || 1]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Create post error:', error);
+    res.status(500).json({ error: 'Failed to create post' });
+  }
+});
+
+app.get('/api/posts', async (req, res) => {
+  if (!useRealDatabase) {
+    return res.json({ posts: [], message: 'Mock data - posts table not connected yet' });
+  }
+  
+  try {
+    const result = await pool.query(
+      'SELECT p.*, u.username, u.display_name, u.avatar_url, u.role FROM polleneer.posts p JOIN polleneer.users u ON p.user_id = u.id ORDER BY p.created_at DESC LIMIT 50'
+    );
+    res.json({ posts: result.rows });
+  } catch (error) {
+    console.error('Get posts error:', error);
+    res.status(500).json({ error: 'Failed to get posts' });
+  }
+});
+
 // Serve index.html for all other routes (SPA)
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
