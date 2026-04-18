@@ -40,4 +40,4 @@ frontend/dist/
 
 # Temporary files
 tmp/
-temp/
+temp/.do/app.yaml
