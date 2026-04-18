@@ -7297,6 +7297,8 @@ img.twemoji {
         const isNew = urlParams.get('isNew') === 'true';
         const linked = urlParams.get('linked') === 'true';
 
+        console.log('DEBUG OAuth:', { oauthProvider, oauthToken: oauthToken ? oauthToken.substring(0, 20) + '...' : null, isNew, linked });
+
         if (oauthProvider && oauthToken) {
             // Prevent second DOMContentLoaded from running
             oauthPendingOnboarding = true;
@@ -7313,6 +7315,7 @@ img.twemoji {
             })
             .then(res => res.json())
             .then(data => {
+                console.log('DEBUG OAuth user data:', data);
                 if (data.user) {
                     localStorage.setItem('polleneer_user', JSON.stringify(data.user));
                     currentUser = data.user;
@@ -7324,6 +7327,7 @@ img.twemoji {
 
                     // Show welcome message
                     if (isNew) {
+                        console.log('DEBUG: Showing OAuth onboarding');
                         // Show OAuth onboarding modal
                         showOAuthOnboarding(data.user);
                     } else if (linked) {
@@ -7624,8 +7628,10 @@ img.twemoji {
         let oauthPendingOnboarding = false; // Flag to prevent second DOMContentLoaded from running
 
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DEBUG: Second DOMContentLoaded, oauthPendingOnboarding =', oauthPendingOnboarding);
             // Check if this is an OAuth callback being handled
             if (oauthPendingOnboarding) {
+                console.log('DEBUG: Skipping second init, OAuth handler running');
                 return; // Skip initialization, OAuth handler will take care of everything
             }
 
@@ -7635,6 +7641,7 @@ img.twemoji {
             initProfileSongPlayer();
 
             const savedUser = localStorage.getItem('polleneer_user');
+            console.log('DEBUG: savedUser =', savedUser ? 'exists' : 'null');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 if (currentUser.username === 'admin') {
