@@ -5351,6 +5351,42 @@ img.twemoji {
                     Already have an account? <a href="#" id="showLogin">Sign in</a>
                 </div>
             </div>
+
+            <!-- OAuth Onboarding Modal -->
+            <div id="oauthOnboardingModal" class="modal-overlay hidden" style="display: none;">
+                <div class="modal-content" style="background: var(--bg-card); border-radius: 16px; padding: 30px; max-width: 450px; width: 90%; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">🐝</div>
+                    <h2 style="color: var(--honey-yellow); margin-bottom: 10px;">Welcome to Polleneer!</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 25px;">Complete your profile to join the hive</p>
+
+                    <div style="margin-bottom: 20px;">
+                        <img id="oauthOnboardingAvatar" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--honey-yellow);">
+                    </div>
+
+                    <form id="oauthOnboardingForm">
+                        <div class="form-group" style="text-align: left;">
+                            <label for="oauthUsername" style="color: var(--text-primary); margin-bottom: 5px; display: block;">Username</label>
+                            <input type="text" id="oauthUsername" class="form-control" placeholder="Choose a unique username" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);">
+                            <small id="oauthUsernameHint" style="color: var(--text-secondary); font-size: 12px;"></small>
+                        </div>
+
+                        <div class="form-group" style="text-align: left; margin-top: 15px;">
+                            <label for="oauthBeeRole" style="color: var(--text-primary); margin-bottom: 5px; display: block;">Choose Your Bee Role</label>
+                            <select id="oauthBeeRole" class="form-control" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);">
+                                <option value="">Select your role</option>
+                                <option value="queen">👑 Queen Bee (Leader)</option>
+                                <option value="worker">🐝 Worker Bee (Contributor)</option>
+                                <option value="drone">🐝 Drone (Explorer)</option>
+                                <option value="honeybee">🍯 Honey Bee (Creator)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="auth-btn" style="width: 100%; margin-top: 25px; padding: 14px; background: var(--honey-yellow); color: var(--bee-black); border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            🐝 Join the Hive
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -7285,12 +7321,14 @@ img.twemoji {
 
                     // Show welcome message
                     if (isNew) {
-                        showToast(`🐝 Welcome to Polleneer, ${currentUser.display_name || currentUser.username}! Your account has been created.`);
+                        // Show OAuth onboarding modal
+                        showOAuthOnboarding(data.user);
                     } else if (linked) {
                         showToast(`🔗 ${oauthProvider.charAt(0).toUpperCase() + oauthProvider.slice(1)} account linked to your existing account!`);
+                        showApp();
+                    } else {
+                        showApp();
                     }
-
-                    showApp();
                 }
             })
             .catch(err => {
@@ -8505,6 +8543,90 @@ img.twemoji {
         function showApp() {
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('appScreen').classList.remove('hidden');
+        }
+
+        function showOAuthOnboarding(user) {
+            const modal = document.getElementById('oauthOnboardingModal');
+            const avatar = document.getElementById('oauthOnboardingAvatar');
+            const usernameInput = document.getElementById('oauthUsername');
+
+            // Set user data
+            avatar.src = user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`;
+            usernameInput.value = user.username || '';
+
+            // Show modal
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+
+            // Username availability check
+            usernameInput.addEventListener('input', async function() {
+                const hint = document.getElementById('oauthUsernameHint');
+                const username = this.value.trim();
+                if (username.length < 3) {
+                    hint.textContent = '';
+                    return;
+                }
+                try {
+                    const res = await fetch('/api/users');
+                    const users = await res.json();
+                    const exists = users.some(u => u.username === username && u.id !== user.id);
+                    hint.textContent = exists ? '❌ Username taken' : '✅ Username available';
+                    hint.style.color = exists ? '#ff6b6b' : '#51cf66';
+                } catch(e) {}
+            });
+
+            // Handle form submission
+            document.getElementById('oauthOnboardingForm').onsubmit = async function(e) {
+                e.preventDefault();
+                const newUsername = usernameInput.value.trim();
+                const newRole = document.getElementById('oauthBeeRole').value;
+
+                if (!newUsername || newUsername.length < 3) {
+                    showToast('Username must be at least 3 characters');
+                    return;
+                }
+
+                if (!newRole) {
+                    showToast('Please select a bee role');
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`/api/users/${user.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('polleneer_token')}`
+                        },
+                        body: JSON.stringify({
+                            username: newUsername,
+                            display_name: newUsername,
+                            role: newRole
+                        })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Update local storage with new user data
+                        currentUser = { ...currentUser, ...data.user };
+                        localStorage.setItem('polleneer_user', JSON.stringify(currentUser));
+
+                        // Close modal and show app
+                        modal.style.display = 'none';
+                        modal.classList.add('hidden');
+                        showApp();
+                        updateUIForUser();
+                        loadHomeFeed();
+                        showToast(`🐝 Welcome to Polleneer, ${newUsername}! Your bee role is ${newRole}!`);
+                    } else {
+                        const err = await res.json();
+                        showToast(err.error || 'Failed to update profile');
+                    }
+                } catch(err) {
+                    console.error('Onboarding error:', err);
+                    showToast('Failed to complete onboarding');
+                }
+            };
         }
 
         function updateUIForUser() {

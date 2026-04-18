@@ -92,18 +92,43 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { display_name, bio, avatar_url } = req.body;
-    
+    const { username, display_name, bio, avatar_url, role } = req.body;
+
     if (!useRealDatabase) {
-      return res.json({ message: 'User updated (mock)', id, display_name, bio });
+      return res.json({ message: 'User updated (mock)', id, username, display_name, bio, role });
+    }
+
+    // Check if username is already taken (if changing)
+    if (username) {
+      const existing = await pool.query('SELECT id FROM users WHERE username = $1 AND id != $2', [username, id]);
+      if (existing.rows.length > 0) {
+        return res.status(400).json({ error: 'Username already taken' });
+      }
     }
 
     const result = await pool.query(
-      'UPDATE users SET display_name = COALESCE($1, display_name), bio = COALESCE($2, bio), avatar_url = COALESCE($3, avatar_url) WHERE id = $4 RETURNING *',
-      [display_name, bio, avatar_url, id]
+      'UPDATE users SET username = COALESCE($1, username), display_name = COALESCE($2, display_name), bio = COALESCE($3, bio), avatar_url = COALESCE($4, avatar_url), role = COALESCE($5, role) WHERE id = $6 RETURNING *',
+      [username, display_name, bio, avatar_url, role, id]
     );
-    
-    res.json({ message: 'User updated', user: result.rows[0] });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = result.rows[0];
+    res.json({
+      message: 'User updated',
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        display_name: user.display_name,
+        role: user.role,
+        bio: user.bio,
+        honey_points: user.honey_points,
+        avatar_url: user.avatar_url
+      }
+    });
   } catch (error) {
     console.error('Update user error:', error);
     res.status(500).json({ error: 'Server error' });
