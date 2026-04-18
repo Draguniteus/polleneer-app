@@ -7253,6 +7253,52 @@ img.twemoji {
 
         document.addEventListener('DOMContentLoaded', () => {
         showLoading('Loading Polleneer...');
+
+        // Handle OAuth callback
+        const urlParams = new URLSearchParams(window.location.search);
+        const oauthProvider = urlParams.get('oauth');
+        const oauthToken = urlParams.get('token');
+        const isNew = urlParams.get('isNew') === 'true';
+        const linked = urlParams.get('linked') === 'true';
+
+        if (oauthProvider && oauthToken) {
+            // Clear URL parameters
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            // Store OAuth token
+            localStorage.setItem('polleneer_token', oauthToken);
+
+            // Fetch user data with the token
+            fetch(`/api/auth/me`, {
+                headers: { 'Authorization': `Bearer ${oauthToken}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.user) {
+                    localStorage.setItem('polleneer_user', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    isAdmin = currentUser.role === 'admin';
+
+                    if (isAdmin) {
+                        document.getElementById('adminPanelBtn').style.display = 'block';
+                    }
+
+                    // Show welcome message
+                    if (isNew) {
+                        showToast(`🐝 Welcome to Polleneer, ${currentUser.display_name || currentUser.username}! Your account has been created.`);
+                    } else if (linked) {
+                        showToast(`🔗 ${oauthProvider.charAt(0).toUpperCase() + oauthProvider.slice(1)} account linked to your existing account!`);
+                    }
+
+                    showApp();
+                }
+            })
+            .catch(err => {
+                console.error('OAuth error:', err);
+                showToast('OAuth login failed. Please try again.');
+            });
+            return;
+        }
     });
 
     /* ===== API SERVICE ===== */
@@ -8413,11 +8459,11 @@ img.twemoji {
         }
 
         function handleGoogleLogin() {
-            showToast('Google login would open here.');
+            window.location.href = '/api/oauth/google';
         }
 
         function handleGithubLogin() {
-            showToast('GitHub login would open here.');
+            window.location.href = '/api/oauth/github';
         }
 
         function handleForgotPassword(e) {

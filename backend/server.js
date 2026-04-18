@@ -15,6 +15,7 @@ const { pool, initializeDatabase, useRealDatabase } = require('./database');
 const authRoutes = require('./routes/auth');
 const usersRoutes = require('./routes/users');
 const postsRoutes = require('./routes/posts');
+const { router: oauthRoutes, initializePassport } = require('./routes/oauth');
 
 // Middleware
 app.use(cors());
@@ -42,6 +43,10 @@ app.use(express.static(publicPath));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/posts', postsRoutes);
+app.use('/api/oauth', oauthRoutes);
+
+// Initialize Passport OAuth
+initializePassport(app);
 
 // API Routes
 
@@ -109,11 +114,22 @@ app.get('/setup-tables', async (req, res) => {
         avatar_url TEXT,
         website TEXT,
         location VARCHAR(255),
+        google_id VARCHAR(255) UNIQUE,
+        github_id VARCHAR(255) UNIQUE,
         joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
     console.log('✅ users table created');
+
+    // Add OAuth columns if they don't exist
+    try {
+      await pool.query(`ALTER TABLE ${userSchema}.users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255) UNIQUE`);
+      await pool.query(`ALTER TABLE ${userSchema}.users ADD COLUMN IF NOT EXISTS github_id VARCHAR(255) UNIQUE`);
+      console.log('✅ OAuth columns added');
+    } catch (e) {
+      console.log('⚠️ OAuth columns may already exist:', e.message);
+    }
     
     // Create posts table
     await pool.query(`
