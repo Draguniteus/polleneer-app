@@ -36,12 +36,9 @@ function initializePassport(app) {
       if (result.rows.length > 0) {
         // Existing user - return them
         const user = result.rows[0];
-        const token = jwt.sign(
-          { userId: user.id, username: user.username },
-          process.env.JWT_SECRET || 'polleneer-secret-key',
-          { expiresIn: '7d' }
-        );
-        return done(null, { user, token, isNew: false });
+        user.justCreated = false;
+        user.justLinked = false;
+        return done(null, user);
       }
 
       // Check if user exists with same email
@@ -51,12 +48,9 @@ function initializePassport(app) {
           // Link Google account to existing user
           await pool.query('UPDATE users SET google_id = $1, avatar_url = COALESCE(avatar_url, $2) WHERE id = $3', [googleId, avatarUrl, result.rows[0].id]);
           const user = result.rows[0];
-          const token = jwt.sign(
-            { userId: user.id, username: user.username },
-            process.env.JWT_SECRET || 'polleneer-secret-key',
-            { expiresIn: '7d' }
-          );
-          return done(null, { user, token, isNew: false, linked: true });
+          user.justCreated = false;
+          user.justLinked = true;
+          return done(null, user);
         }
       }
 
@@ -73,13 +67,9 @@ function initializePassport(app) {
       );
 
       const user = result.rows[0];
-      const token = jwt.sign(
-        { userId: user.id, username: user.username },
-        process.env.JWT_SECRET || 'polleneer-secret-key',
-        { expiresIn: '7d' }
-      );
-
-      return done(null, { user, token, isNew: true });
+      user.justCreated = true;
+      user.justLinked = false;
+      return done(null, user);
     } catch (error) {
       console.error('Google OAuth error:', error);
       return done(error);
@@ -109,12 +99,9 @@ function initializePassport(app) {
 
       if (result.rows.length > 0) {
         const user = result.rows[0];
-        const token = jwt.sign(
-          { userId: user.id, username: user.username },
-          process.env.JWT_SECRET || 'polleneer-secret-key',
-          { expiresIn: '7d' }
-        );
-        return done(null, { user, token, isNew: false });
+        user.justCreated = false;
+        user.justLinked = false;
+        return done(null, user);
       }
 
       // Check if user exists with same email
@@ -127,7 +114,9 @@ function initializePassport(app) {
           process.env.JWT_SECRET || 'polleneer-secret-key',
           { expiresIn: '7d' }
         );
-        return done(null, { user, token, isNew: false, linked: true });
+        user.justCreated = false;
+        user.justLinked = true;
+        return done(null, user);
       }
 
       // Create new user
@@ -143,13 +132,9 @@ function initializePassport(app) {
       );
 
       const user = result.rows[0];
-      const token = jwt.sign(
-        { userId: user.id, username: user.username },
-        process.env.JWT_SECRET || 'polleneer-secret-key',
-        { expiresIn: '7d' }
-      );
-
-      return done(null, { user, token, isNew: true });
+      user.justCreated = true;
+      user.justLinked = false;
+      return done(null, user);
     } catch (error) {
       console.error('GitHub OAuth error:', error);
       return done(error);
@@ -164,11 +149,21 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/callback',
-  passport.authenticate('google', { session: false }),
-  (req, res) => {
-    const { user, token, isNew, linked } = req.user;
-    // Redirect to frontend with token
+  passport.authenticate('google', { session: false, failureRedirect: '/?error=oauth_failed' }),
+  (req, res, next) => {
+    // User is in req.user, but our custom fields (token, isNew, linked) were added by the verify callback
+    // We need to re-create the token since we can't pass it through passport's session
+    const jwt = require('jsonwebtoken');
+    const user = req.user;
+    const token = jwt.sign(
+      { userId: user.id, username: user.username },
+      process.env.JWT_SECRET || 'polleneer-secret-key',
+      { expiresIn: '7d' }
+    );
+    // Redirect to frontend with token - we don't know isNew/linked here, so default to true for new users
     const baseUrl = process.env.FRONTEND_URL || 'https://polleneer-app-ukvcq.ondigitalocean.app';
+    const isNew = user.justCreated || false;
+    const linked = user.justLinked || false;
     let redirectUrl = `${baseUrl}?oauth=google&token=${token}&isNew=${isNew}`;
     if (linked) redirectUrl += '&linked=true';
     res.redirect(redirectUrl);
@@ -181,10 +176,18 @@ router.get('/github', passport.authenticate('github', {
 }));
 
 router.get('/github/callback',
-  passport.authenticate('github', { session: false }),
-  (req, res) => {
-    const { user, token, isNew, linked } = req.user;
+  passport.authenticate('github', { session: false, failureRedirect: '/?error=oauth_failed' }),
+  (req, res, next) => {
+    const jwt = require('jsonwebtoken');
+    const user = req.user;
+    const token = jwt.sign(
+      { userId: user.id, username: user.username },
+      process.env.JWT_SECRET || 'polleneer-secret-key',
+      { expiresIn: '7d' }
+    );
     const baseUrl = process.env.FRONTEND_URL || 'https://polleneer-app-ukvcq.ondigitalocean.app';
+    const isNew = user.justCreated || false;
+    const linked = user.justLinked || false;
     let redirectUrl = `${baseUrl}?oauth=github&token=${token}&isNew=${isNew}`;
     if (linked) redirectUrl += '&linked=true';
     res.redirect(redirectUrl);
