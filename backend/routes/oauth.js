@@ -12,11 +12,13 @@ function initializePassport(app) {
   app.use(passport.initialize());
   // Note: We don't use passport.session() because we use JWT tokens instead of sessions
 
+  const callbackBase = process.env.OAUTH_CALLBACK_BASE || 'https://polleneer-app-ukvcq.ondigitalocean.app';
+
   // Google OAuth Strategy
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback'
+    callbackURL: `${callbackBase}/api/auth/google/callback`
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       const googleId = profile.id;
@@ -88,7 +90,7 @@ function initializePassport(app) {
   passport.use(new GithubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: process.env.GITHUB_CALLBACK_URL || '/api/auth/github/callback',
+    callbackURL: `${callbackBase}/api/auth/github/callback`,
     scope: ['user:email']
   }, async (accessToken, refreshToken, profile, done) => {
     try {
