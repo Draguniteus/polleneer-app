@@ -10,10 +10,7 @@ const { pool, useRealDatabase } = require('../database');
 // Initialize Passport
 function initializePassport(app) {
   app.use(passport.initialize());
-  app.use(passport.session());
-
-  passport.serializeUser((user, done) => done(null, user));
-  passport.deserializeUser((user, done) => done(null, user));
+  // Note: We don't use passport.session() because we use JWT tokens instead of sessions
 
   // Google OAuth Strategy
   passport.use(new GoogleStrategy({
