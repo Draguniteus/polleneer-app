@@ -1,6 +1,51 @@
-type: web
+alerts:
+- rule: DEPLOYMENT_FAILED
+- rule: DOMAIN_FAILED
+databases:
+- cluster_name: app-5c4e0b95-2424-41f6-9b08-d3e2d3ee3fb3
+  db_name: db
+  db_user: db
+  engine: PG
+  name: db
+  production: true
+  version: "17"
+features:
+- buildpack-stack=ubuntu-22
+ingress:
+  rules:
+  - component:
+      name: polleneer-app
+    match:
+      path:
+        prefix: /
 name: polleneer-app
 region: nyc
-source_dir: /backend
-build_command: cd ../frontend && node simple-production-build.mjs && cp -r dist/* ../backend/public/
-run_command: node server.js
+services:
+- build_command: npm install
+  environment_slug: node-js
+  envs:
+  - key: DATABASE_URL
+    scope: RUN_TIME
+    value: postgresql://doadmin:AVNS_Ud2mLgW_0v7uRNu1TV9@app-5c4e0b95-2424-41f6-9b08-d3e2d3ee3fb3-do-user-30933879-0.g.db.ondigitalocean.com:25060/db?sslmode=require
+  - key: GOOGLE_CLIENT_ID
+    scope: RUN_TIME
+    value: 555625676713-go8rhs606rqq1hdt543cu9fo71g15q1b.apps.googleusercontent.com
+  - key: GOOGLE_CLIENT_SECRET
+    scope: RUN_TIME
+    value: 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
+  - key: GITHUB_CLIENT_ID
+    scope: RUN_TIME
+    value: Ov23ligd2uxtftAou9tn
+  - key: GITHUB_CLIENT_SECRET
+    scope: RUN_TIME
+    value: 6a610c1587cf70c1e6735d4545213b2fbd46bd93
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: Draguniteus/polleneer-app
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: apps-s-1vcpu-1gb
+  name: polleneer-app
+  run_command: npm start
+  source_dir: /backend
