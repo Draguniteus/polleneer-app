@@ -7298,6 +7298,9 @@ img.twemoji {
         const linked = urlParams.get('linked') === 'true';
 
         if (oauthProvider && oauthToken) {
+            // Prevent second DOMContentLoaded from running
+            oauthPendingOnboarding = true;
+
             // Clear URL parameters
             window.history.replaceState({}, document.title, window.location.pathname);
 
@@ -7334,6 +7337,7 @@ img.twemoji {
             .catch(err => {
                 console.error('OAuth error:', err);
                 showToast('OAuth login failed. Please try again.');
+                oauthPendingOnboarding = false; // Reset on error
             });
             return;
         }
@@ -7617,12 +7621,19 @@ img.twemoji {
         // ============================================
         // INITIALIZATION FUNCTIONS
         // ============================================
+        let oauthPendingOnboarding = false; // Flag to prevent second DOMContentLoaded from running
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if this is an OAuth callback being handled
+            if (oauthPendingOnboarding) {
+                return; // Skip initialization, OAuth handler will take care of everything
+            }
+
             initializeApp();
             setupEventListeners();
             loadSampleData();
             initProfileSongPlayer();
-            
+
             const savedUser = localStorage.getItem('polleneer_user');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
